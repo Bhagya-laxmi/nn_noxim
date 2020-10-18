@@ -1,0 +1,10 @@
+No.24 output neuron result: 0.000275227
+No.24 output neuron result: 0.52042
+No.24 output neuron result: 0.180802
+No.24 output neuron result: 0.00109497
+No.24 output neuron result: 0.00432092
+No.24 output neuron result: 1.58857e-05
+No.24 output neuron result: 0.000274552
+No.24 output neuron result: 0.99884
+No.24 output neuron result: 0.481581
+No.24 output neuron result: 0.036001

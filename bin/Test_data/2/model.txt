@@ -1,0 +1,6 @@
+% Input ( 3D_shape )
+% Dense ( size  activation:"relu"/"tanh"/"sigmoid"/"softmax" )
+
+Input 400 1 1
+Dense 25 sigmoid
+Dense 10 sigmoid

@@ -1,0 +1,29 @@
+g++ -O2 -I/usr/systemc/include -c ../src/NoximNoC.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximRouter.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximProcessingElement.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximBuffer.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximStats.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximGlobalStats.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximGlobalRoutingTable.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximLocalRoutingTable.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximGlobalTrafficTable.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximReservationTable.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximPower.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximCmdLineParser.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximMain.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/thermal_IF.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximLog.cpp
+g++ -O2 -I/usr/systemc/include -c ../src/NoximVLink.cpp
+
+gcc -c -I/usr/systemc/include ../src/util.c
+gcc -c -I/usr/systemc/include ../src/temperature_grid.c
+gcc -c -I/usr/systemc/include ../src/temperature_block.c
+gcc -c -I/usr/systemc/include ../src/temperature.c
+gcc -c -I/usr/systemc/include ../src/shape.c
+gcc -c -I/usr/systemc/include ../src/RCutil.c
+gcc -c -I/usr/systemc/include ../src/npe.c
+gcc -c -I/usr/systemc/include ../src/package.c
+gcc -c -I/usr/systemc/include ../src/flp.c
+g++ -O2 -I/usr/systemc/include -L/usr/systemc/lib-linux64 -o noxim ./NoximNoC.o ./NoximRouter.o ./NoximProcessingElement.o ./NoximBuffer.o ./NoximStats.o ./NoximGlobalStats.o ./NoximGlobalRoutingTable.o ./NoximLocalRoutingTable.o ./NoximGlobalTrafficTable.o ./NoximReservationTable.o ./NoximPower.o ./NoximCmdLineParser.o ./NoximMain.o ./thermal_IF.o ./NoximLog.o ./NoximVLink.o  ./util.o  ./temperature_grid.o  ./temperature_block.o  ./temperature.o  ./shape.o  ./RCutil.o  ./npe.o  ./package.o  ./flp.o  -lsystemc -lm  2>&1 | c++filt
+
+
