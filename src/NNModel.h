@@ -28,6 +28,9 @@ using namespace std;
 #define RELU             	1
 #define TANH              	2
 #define SIGMOID                	3
+#define AVERAGE              	0
+#define MAXIMUM                	1
+
 
 // Structure used to store information into the table
 struct NeuInformation {

@@ -22,7 +22,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	ifstream fin(NoximGlobalParams::NNmodel_filename, ios::in); 						//** 2018.09.02 edit by Yueh-Chi,Yang **//
 	char temp_type[20], temp_sv_pad[20], temp_actfun[10];
 	int temp;
-	int temp_c_x, temp_c_y, temp_z, temp_num, temp_std, temp_x, temp_y, temp_pad;
+	int temp_c_x, temp_c_y, temp_z, temp_num, temp_std, temp_x, temp_y, temp_pad, temp_channels;
 	int input_size, output_size;
 	deque< deque< int > > conv;
 	deque< deque< int > > pool;
@@ -79,6 +79,65 @@ bool NNModel::load()//M_fname Useless tytyty
 				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<                   setw(10)<<" |"
 				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<endl;
 		}
+		else if (!strcmp( temp_type, "Convolution"))
+		{
+			all_leyer_type.push_back('c');
+			char line[256];
+			fin.getline(line, sizeof(line) - 1);
+			sscanf(line, "%d %d %d %d %d %d %d %s",&temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y, &temp_std, &temp_pad, &temp_actfun);
+			deque< int > temp_leyer_size;
+			temp = temp_x *temp_y;
+			temp_leyer_size.push_back(temp);  //The size of the convolution layer
+			temp_leyer_size.push_back(temp_x);
+			temp_leyer_size.push_back(temp_y);
+			temp_leyer_size.push_back(temp_channels);
+			temp_leyer_size.push_back(temp_c_x);
+			temp_leyer_size.push_back(temp_c_y);
+			temp_leyer_size.push_back(temp_std);
+			temp_leyer_size.push_back(temp_pad);
+			if(!strcmp( temp_actfun, "relu"))
+				temp_leyer_size.push_back(RELU);
+			else if(!strcmp( temp_actfun, "tanh"))
+				temp_leyer_size.push_back(TANH);
+			else if(!strcmp( temp_actfun, "sigmoid"))
+				temp_leyer_size.push_back(SIGMOID);
+			else if(!strcmp( temp_actfun, "softmax"))
+				temp_leyer_size.push_back(SOFTMAX);
+
+			all_leyer_size.push_back(temp_leyer_size);
+			all_Nue+=temp;
+			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<     setw(8)<<"Convol"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
+			<<      setw(8)<<temp_leyer_size[1]<<" |"<<   setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
+			<<      setw(8)<<temp_leyer_size[4]<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
+			<<      setw(8)<<temp_leyer_size[7]<<" |"<<          setw(8)<<temp_actfun<<" |"<<endl;
+		}else if (!strcmp( temp_type, "Pooling"))
+		{
+			all_leyer_type.push_back('p');
+			char line[256];
+			fin.getline(line, sizeof(line) - 1);
+			sscanf(line, "%d %d %d %d %d %d %s", &temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y, &temp_std, &temp_actfun);
+			deque< int > temp_leyer_size;
+			temp = temp_x *temp_y;
+			temp_leyer_size.push_back(temp);//The size of the pooling layer
+			temp_leyer_size.push_back(temp_x);
+			temp_leyer_size.push_back(temp_y);
+			temp_leyer_size.push_back(temp_channels);
+			temp_leyer_size.push_back(temp_c_x);
+			temp_leyer_size.push_back(temp_c_y);
+			temp_leyer_size.push_back(temp_std);
+			
+			if(!strcmp( temp_actfun, "average"))
+				temp_leyer_size.push_back(AVERAGE);
+			else if(!strcmp( temp_actfun, "maximum"))
+				temp_leyer_size.push_back(MAXIMUM);
+
+			all_leyer_size.push_back(temp_leyer_size);
+			all_Nue+=temp;
+			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<     setw(8)<<"Pooling"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
+			<<      setw(8)<<temp_leyer_size[1]<<" |"<<   setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
+			<<      setw(8)<<temp_leyer_size[4]<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
+			<<                   setw(10)<<" |"<<         setw(8)<<temp_actfun<<" |"<<endl;
+		}
 		else if (!strcmp( temp_type, "%"))
 		{
 		
@@ -93,6 +152,10 @@ bool NNModel::load()//M_fname Useless tytyty
 		}
 
 	}
+	//for( int i=0; i<5;i++){
+	//  cout<<all_leyer_type[i]<<"-------";
+	//}
+
 	cout<<"model all_leyer complete"<<endl;
 	cout<<"all neu:"<<all_Nue<<endl;
 	fin.close();
@@ -169,13 +232,15 @@ bool NNModel::load()//M_fname Useless tytyty
 	int temp_ID_conv = -1;
 	deque < float > temp_conv_weight;
 	int temp_layer_maxID = input_size;
-
+	
 	Group_table.clear();
 	deque < NeuInformation > temp_Group_table;
 	temp_Group_table.clear();
 	deque < int > temp_leyer_ID_Group;
 	temp_leyer_ID_Group.clear();
 	
+	int prevLayer_size;
+
 	ifstream fin_w(NoximGlobalParams::NNweight_filename, ios::in);	
 	cout<<"weight file loading (filename: " << NoximGlobalParams::NNweight_filename << ")..."<<endl;	//** 2018.09.02 edit by Yueh-Chi,Yang **//
 
@@ -223,27 +288,67 @@ bool NNModel::load()//M_fname Useless tytyty
 		}
 
 		NeuInfo.Type_layer = all_leyer_type[NeuInfo.ID_layer];
-		
-		if( NeuInfo.Type_layer == 'f')
+		//if( NeuInfo.Type_layer == 'c'){
+		//	cout<< "Bias Weight for convolution layer: "<<endl;
+		//	for( int i=0; i< all_leyer_size[temp_layer][3]; i ++){
+		//	 fin_w >> temp_w;
+		//	 NeuInfo.weight.push_back(temp_w); //Saving bias as weights in the neurons
+
+		//	 cout<< temp_w <<"----";
+		//	}
+		//	cout<<endl;
+		//	cout<< "Convolution channel weights: "<<endl;
+		//	for( int i=0; i< all_leyer_size[temp_layer][3] * all_leyer_size[temp_layer][4] *all_leyer_size[temp_layer][5] ; i++){
+		//	   fin>> temp_w;
+		//	   temp_conv_weight.push_back(temp_w);
+
+		//           cout<< temp_w<< "----";	
+		//	}
+		//	cout<<endl;		  		
+		//}
+		 if( NeuInfo.Type_layer == 'f')
 		{
-			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0] +1 ) ; i++ )	//include bias***
+ 		 cout<<endl<<"Fully connected weights: "<<endl;
+		 if( all_leyer_type[temp_layer -1] =='p')
+		 {
+		   prevLayer_size = all_leyer_size[ temp_layer-1 ][0]* all_leyer_size[ temp_layer-1 ][3]+1;
+		 }else if( all_leyer_type[temp_layer -1] =='f')
+		 {
+		   prevLayer_size = all_leyer_size[ temp_layer-1 ][0] +1;
+		 }
+			for( int i=0 ; i < ( prevLayer_size ) ; i++ )	//include bias***
 			{
 				fin_w>>temp_w;
 				NeuInfo.weight.push_back(temp_w);
+;
+				cout<< temp_w<<"----";
 			}
 		}
-
+		//cout<<endl;
 		//***********mapping****************
-		
+		//all_conv_weight.push_back(temp_conv_weight);
 		temp_Group_table.push_back(NeuInfo);
 		temp_ID_In_Group++;
 		temp_ID_In_layer++;
 		temp_ID_Neu++;
 	}
-
+	cout<<endl<<"Convolution weight: "<<endl;
+	for( int i=0; i<all_leyer_type.size(); i++)
+	{
+	  if( all_leyer_type[i] == 'c')
+	  {
+	    for( int j= 0; j< (all_leyer_size[i][3] * all_leyer_size[i][4] *all_leyer_size[i][5] + all_leyer_size[i][3]); j++)
+	    { 
+	      fin_w >> temp_w;
+	      temp_conv_weight.push_back(temp_w); //Convolution weight and then bias value
+	      cout<<temp_w<< "----";
+            }		
+	  }
+	  all_conv_weight.push_back(temp_conv_weight);
+	}	
 	fin_w.close();
 	
-	deque<float>().swap(temp_conv_weight);
+	//deque<float>().swap(temp_conv_weight);
 	deque<NeuInformation>().swap(temp_Group_table);
 	deque<int>().swap(temp_leyer_ID_Group);
 	cout<<"model & group complete"<<endl;
@@ -370,7 +475,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<"load input complete"<<endl;
     
 	//Reverse Eng
-	/*
+	
 	cout<<"All data in"<<endl;
 	for( int i =0; i< all_data_in.size();i++){
 		for( int j=0; j< all_data_in[i].size();j++ ){
@@ -381,9 +486,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	}
 
 	cout<<endl;
-    */
-
-	return true;
+    	return true;
 }
 
 

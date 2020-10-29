@@ -1,6 +1,10 @@
 % Input ( 3D_shape )
+% Convolution ( 3D_shape kernel_x kernel_y stride pad activation:"relu"/"tanh"/"sigmoid"/"softmax" )
+% Pooling ( 3D_shape kernel_x kernel_y stride type:"average"/"maximum" )
 % Dense ( size  activation:"relu"/"tanh"/"sigmoid"/"softmax" )
 
-Input 400 1 1
-Dense 25 sigmoid
-Dense 10 sigmoid
+Input 5 5 1
+Convolution 4 4 6 2 2 1 0 sigmoid
+Pooling 2 2 6 2 2 2 average
+Dense 3 sigmoid
+Dense 2 sigmoid

@@ -158,7 +158,7 @@ void NoximNoC::buildMesh()
 		t[i][j][k]->DW_tag[DIRECTION_EAST](DW_tag_to_east[i+1][j][k]);
 		t[i][j][k]->DW_tag[DIRECTION_SOUTH](DW_tag_to_south[i][j+1][k]);
 		t[i][j][k]->DW_tag[DIRECTION_WEST](DW_tag_to_west[i][j][k]);
-		t[i][j][k]->DW_tag_neighbor[DIRECTION_NORTH](DW_tag_to_south[i][j][NoximGlobalParams::mesh_dim_z-1]);	//都接到最底層發出的DW_tag
+		t[i][j][k]->DW_tag_neighbor[DIRECTION_NORTH](DW_tag_to_south[i][j][NoximGlobalParams::mesh_dim_z-1]);	//\B3\A3\B1\B5\A8\EC\B3怍\B3\BCh\B5o\A5X\AA\BADW_tag
 		t[i][j][k]->DW_tag_neighbor[DIRECTION_EAST](DW_tag_to_west[i+1][j][NoximGlobalParams::mesh_dim_z-1]);
 		t[i][j][k]->DW_tag_neighbor[DIRECTION_SOUTH](DW_tag_to_north[i][j+1][NoximGlobalParams::mesh_dim_z-1]);
 		t[i][j][k]->DW_tag_neighbor[DIRECTION_WEST](DW_tag_to_east[i][j][NoximGlobalParams::mesh_dim_z-1]);
@@ -393,7 +393,7 @@ NoximTile *NoximNoC::searchNode(const int id) const
 			for ( k=0; k<NoximGlobalParams::mesh_dim_z; k++)
 				if (t[i][j][k]->r->local_id == id)
 					return t[i][j][k];
-	return false;
+	return NULL;//false;
 }
 
 void NoximNoC::entry()  //Foster big modified - 09/11/12
@@ -423,11 +423,11 @@ void NoximNoC::entry()  //Foster big modified - 09/11/12
 		     steadyPwr2PtraceFile();
 		  
 		  //transient power
-		  transPwr2PtraceFile();//把現在各點的power轉成ptrace file
+		  transPwr2PtraceFile();//\A7\E2\B2{\A6b\A6U\C2I\AA\BApower\C2鄏私trace file
 	      HS_interface->Temperature_calc(instPowerTrace, TemperatureTrace);
 	      setTemperature();
 
-		  bool IsEmergency = EmergencyDecision();		//check現在溫度是否超過thermal limit, 是否要進入emergency mode
+		  bool IsEmergency = EmergencyDecision();		//check\B2{\A6b\B7贖蚻O\A7_\B6W\B9Lthermal limit, \ACO\A7_\ADn\B6i\A4Jemergency mode
 		//Print information & record cnt	
 		for(int z=0; z < NoximGlobalParams::mesh_dim_z; z++) 
 		{
@@ -453,7 +453,7 @@ void NoximNoC::entry()  //Foster big modified - 09/11/12
 		  			cnt_received_total[z] += t[x][y][z]->r->cnt_received;
 	//}		  			
 
-		  			if(!LastIsEmergency)	//如過上個iteration沒有thermal emergency, 就把這次的traffic用作新的traffic quota計算
+		  			if(!LastIsEmergency)	//\A6p\B9L\A4W\AD\D3iteration\A8S\A6\B3thermal emergency, \B4N\A7\E2\B3o\A6\B8\AA\BAtraffic\A5峓@\B7s\AA\BAtraffic quota\ADp\BA\E2
 		  			{
 		  				t[x][y][z]->pe->Quota_local = (int)((double)t[x][y][z]->pe->cnt_local * (float)(1-NoximGlobalParams::throt_ratio) );	//set initial quota
 		  				t[x][y][z]->r->Quota_neighbor = (int)((double)t[x][y][z]->r->cnt_neighbor * (float)(1-NoximGlobalParams::throt_ratio) ); //set initial quota
@@ -484,15 +484,15 @@ void NoximNoC::entry()  //Foster big modified - 09/11/12
 			for(int y=0; y < NoximGlobalParams::mesh_dim_y; y++) 
 				for(int x=0; x < NoximGlobalParams::mesh_dim_x; x++)
 				{							  			
-		  			t[x][y][z]->pe->cnt_local = 0;//reset to zero寫在這!!不可拿掉
-		  			t[x][y][z]->r->cnt_neighbor = 0;//reset to zero寫在這!!不可拿掉
-		  			t[x][y][z]->r->cnt_received = 0;//reset to zero寫在這!!不可拿掉
+		  			t[x][y][z]->pe->cnt_local = 0;//reset to zero\BCg\A6b\B3o!!\A4\A3\A5i\AE\B3\B1\BC
+		  			t[x][y][z]->r->cnt_neighbor = 0;//reset to zero\BCg\A6b\B3o!!\A4\A3\A5i\AE\B3\B1\BC
+		  			t[x][y][z]->r->cnt_received = 0;//reset to zero\BCg\A6b\B3o!!\A4\A3\A5i\AE\B3\B1\BC
 				}
 		  
 	  }
 	}
 	
-	if( getCurrentCycleNum() == NoximGlobalParams::simulation_time ) //收尾，做steady計算
+	if( getCurrentCycleNum() == NoximGlobalParams::simulation_time ) //\A6\AC\A7\C0\A1A\B0\B5steady\ADp\BA\E2
 	{ 
 		HS_interface->steadyTmp(t);
 	}
@@ -532,7 +532,7 @@ void NoximNoC::transPwr2PtraceFile()
 				instPowerTrace[3*idx+2] = t[m][n][o]->r->stats.power.getTransientFPMACPower();
 				results_log_pwr << instPowerTrace[3*idx+2]<<"\t";	
 
-    			t[m][n][o]->r->stats.power.resetTransientPwr(); //清除這段期間的Power累積
+    			t[m][n][o]->r->stats.power.resetTransientPwr(); //\B2M\B0\A3\B3o\ACq\B4\C1\B6\A1\AA\BAPower\B2祪n
 				}
 			}
 	}
@@ -693,7 +693,7 @@ bool NoximNoC::EmergencyDecision()
 	else if(NoximGlobalParams::throt_type == THROT_DISTRIBUTED)
 	{
 		
-		for(int z=NoximGlobalParams::mesh_dim_z-1; z >= 0 ; z--) //z由下(靠近heat sink)往上檢查, 上面檢查到過熱時才可以連下面一起改成emergency
+		for(int z=NoximGlobalParams::mesh_dim_z-1; z >= 0 ; z--) //z\A5悀U(\BEa\AA\F1heat sink)\A9\B9\A4W\C0邠d, \A4W\AD\B1\C0邠d\A8\EC\B9L\BC\F6\AE氻~\A5i\A5H\B3s\A4U\AD\B1\A4@\B0_\A7鵀牠mergency
 			for(int y=0; y < NoximGlobalParams::mesh_dim_y; y++) 
 				for(int x=0; x < NoximGlobalParams::mesh_dim_x; x++)
 					{
@@ -741,7 +741,7 @@ bool NoximNoC::EmergencyDecision()
 	else if(NoximGlobalParams::throt_type == THROT_VERTICAL)
 	{
 		
-		for(int z=NoximGlobalParams::mesh_dim_z-1; z >= 0 ; z--) //z由下(靠近heat sink)往上檢查, 上面檢查到過熱時才可以連下面一起改成emergency
+		for(int z=NoximGlobalParams::mesh_dim_z-1; z >= 0 ; z--) //z\A5悀U(\BEa\AA\F1heat sink)\A9\B9\A4W\C0邠d, \A4W\AD\B1\C0邠d\A8\EC\B9L\BC\F6\AE氻~\A5i\A5H\B3s\A4U\AD\B1\A4@\B0_\A7鵀牠mergency
 			for(int y=0; y < NoximGlobalParams::mesh_dim_y; y++) 
 				for(int x=0; x < NoximGlobalParams::mesh_dim_x; x++)
 					{
@@ -759,7 +759,7 @@ bool NoximNoC::EmergencyDecision()
 #endif
 								for(int zz = z; zz<t[x][y][z]->pe->emergency_level+z; zz++)
 								{
-									if(zz < NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y*(NoximGlobalParams::mesh_dim_z-1))	//假設最靠近heat sink(底層)都不會超過, 故不用進入emergency
+									if(zz < NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y*(NoximGlobalParams::mesh_dim_z-1))	//\B0\B2\B3]\B3抩a\AA\F1heat sink(\A9\B3\BCh)\B3\A3\A4\A3\B7|\B6W\B9L, \ACG\A4\A3\A5庤i\A4Jemergency
 									{
 										t[x][y][zz]->pe->emergency = true;
 										t[x][y][zz]->r->emergency = true;

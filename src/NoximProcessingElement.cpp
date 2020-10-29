@@ -30,7 +30,7 @@ int NoximProcessingElement::randInt(int min, int max)
 void NoximProcessingElement::rxProcess()
 {	
 	if (reset.read() ) {
-		cout<<endl;
+		//cout<<endl;
 		//cout<<"PE Rx Reset process"<<endl;
 		//ack_rx.write(0);
 		//current_level_rx = 0;
