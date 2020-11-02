@@ -1,6 +1,1 @@
-72: ProcessingElement[2] SENDING [type: H, seq: 0, 2-->3], src_Neu_id = 0, data = 0
-73: ProcessingElement[2] SENDING [type: B, seq: 1, 2-->3], src_Neu_id = 41, data = 0
-74: ProcessingElement[2] SENDING [type: B, seq: 2, 2-->3], src_Neu_id = 42, data = 0
-75: ProcessingElement[2] SENDING [type: B, seq: 3, 2-->3], src_Neu_id = 43, data = 0
-76: ProcessingElement[2] SENDING [type: B, seq: 4, 2-->3], src_Neu_id = 44, data = 0
-77: ProcessingElement[2] SENDING [type: T, seq: 5, 2-->3], src_Neu_id = 0, data = 0
+1: ProcessingElement[2] SENDING [type: H, seq: 0, 2-->11], src_Neu_id = 0, data = 0

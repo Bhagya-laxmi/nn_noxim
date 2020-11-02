@@ -1,5 +1,1 @@
-91: ProcessingElement[3] SENDING [type: H, seq: 0, 3-->4], src_Neu_id = 0, data = 0
-92: ProcessingElement[3] SENDING [type: B, seq: 1, 3-->4], src_Neu_id = 45, data = 0.998054
-93: ProcessingElement[3] SENDING [type: B, seq: 2, 3-->4], src_Neu_id = 46, data = 0.999283
-94: ProcessingElement[3] SENDING [type: B, seq: 3, 3-->4], src_Neu_id = 47, data = 0.999736
-95: ProcessingElement[3] SENDING [type: T, seq: 4, 3-->4], src_Neu_id = 0, data = 0
+1: ProcessingElement[3] SENDING [type: H, seq: 0, 3-->11], src_Neu_id = 0, data = 0

@@ -22,15 +22,15 @@ bool NNModel::load()//M_fname Useless tytyty
 	ifstream fin(NoximGlobalParams::NNmodel_filename, ios::in); 						//** 2018.09.02 edit by Yueh-Chi,Yang **//
 	char temp_type[20], temp_sv_pad[20], temp_actfun[10];
 	int temp;
-	int temp_c_x, temp_c_y, temp_z, temp_num, temp_std, temp_x, temp_y, temp_pad, temp_channels;
+	int temp_c_x, temp_c_y, temp_z, temp_num, temp_std, temp_x, temp_y, temp_pad, temp_channels, temp_c_z;
 	int input_size, output_size;
 	deque< deque< int > > conv;
 	deque< deque< int > > pool;
 	int all_Nue=0;
 	// *****************all layer Neu_num setting*******************
 	cout<<endl;
-	cout<<"layer_ID |    type | Neu_num |       X |       Y | channel |   C/P_X |   C/P_Y |  stride | padding | act_fun |"<<endl;
-	cout<<"--------------------------------------------------------------------------------------------------------------"<<endl;
+	cout<<"layer_ID |    type | Neu_num |       X |       Y | channel |   C/P_X |   C/P_Y |    C/P_Z |  stride | padding | act_fun |"<<endl;
+	cout<<"-------------------------------------------------------------------------------------------------------------------------"<<endl;
 
 	while(fin >> temp_type){
 
@@ -40,7 +40,7 @@ bool NNModel::load()//M_fname Useless tytyty
 			all_leyer_type.push_back('f');
 			char line[256];
 			fin.getline(line, sizeof(line) - 1);
-			sscanf(line, "%d %s", &temp, &temp_actfun);
+			sscanf(line, "%d %s", &temp, temp_actfun);
 			deque< int > temp_leyer_size;
 			temp_leyer_size.push_back(temp);
 			if(!strcmp( temp_actfun, "relu"))
@@ -56,7 +56,8 @@ bool NNModel::load()//M_fname Useless tytyty
 			all_Nue+=temp;
 			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<    setw(8)<<"Fully"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
 				<<                   setw(10)<<" |"<<            setw(10)<<" |"<<                   setw(10)<<" |"
-				<<                   setw(10)<<" |"<<            setw(10)<<" |"<<                   setw(10)<<" |"
+				<<                   setw(10)<<" |"<<            setw(10)<<" |"<<            setw(10)<<" |"
+				<<                   setw(10)<<" |"
 				<<                   setw(10)<<" |"<<setw(8)<<temp_actfun<<" |"<<endl;
 		}
 		else if (!strcmp( temp_type, "Input"))
@@ -77,22 +78,23 @@ bool NNModel::load()//M_fname Useless tytyty
 			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<           setw(8)<<"Input"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
 				<<setw(8)<<temp_leyer_size[1]<<" |"<<setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
 				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<                   setw(10)<<" |"
-				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<endl;
+				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<            setw(10)<<" |"<<endl;
 		}
 		else if (!strcmp( temp_type, "Convolution"))
 		{
 			all_leyer_type.push_back('c');
 			char line[256];
 			fin.getline(line, sizeof(line) - 1);
-			sscanf(line, "%d %d %d %d %d %d %d %s",&temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y, &temp_std, &temp_pad, &temp_actfun);
+			sscanf(line, "%d %d %d %d %d %d %d %d %s",&temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y,&temp_c_z, &temp_std, &temp_pad, temp_actfun);
 			deque< int > temp_leyer_size;
-			temp = temp_x *temp_y;
+			temp = temp_x *temp_y*temp_channels;
 			temp_leyer_size.push_back(temp);  //The size of the convolution layer
 			temp_leyer_size.push_back(temp_x);
 			temp_leyer_size.push_back(temp_y);
 			temp_leyer_size.push_back(temp_channels);
 			temp_leyer_size.push_back(temp_c_x);
 			temp_leyer_size.push_back(temp_c_y);
+			temp_leyer_size.push_back(temp_c_z);
 			temp_leyer_size.push_back(temp_std);
 			temp_leyer_size.push_back(temp_pad);
 			if(!strcmp( temp_actfun, "relu"))
@@ -109,15 +111,15 @@ bool NNModel::load()//M_fname Useless tytyty
 			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<     setw(8)<<"Convol"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
 			<<      setw(8)<<temp_leyer_size[1]<<" |"<<   setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
 			<<      setw(8)<<temp_leyer_size[4]<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
-			<<      setw(8)<<temp_leyer_size[7]<<" |"<<          setw(8)<<temp_actfun<<" |"<<endl;
+			<<      setw(8)<<temp_leyer_size[7]<<" |"<<   setw(8)<<temp_leyer_size[8]<<" |"<<setw(8)<<temp_actfun<<" |"<<endl;
 		}else if (!strcmp( temp_type, "Pooling"))
 		{
 			all_leyer_type.push_back('p');
 			char line[256];
 			fin.getline(line, sizeof(line) - 1);
-			sscanf(line, "%d %d %d %d %d %d %s", &temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y, &temp_std, &temp_actfun);
+			sscanf(line, "%d %d %d %d %d %d %s", &temp_x,&temp_y, &temp_channels, &temp_c_x, &temp_c_y, &temp_std, temp_actfun);
 			deque< int > temp_leyer_size;
-			temp = temp_x *temp_y;
+			temp = temp_x *temp_y*temp_channels;
 			temp_leyer_size.push_back(temp);//The size of the pooling layer
 			temp_leyer_size.push_back(temp_x);
 			temp_leyer_size.push_back(temp_y);
@@ -135,7 +137,7 @@ bool NNModel::load()//M_fname Useless tytyty
 			all_Nue+=temp;
 			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<     setw(8)<<"Pooling"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
 			<<      setw(8)<<temp_leyer_size[1]<<" |"<<   setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
-			<<      setw(8)<<temp_leyer_size[4]<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
+			<<      setw(8)<<temp_leyer_size[4]<<" |"<<            setw(10)<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
 			<<                   setw(10)<<" |"<<         setw(8)<<temp_actfun<<" |"<<endl;
 		}
 		else if (!strcmp( temp_type, "%"))
@@ -240,10 +242,51 @@ bool NNModel::load()//M_fname Useless tytyty
 	temp_leyer_ID_Group.clear();
 	
 	int prevLayer_size;
+	int kernel_size;
 
 	ifstream fin_w(NoximGlobalParams::NNweight_filename, ios::in);	
 	cout<<"weight file loading (filename: " << NoximGlobalParams::NNweight_filename << ")..."<<endl;	//** 2018.09.02 edit by Yueh-Chi,Yang **//
+    
+	//Save convolution weights and bias for each filter
+	for(int i =0; i< all_leyer_type.size(); i++)
+	{
+       if(all_leyer_type[i] == 'c')
+	   {
+		   kernel_size = all_leyer_size[i][4] * all_leyer_size[i][5];
+		   for(int j=0; j< all_leyer_size[i][3]*all_leyer_size[i][6];j++)
+		   {
+			   temp_conv_weight.clear();
+			   for(int l=0; l<kernel_size;l++)
+			   {
+				   fin_w >> temp_w;
+				   temp_conv_weight.push_back(temp_w);
+			   }
+			   all_conv_weight.push_back(temp_conv_weight);
+		   }
 
+		   for( int m =0; m < all_leyer_size[i][3];m++)
+		   {
+			   fin_w >> temp_w;
+			   all_conv_bias.push_back(temp_w);
+		   }
+	   }
+
+	}
+
+	/*--------------Debugging---------------------------*/
+    /*cout<< all_conv_bias.size()<<endl;
+    for( int p=0; p< all_conv_bias.size();p++)
+	{
+		cout<<all_conv_bias[p]<<"-----";
+	}
+	cout<<endl;
+	cout<<all_conv_weight.size()<<endl;
+	for( int p=0; p< 25;p++)
+	{
+		cout<<all_conv_weight[7][p]<<"---";
+	}
+	cout<<endl;*/
+	/*--------------------------------------------------*/
 	while(1)
 	{
 		NeuInformation NeuInfo;
@@ -308,20 +351,10 @@ bool NNModel::load()//M_fname Useless tytyty
 		//}
 		 if( NeuInfo.Type_layer == 'f')
 		{
- 		 cout<<endl<<"Fully connected weights: "<<endl;
-		 if( all_leyer_type[temp_layer -1] =='p')
-		 {
-		   prevLayer_size = all_leyer_size[ temp_layer-1 ][0]* all_leyer_size[ temp_layer-1 ][3]+1;
-		 }else if( all_leyer_type[temp_layer -1] =='f')
-		 {
-		   prevLayer_size = all_leyer_size[ temp_layer-1 ][0] +1;
-		 }
-			for( int i=0 ; i < ( prevLayer_size ) ; i++ )	//include bias***
+			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0] +1 ) ; i++ )	//include bias***
 			{
 				fin_w>>temp_w;
 				NeuInfo.weight.push_back(temp_w);
-;
-				cout<< temp_w<<"----";
 			}
 		}
 		//cout<<endl;
@@ -332,7 +365,7 @@ bool NNModel::load()//M_fname Useless tytyty
 		temp_ID_In_layer++;
 		temp_ID_Neu++;
 	}
-	cout<<endl<<"Convolution weight: "<<endl;
+	/*cout<<endl<<"Convolution weight: "<<endl;
 	for( int i=0; i<all_leyer_type.size(); i++)
 	{
 	  if( all_leyer_type[i] == 'c')
@@ -345,7 +378,7 @@ bool NNModel::load()//M_fname Useless tytyty
             }		
 	  }
 	  all_conv_weight.push_back(temp_conv_weight);
-	}	
+	} */	
 	fin_w.close();
 	
 	//deque<float>().swap(temp_conv_weight);
