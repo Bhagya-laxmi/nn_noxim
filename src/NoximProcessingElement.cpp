@@ -230,7 +230,63 @@ if (reset.read() ) {
 					
 					ID_layer = PE_table[0].ID_layer;
 					Type_layer = PE_table[0].Type_layer;
+					Use_Neu = PE_table.size();
+					res.assign( Use_Neu, 0 );
+					
 
+					for(int i = 0 ; i<Use_Neu ; i++)
+					{
+						Use_Neu_ID.push_back(PE_table[i].ID_Neu);
+					}
+
+					/*-------Debugging------*/
+					//cout<<"Local id: "<< local_id<<endl;
+					//cout<<"Use Neuron ID: "<<Use_Neu_ID.back()<<endl;
+					//cout<<"Use Neuron ID: "<<Use_Neu_ID.front()<<endl;
+					/*----------------------*/
+					if( Type_layer == 'f')
+					{
+						if(ID_layer !=NN_Model->all_leyer_size.size()-1)
+						{
+						   //trans ids	
+							int i;
+							for(i = 0 ; i<NN_Model->all_leyer_ID_Group[ID_layer].size() ; i++)
+							{
+								int temp_Group = NN_Model->all_leyer_ID_Group[ID_layer][i];
+								trans_PE_ID.push_back(NN_Model-> mapping_table[temp_Group]);
+							}
+							trans = i;
+							should_trans = trans;
+							/*-------Debugging------*/
+							//cout<<"Size of next layer: "<<NN_Model->all_leyer_ID_Group[ID_layer].size()<<endl;
+							/*----------------------*/
+						}
+
+						//receive ids
+						receive = NN_Model-> all_leyer_size[ID_layer-1][0];
+						should_receive = receive;
+						receive_Neu_ID.clear();
+						receive_data.assign(receive , 0 );
+						
+						int temp_receive_start_ID = Use_Neu_ID[0] - PE_table[0].ID_In_layer - receive;
+						
+						for(int i = 0 ; i<receive ; i++)
+						{
+							receive_Neu_ID.push_back(temp_receive_start_ID+i);
+						}
+						flag_p =0;
+						flag_f =0;
+						/*-------Debugging------*/
+						//cout<<"Size of previous layer: "<<receive<<endl;
+						/*----------------------*/
+					}else
+					{
+						
+
+
+
+					}
+					/*
 					Use_Neu = PE_table.size();
 					for(int i = 0 ; i<Use_Neu ; i++)
 					{
@@ -288,7 +344,7 @@ if (reset.read() ) {
 					else
 					{
 						res.assign( Use_Neu, 0 );
-					}
+					}*/
 				}
 				break;
 			}

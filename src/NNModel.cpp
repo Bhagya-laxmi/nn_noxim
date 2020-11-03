@@ -351,24 +351,6 @@ bool NNModel::load()//M_fname Useless tytyty
 
 		NeuInfo.Type_layer = all_leyer_type[NeuInfo.ID_layer];
 
-		//if( NeuInfo.Type_layer == 'c'){
-		//	cout<< "Bias Weight for convolution layer: "<<endl;
-		//	for( int i=0; i< all_leyer_size[temp_layer][3]; i ++){
-		//	 fin_w >> temp_w;
-		//	 NeuInfo.weight.push_back(temp_w); //Saving bias as weights in the neurons
-
-		//	 cout<< temp_w <<"----";
-		//	}
-		//	cout<<endl;
-		//	cout<< "Convolution channel weights: "<<endl;
-		//	for( int i=0; i< all_leyer_size[temp_layer][3] * all_leyer_size[temp_layer][4] *all_leyer_size[temp_layer][5] ; i++){
-		//	   fin>> temp_w;
-		//	   temp_conv_weight.push_back(temp_w);
-
-		//           cout<< temp_w<< "----";	
-		//	}
-		//	cout<<endl;		  		
-		//}
 		 if( NeuInfo.Type_layer == 'f')
 		{
 			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0]) ; i++ )	
@@ -412,7 +394,10 @@ bool NNModel::load()//M_fname Useless tytyty
     
 	
 	 //Reverse Eng
-	/* 
+	/*
+	 cout<< Group_table[1][0].Type_layer<<endl;
+	 cout<< Group_table[50][0].Type_layer<<endl;;
+	 
 	 cout<<"Group Table"<<endl;
     cout<<"Neuron ID"<<endl;
     for( int i =0; i< Group_table.size();i++){
@@ -422,6 +407,7 @@ bool NNModel::load()//M_fname Useless tytyty
 		}	
 	}
     cout<<endl;
+	
 	cout<<"Id in Group"<<endl;
 	for( int i =0; i< Group_table.size();i++){
 		for( int j=0; j< Group_table[i].size();j++ ){
@@ -441,7 +427,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	
 	 //Reverse Eng
 	 cout<<"All Layer ID Group"<<endl;
-
+	
     
 	for( int i =0; i< all_leyer_ID_Group.size();i++){
 		for( int j=0; j< all_leyer_ID_Group[i].size();j++ ){
@@ -450,7 +436,13 @@ bool NNModel::load()//M_fname Useless tytyty
 		}
 		
 	}
-	cout<<endl;
+	
+	cout<<"All layer id group size: "<<all_leyer_ID_Group.size()<<endl;
+	//cout<<"Last layer: "<<all_leyer_ID_Group[6].size()<<endl;
+	//cout<<"First layer: "<<all_leyer_ID_Group[0].size()<<endl;
+	cout<<"Group table size: "<<Group_table.size()<<endl;
+	cout<<"all layer type size: "<<all_leyer_type.size()<<endl;
+	cout<<"all layer size: "<<all_leyer_size.size()<<endl;
 	
     cout<<endl;
 	//Reverse Eng
