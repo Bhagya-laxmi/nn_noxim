@@ -74,8 +74,8 @@ bool NNModel::load()//M_fname Useless tytyty
 			temp_leyer_size.push_back(temp_z);
 
 			all_leyer_size.push_back(temp_leyer_size);
-			all_Nue+=temp;
-			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<           setw(8)<<"Input"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
+			//all_Nue+=temp;
+			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<           setw(8)<<"Input"<<" |"<<setw(10)<<" |"
 				<<setw(8)<<temp_leyer_size[1]<<" |"<<setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
 				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<                   setw(10)<<" |"
 				<<                   setw(10)<<" |"<<                   setw(10)<<" |"<<            setw(10)<<" |"<<endl;
@@ -226,14 +226,14 @@ bool NNModel::load()//M_fname Useless tytyty
 
 	// ******************temp_Group_table setting**********************
 	int temp_ID_Neu=0;
-	int temp_layer=0;
+	int temp_layer=1; //Layer id starts from layer 1 which is convolution layer
 	int temp_ID_In_layer=0;
 	int temp_ID_Group=0;
 	int temp_ID_In_Group=0;
 	float temp_w;
 	int temp_ID_conv = -1;
 	deque < float > temp_conv_weight;
-	int temp_layer_maxID = input_size;
+	int temp_layer_maxID = all_leyer_size[temp_layer][0]; //Starting with layer 1
 	
 	Group_table.clear();
 	deque < NeuInformation > temp_Group_table;
@@ -241,9 +241,9 @@ bool NNModel::load()//M_fname Useless tytyty
 	deque < int > temp_leyer_ID_Group;
 	temp_leyer_ID_Group.clear();
 	
-	int prevLayer_size;
+	//int prevLayer_size;
 	int kernel_size;
-
+	deque <float> temp_bias;
 	ifstream fin_w(NoximGlobalParams::NNweight_filename, ios::in);	
 	cout<<"weight file loading (filename: " << NoximGlobalParams::NNweight_filename << ")..."<<endl;	//** 2018.09.02 edit by Yueh-Chi,Yang **//
     
@@ -261,13 +261,13 @@ bool NNModel::load()//M_fname Useless tytyty
 				   fin_w >> temp_w;
 				   temp_conv_weight.push_back(temp_w);
 			   }
-			   all_conv_weight.push_back(temp_conv_weight);
+			   all_conv_weight.push_back(temp_conv_weight);//Convolution kernel weights
 		   }
 
 		   for( int m =0; m < all_leyer_size[i][3];m++)
 		   {
 			   fin_w >> temp_w;
-			   all_conv_bias.push_back(temp_w);
+			   all_conv_bias.push_back(temp_w);   //Bias for each filter
 		   }
 	   }
 
@@ -287,6 +287,8 @@ bool NNModel::load()//M_fname Useless tytyty
 	}
 	cout<<endl;*/
 	/*--------------------------------------------------*/
+    
+	
 	while(1)
 	{
 		NeuInformation NeuInfo;
@@ -328,9 +330,27 @@ bool NNModel::load()//M_fname Useless tytyty
 			NeuInfo.ID_In_layer = temp_ID_In_layer;
 			NeuInfo.ID_In_Group = temp_ID_In_Group;
 			temp_layer_maxID += all_leyer_size[temp_layer][0];
+
+			temp_bias.clear();
+			if(all_leyer_type[temp_layer]=='f')
+			{
+				for(int k=0;k<all_leyer_size[temp_layer][0];k++)
+				{
+					fin_w >> temp_w;
+					temp_bias.push_back(temp_w);
+					
+				}
+				/*-------------Debugging------------*/
+				//cout<<temp_bias.back()<<endl;
+				//cout<<temp_bias.front()<<endl;
+				//cout<<"Size of temp_bias: "<<temp_bias.size()<<"--"<<temp_layer<<endl;
+				/*----------------------------------*/
+			}
+			
 		}
 
 		NeuInfo.Type_layer = all_leyer_type[NeuInfo.ID_layer];
+
 		//if( NeuInfo.Type_layer == 'c'){
 		//	cout<< "Bias Weight for convolution layer: "<<endl;
 		//	for( int i=0; i< all_leyer_size[temp_layer][3]; i ++){
@@ -351,11 +371,15 @@ bool NNModel::load()//M_fname Useless tytyty
 		//}
 		 if( NeuInfo.Type_layer == 'f')
 		{
-			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0] +1 ) ; i++ )	//include bias***
+			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0]) ; i++ )	
 			{
 				fin_w>>temp_w;
 				NeuInfo.weight.push_back(temp_w);
 			}
+			NeuInfo.weight.push_back(temp_bias[NeuInfo.ID_In_layer]); //Include bias
+			/*------Debugging------*/
+			//cout<<NeuInfo.weight.size()<<"-"<<NeuInfo.weight.front()<<"-"<<NeuInfo.weight.back()<<endl;
+			/*---------------------*/
 		}
 		//cout<<endl;
 		//***********mapping****************
@@ -507,18 +531,17 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<"all_data_in.size(): "<<all_data_in.size()<<endl;
 	cout<<"load input complete"<<endl;
     
-	//Reverse Eng
+	/*--------Debugging-----------------*/
+	//cout<<"All data in"<<endl;
+	//for( int i =0; i< all_data_in.size();i++){
+	//	for( int j=0; j< all_data_in[i].size();j++ ){
+    //         cout<< all_data_in[i][j]<<"--";
+	//	}	
+	//}
+	//cout<<endl;
+	//cout<<all_data_in[0].size()<<endl;
+	/*----------------------------------*/
 	
-	cout<<"All data in"<<endl;
-	for( int i =0; i< all_data_in.size();i++){
-		for( int j=0; j< all_data_in[i].size();j++ ){
-             cout<< all_data_in[i][j]<<"--";
-
-		}
-		
-	}
-
-	cout<<endl;
     	return true;
 }
 
