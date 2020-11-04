@@ -78,6 +78,9 @@ SC_MODULE(NoximProcessingElement)
 	int computation_time;
 	int temp_computation_time;
 
+	
+	deque<int> trans_PE_ID_conv;
+	
 //*********************************************************************************************
 	
 	// Functions

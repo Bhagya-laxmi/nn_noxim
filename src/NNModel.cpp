@@ -214,14 +214,14 @@ bool NNModel::load()//M_fname Useless tytyty
 		cout<<"Error mapping algorithm!!"<<endl;
 		exit(1);
 	}
-	/*
-    //Reverse Eng
-	cout<<"Mapping Table"<<endl;
-	for( int i =0; i< mapping_table.size();i++){
-		cout<< mapping_table.at(i)<<"--";
-	}
-	cout<<endl;
-	*/
+	/*------Debugging--------*/
+	//cout<<"Mapping Table"<<endl;
+	//for( int i =0; i< mapping_table.size();i++){
+	//	cout<< mapping_table.at(i)<<"--";
+	//}
+	//cout<<endl;
+	/*-----------------------*/
+	cout<<"Model mapping table: "<<mapping_table.size()<<endl;
 	cout<<"maping complete"<<endl;
 
 	// ******************temp_Group_table setting**********************
@@ -234,7 +234,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	int temp_ID_conv = -1;
 	deque < float > temp_conv_weight;
 	int temp_layer_maxID = all_leyer_size[temp_layer][0]; //Starting with layer 1
-	
+	//cout<<"Max id: "<<temp_layer_maxID<<endl;
 	Group_table.clear();
 	deque < NeuInformation > temp_Group_table;
 	temp_Group_table.clear();
@@ -311,6 +311,7 @@ bool NNModel::load()//M_fname Useless tytyty
 			NeuInfo.ID_Group = temp_ID_Group;
 		}
 		else{													//change layer and group
+			//cout<<"Temp id in layer: "<<temp_ID_In_layer<<endl;
 			Group_table.push_back(temp_Group_table);
 			temp_Group_table.clear();
 					

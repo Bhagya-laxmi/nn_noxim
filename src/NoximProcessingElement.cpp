@@ -215,14 +215,19 @@ if (reset.read() ) {
 			//cout<<"Step 2 Done"<<endl;
 		}
 
-
+		//cout<< NN_Model->all_leyer_ID_Group.size()<<endl;
+		//cout<<endl<<"starting"<<endl;
+		
 		for( int k = 0 ; k<NN_Model->mapping_table.size() ; k++ )
 		{
+			//cout<<"Loop 1"<<endl;
 			if(NN_Model->mapping_table[k]==local_id)
 			{
+				//cout<<"Loop 2"<<endl;
 				ID_group = k;
 				if(ID_group<NN_Model->Group_table.size())
 				{
+					//cout<<"Loop 3"<<endl;
 					PE_enable = 1;
 
 					PE_table = NN_Model->Group_table[ID_group];
@@ -236,6 +241,7 @@ if (reset.read() ) {
 
 					for(int i = 0 ; i<Use_Neu ; i++)
 					{
+						//cout<<"Loop 4"<<endl;
 						Use_Neu_ID.push_back(PE_table[i].ID_Neu);
 					}
 
@@ -281,11 +287,189 @@ if (reset.read() ) {
 						/*----------------------*/
 					}else
 					{
-						
+						//cout<<"Conv or pool layer"<<endl;
+						//Convert the id_in_layer into 3d coordinate system
+					    int layer_x = NN_Model->all_leyer_size[ID_layer][1];
+						int layer_y = NN_Model->all_leyer_size[ID_layer][2];
+						int layer_z = NN_Model->all_leyer_size[ID_layer][3];
+						int done = 0;
+						int temp_coord;
+						deque<int> coord_xyz;
+						deque <deque<deque<int>>> trans_xyz; //Use neurons-- dequeue for kernel -- xyz
+						for(int i=0; i<Use_Neu; i++)
+						{
+							done =0;
+							for(int j=0; j< layer_z; j++)
+							{
+								for(int m =0; m< layer_x; m++)
+								{
+									for(int l =0; l< layer_y; l++)
+									{
+										if((j*layer_x*layer_y + layer_y*m + l)==PE_table[i].ID_In_layer)
+										{
+											temp_coord= m*10000 + l*100 + j;
+											coord_xyz.push_back(temp_coord);
+											temp_coord =0;
+											/*-------Debugging--------*/
+											
+											//if((ID_layer == 3) && (PE_table[i].ID_In_layer == 100)/*&& (PE_table[i].ID_In_layer < 77)*/){
+												//cout<<"Layer id: "<<ID_layer<<":::";
+												//cout<<endl<<"Neuron count: "<<Use_Neu<<"::";
+												//cout<< "ID in layer: "<<PE_table[i].ID_In_layer<<"--";
+												//cout<<"Coord: "<< coord_xyz[i]<<"--";
+												//cout<<"x: "<<m<<"--y: "<<l<<"--z: "<<j<<endl;
+												//cout<<layer_x<<"--"<<layer_y<<"--"<<layer_z<<endl;
 
+											//}
+											
+											/*------------------------*/
+											done = 1;
+											break;
+										}
+									}
+									if( done ==1) break;
 
+								}if(done ==1) break;
 
+							}
+						}
+						//cout<<"coord dequeu size: "<<coord_xyz.size()<<endl;
+						//if(ID_layer == 1){cout<<coord_xyz.front()<<"--"<<coord_xyz.back()<<endl;}
+						deque<int> temp_coord_needed_nxtLayer;
+						deque<deque<int>> coord_needed_nxtLayer;
+						int horizontal=0;
+						int vertical=0;
+						if(Type_layer == 'c')
+						{
+							//trans PE ids are noted down
+							if(NN_Model->all_leyer_type[ID_layer+1] == 'p') //must consider stride
+							{
+								//output size of next layer
+								int pool_x =NN_Model->all_leyer_size[ID_layer+1][1];
+								int pool_y=NN_Model->all_leyer_size[ID_layer+1][2];
+								int pool_z =NN_Model->all_leyer_size[ID_layer+1][3];
+								int kernel_x= NN_Model->all_leyer_size[ID_layer+1][4];
+								int kernel_y= NN_Model->all_leyer_size[ID_layer+1][5];
+								int stride = NN_Model->all_leyer_size[ID_layer+1][6];
+
+								for(int a =0; a< pool_x; a++)
+								{
+									for(int b=0; b< pool_y;b++)
+									{ 
+										if(a>0){ vertical =1;}
+										if(b>0) {horizontal =1;}
+										if(horizontal ==0 && vertical ==0) //0,0
+										{
+											//TODO
+											temp_coord_needed_nxtLayer.push_back(a*100+b);
+											temp_coord_needed_nxtLayer.push_back(a*100+(b+1));
+											temp_coord_needed_nxtLayer.push_back((a+1)*100+b);
+											temp_coord_needed_nxtLayer.push_back((a+1)*100+(b+1));
+
+										}else if(horizontal ==0 && vertical ==1)
+										{
+											
+											temp_coord_needed_nxtLayer.push_back((stride*a)*100+b);
+											temp_coord_needed_nxtLayer.push_back((stride*a)*100+(b+1));
+											temp_coord_needed_nxtLayer.push_back(((stride*a)+1)*100+b);
+											temp_coord_needed_nxtLayer.push_back(((stride*a)+1)*100+(b+1));											
+										}else if(horizontal ==1 && vertical == 0)
+										{
+											
+											temp_coord_needed_nxtLayer.push_back(a*100+b*stride);
+											temp_coord_needed_nxtLayer.push_back(a*100+(b*stride+1));
+											temp_coord_needed_nxtLayer.push_back((a+1)*100+b*stride);
+											temp_coord_needed_nxtLayer.push_back((a+1)*100+(b*stride+1));
+										}else if(horizontal ==1 && vertical == 1)
+										{
+											
+											temp_coord_needed_nxtLayer.push_back((stride*a)*100+b*stride);
+											temp_coord_needed_nxtLayer.push_back((stride*a)*100+(b*stride+1));
+											temp_coord_needed_nxtLayer.push_back(((stride*a)+1)*100+b*stride);
+											temp_coord_needed_nxtLayer.push_back(((stride*a)+1)*100+(b*stride+1));
+										}
+											/*-------Debugging--------*/
+											
+											//if((ID_layer == 3) && (a ==4)&& (b==4)){
+											//	cout<<endl<<"Pool: "<<pool_x<<"-"<<pool_y<<"-"<<pool_z<<"--";
+												//cout<<horizontal<<"--"<<vertical<<"--";
+											//	cout<< temp_coord_needed_nxtLayer[0]<<"--";
+											//	cout<< temp_coord_needed_nxtLayer[1]<<"--";
+											//	cout<< temp_coord_needed_nxtLayer[2]<<"--";
+											//	cout<< temp_coord_needed_nxtLayer[3]<<endl;
+											//}
+											
+											/*------------------------*/
+										coord_needed_nxtLayer.push_back(temp_coord_needed_nxtLayer);
+										temp_coord_needed_nxtLayer.clear();
+										horizontal =0;
+										vertical =0;
+									}
+								}
+								/*------Debugging------*/
+								//if(ID_layer == 3){
+								//	cout<<":::"<<coord_needed_nxtLayer.size()<<endl;
+								//}
+								/*---------------------*/
+								int curr_id;
+								
+								done =0;
+								for(int h=0; h< Use_Neu; h++)
+								{
+									done=0;
+									curr_id = (coord_xyz[h]/10000)* 100 + (coord_xyz[h]%10000)/100;
+									for(int f=0; f<coord_needed_nxtLayer.size();f++)
+									{
+										if((curr_id == coord_needed_nxtLayer[f][0])||
+										(curr_id == coord_needed_nxtLayer[f][1])||
+										(curr_id == coord_needed_nxtLayer[f][2])||
+										(curr_id == coord_needed_nxtLayer[f][3]))
+										{	
+											trans_PE_ID_conv.push_back(f);
+											/*------Debugging------*/
+											//if((ID_layer ==3)&&(PE_table[h].ID_In_layer == 210))
+											//{
+											//	cout<<"Curr: "<<curr_id<<"-"<<f<<"-"<<trans_PE_ID_conv[h]<<"-"<<coord_xyz[h]<<endl;
+											//}
+											/*--------------------*/
+											done=1;break;
+										}
+									}
+
+								}
+								/*---------Debugging-------*/
+								//if((ID_layer ==3)&&(PE_table[1].ID_In_layer == 1))
+								//{
+									//cout<<coord_xyz[1]<<"--";
+									//cout<<"Size: "<<trans_PE_ID_conv[1].size()<<"--"<<trans_PE_ID_conv[1][0]<<endl;
+
+								//}
+								/*------------------------*/
+
+							}
+							/*-----------Debugging----------*/
+							
+							if(ID_layer ==1)
+							{
+								if(PE_table[0].ID_Group == 0)
+								{
+									//cout<<endl<<"Local id: "<< local_id<<endl;
+									//int p = 1;
+									//cout<<"next layer: "<<coord_needed_thisLayer[p][0]<<"--"<<coord_needed_thisLayer[p][1]<<"--"<<coord_needed_thisLayer[p][2]<<"--"<<coord_needed_thisLayer[p][3]<<endl;
+									//cout<<"X: "<< temp[0]<<endl;
+									//cout<<"y: "<< temp[1]<<endl;
+									//cout<<"z: "<< temp[2]<<endl;
+								}
+							}
+							/*------------------------------*/
+
+						}else
+						{
+
+						}	
 					}
+						
+					
 					/*
 					Use_Neu = PE_table.size();
 					for(int i = 0 ; i<Use_Neu ; i++)
