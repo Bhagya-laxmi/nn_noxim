@@ -295,7 +295,7 @@ if (reset.read() ) {
 						int done = 0;
 						int temp_coord;
 						deque<int> coord_xyz;
-						deque <deque<deque<int>>> trans_xyz; //Use neurons-- dequeue for kernel -- xyz
+						
 						for(int i=0; i<Use_Neu; i++)
 						{
 							done =0;
@@ -312,14 +312,13 @@ if (reset.read() ) {
 											temp_coord =0;
 											/*-------Debugging--------*/
 											
-											//if((ID_layer == 3) && (PE_table[i].ID_In_layer == 100)/*&& (PE_table[i].ID_In_layer < 77)*/){
-												//cout<<"Layer id: "<<ID_layer<<":::";
-												//cout<<endl<<"Neuron count: "<<Use_Neu<<"::";
-												//cout<< "ID in layer: "<<PE_table[i].ID_In_layer<<"--";
-												//cout<<"Coord: "<< coord_xyz[i]<<"--";
-												//cout<<"x: "<<m<<"--y: "<<l<<"--z: "<<j<<endl;
-												//cout<<layer_x<<"--"<<layer_y<<"--"<<layer_z<<endl;
-
+											//if((ID_layer == 3) && (PE_table[i].ID_In_layer == 1599)/*&& (PE_table[i].ID_In_layer < 77)*/){
+											//	cout<<"Layer id: "<<ID_layer<<":::";
+											//	cout<<endl<<"Neuron count: "<<Use_Neu<<"::";
+											//	cout<< "ID in layer: "<<PE_table[i].ID_In_layer<<"--";
+											//	cout<<"Coord: "<< coord_xyz[i]<<"--";
+											//	cout<<"x: "<<m<<"--y: "<<l<<"--z: "<<j<<endl;
+											//	cout<<layer_x<<"--"<<layer_y<<"--"<<layer_z<<endl;
 											//}
 											
 											/*------------------------*/
@@ -344,12 +343,12 @@ if (reset.read() ) {
 							//trans PE ids are noted down
 							if(NN_Model->all_leyer_type[ID_layer+1] == 'p') //must consider stride
 							{
-								//output size of next layer
+								//output size of next layer(14*14 or 5*5)
 								int pool_x =NN_Model->all_leyer_size[ID_layer+1][1];
 								int pool_y=NN_Model->all_leyer_size[ID_layer+1][2];
 								int pool_z =NN_Model->all_leyer_size[ID_layer+1][3];
-								int kernel_x= NN_Model->all_leyer_size[ID_layer+1][4];
-								int kernel_y= NN_Model->all_leyer_size[ID_layer+1][5];
+								int kernelP_x= NN_Model->all_leyer_size[ID_layer+1][4];
+								int kernelP_y= NN_Model->all_leyer_size[ID_layer+1][5];
 								int stride = NN_Model->all_leyer_size[ID_layer+1][6];
 
 								for(int a =0; a< pool_x; a++)
@@ -412,64 +411,106 @@ if (reset.read() ) {
 								//}
 								/*---------------------*/
 								int curr_id;
-								
+								int tmp;
 								done =0;
+								//int done_conv;
+								//deque <int> temp_check;
+								deque<int> trans_id_in_layer;
+								//deque <int> trans_xyz;
 								for(int h=0; h< Use_Neu; h++)
 								{
 									done=0;
-									curr_id = (coord_xyz[h]/10000)* 100 + (coord_xyz[h]%10000)/100;
+									curr_id = (coord_xyz[h]/10000)* 100 + (coord_xyz[h]%10000)/100; //xy only
 									for(int f=0; f<coord_needed_nxtLayer.size();f++)
 									{
+										
 										if((curr_id == coord_needed_nxtLayer[f][0])||
 										(curr_id == coord_needed_nxtLayer[f][1])||
 										(curr_id == coord_needed_nxtLayer[f][2])||
 										(curr_id == coord_needed_nxtLayer[f][3]))
-										{	
-											trans_PE_ID_conv.push_back(f);
+										{
+											trans_id_in_layer.push_back(f+coord_xyz[h]%100*pool_x*pool_y); //Need to save id including xyz
 											/*------Debugging------*/
-											//if((ID_layer ==3)&&(PE_table[h].ID_In_layer == 210))
+											//Converting into 2d coord
+											//for(int g=0; g<pool_x;g++)
 											//{
-											//	cout<<"Curr: "<<curr_id<<"-"<<f<<"-"<<trans_PE_ID_conv[h]<<"-"<<coord_xyz[h]<<endl;
+											//	done_conv =0;
+											//	for(int q=0; q< pool_y;q++)
+											//	{
+											//		if(f == (pool_y*g + q))
+											//		{
+											//			tmp = g*10000 +q*100+coord_xyz[h]%100;
+											//			done_conv=1;
+											//			break;
+											//		}
+											//	}if(done_conv == 1) break;
+											//}
+											//temp_check.push_back(f);
+											//trans_xyz.push_back(tmp);
+											
+											//if((ID_layer ==3)&&(PE_table[h].ID_In_layer == 1599))
+											//{
+											//	cout<<"Curr: "<<curr_id<<"--"<<f<<"--"<<trans_id_in_layer[h]<<"-"<<coord_xyz[h]<<endl;
+												//cout<<"Curr: "<<curr_id<<"-"<<f<<"-"<<trans_PE_ID_conv[h]<<"-"<<trans_xyz[h]<<"-"<<"-"<<temp_check[h]<<"-"<<coord_xyz[h]<<endl;
 											//}
 											/*--------------------*/
+
 											done=1;break;
 										}
 									}
 
 								}
+
 								/*---------Debugging-------*/
 								//if((ID_layer ==3)&&(PE_table[1].ID_In_layer == 1))
 								//{
 									//cout<<coord_xyz[1]<<"--";
-									//cout<<"Size: "<<trans_PE_ID_conv[1].size()<<"--"<<trans_PE_ID_conv[1][0]<<endl;
+									//cout<<"Size: "<<temp_trans_xyz[1].size()<<"--"<<temp_trans_xyz[1][0]<<endl;
 
 								//}
 								/*------------------------*/
-
-							}
-							/*-----------Debugging----------*/
-							
-							if(ID_layer ==1)
-							{
-								if(PE_table[0].ID_Group == 0)
+							 //Converting the ID-in_layer to PE id
+							 deque< NeuInformation > PE_table_nxtlayer;
+							 deque <int> trans_conv;
+							 trans_conv.assign(Use_Neu,1); //transmitting count per neuron
+								for(int w=0; w< Use_Neu; w++)
 								{
-									//cout<<endl<<"Local id: "<< local_id<<endl;
-									//int p = 1;
-									//cout<<"next layer: "<<coord_needed_thisLayer[p][0]<<"--"<<coord_needed_thisLayer[p][1]<<"--"<<coord_needed_thisLayer[p][2]<<"--"<<coord_needed_thisLayer[p][3]<<endl;
-									//cout<<"X: "<< temp[0]<<endl;
-									//cout<<"y: "<< temp[1]<<endl;
-									//cout<<"z: "<< temp[2]<<endl;
+									done =0;
+									for(int i = 0 ; i<NN_Model->all_leyer_ID_Group[ID_layer].size() ; i++)
+									{
+										int temp_Group = NN_Model->all_leyer_ID_Group[ID_layer][i];
+										PE_table_nxtlayer = NN_Model->Group_table[temp_Group];
+										for(int e=0; e<PE_table_nxtlayer.size();e++)
+										{
+											if(trans_id_in_layer[w] == PE_table_nxtlayer[e].ID_In_layer)
+											{
+												trans_PE_ID_conv.push_back(NN_Model-> mapping_table[temp_Group]);
+												done =1;
+
+												/*---------Debugging---------*/
+												//if((ID_layer ==3)&&(PE_table[w].ID_In_layer == 1599))
+												//{
+												//	cout<<trans_id_in_layer[w]<<"-"<<trans_PE_ID_conv[w]<<endl;
+												//}
+												/*---------------------------*/
+												break;
+											}
+										}if(done == 1) break;
+										
+									}
 								}
-							}
-							/*------------------------------*/
-
-						}else
-						{
-
-						}	
-					}
+								//distinction btw 1st convolution layer and others
+								if(ID_layer == 1)
+								{
+									//Take data from memory and prepare the data
+								}else
+								{
+									// note down the receive ids
+								}
+							}	
+						}else{}
 						
-					
+					}
 					/*
 					Use_Neu = PE_table.size();
 					for(int i = 0 ; i<Use_Neu ; i++)
