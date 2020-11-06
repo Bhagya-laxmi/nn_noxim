@@ -532,7 +532,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	//	}	
 	//}
 	//cout<<endl;
-	//cout<<all_data_in[0].size()<<endl;
+	//cout<<"Size of input: "<<all_data_in[0].size()<<endl;
 	/*----------------------------------*/
 	
     	return true;

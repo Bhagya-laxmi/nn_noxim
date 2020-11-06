@@ -471,7 +471,7 @@ if (reset.read() ) {
 								/*------------------------*/
 							 //Converting the ID-in_layer to PE id
 							 deque< NeuInformation > PE_table_nxtlayer;
-							 deque <int> trans_conv;
+							 
 							 trans_conv.assign(Use_Neu,1); //transmitting count per neuron
 								for(int w=0; w< Use_Neu; w++)
 								{
@@ -499,13 +499,71 @@ if (reset.read() ) {
 										
 									}
 								}
+								
+								int kernel_x= NN_Model->all_leyer_size[ID_layer][4];
+								int kernel_y= NN_Model->all_leyer_size[ID_layer][5];
+								
+								int prev_x =NN_Model->all_leyer_size[ID_layer-1][1] ;
+								int prev_y=NN_Model->all_leyer_size[ID_layer-1][2];
+								int prev_z =NN_Model->all_leyer_size[ID_layer-1][3];
 								//distinction btw 1st convolution layer and others
+								deque <int> temp_receive;
+								int curr_id_x;
+								int curr_id_y;
+								deque <int> check;
+								
+								for(int u=0;u<Use_Neu; u++)
+								{
+									curr_id_x =0;
+									curr_id_y =0;
+									curr_id_x = (coord_xyz[u]/10000); 
+									curr_id_y= (coord_xyz[u]%10000)/100; //xy only
+
+									for( int a=0;a< prev_z; a++)
+									{
+										for(int b=0; b<kernel_x; b++)
+										{
+											for(int c=0; c< kernel_y; c++)
+											{
+												//check.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
+												temp_receive.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
+											}
+											
+										}
+									}
+									if(ID_layer != 1)
+									{
+										receive_conv.push_back(temp_receive.size());
+									}
+									
+									receive_PE_ID_conv.push_back(temp_receive);
+									temp_receive.clear();
+									//check.clear();
+									/*------Debugging-------*/
+									//if((ID_layer ==3)&&(PE_table[u].ID_In_layer == 1599))
+									//{
+									//	cout<<coord_xyz[u]<<"--"<<curr_id_x<<"--"<<curr_id_y<<endl;
+									//	for(int ch =0; ch< receive_PE_ID_conv[u].size(); ch++)
+									//	{
+											//cout<<receive_PE_ID_conv[u][ch]<<"-";
+											//cout<< check[ch]<<"-";
+											
+									//	}	cout<<receive_conv[u]<<"--";
+									//}
+									/*---------------------*/	
+
+								}
 								if(ID_layer == 1)
 								{
 									//Take data from memory and prepare the data
+								
+									flag_p=1;
+									flag_f=1;
 								}else
 								{
 									// note down the receive ids
+									flag_p =0;
+									flag_f =0;
 								}
 							}	
 						}else{}
