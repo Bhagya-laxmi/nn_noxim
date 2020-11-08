@@ -137,7 +137,7 @@ bool NNModel::load()//M_fname Useless tytyty
 			all_Nue+=temp;
 			cout<<setw(8)<<all_leyer_type.size()-1<<" |"<<     setw(8)<<"Pooling"<<" |"<<setw(8)<<temp_leyer_size[0]<<" |"
 			<<      setw(8)<<temp_leyer_size[1]<<" |"<<   setw(8)<<temp_leyer_size[2]<<" |"<<setw(8)<<temp_leyer_size[3]<<" |"
-			<<      setw(8)<<temp_leyer_size[4]<<" |"<<            setw(10)<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
+			<<      setw(8)<<temp_leyer_size[4]<<" |"<<   setw(8)<<temp_leyer_size[5]<<" |"<<            setw(10)<<" |"<<setw(8)<<temp_leyer_size[6]<<" |"	
 			<<                   setw(10)<<" |"<<         setw(8)<<temp_actfun<<" |"<<endl;
 		}
 		else if (!strcmp( temp_type, "%"))

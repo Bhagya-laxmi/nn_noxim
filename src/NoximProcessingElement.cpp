@@ -507,11 +507,12 @@ if (reset.read() ) {
 								int prev_y=NN_Model->all_leyer_size[ID_layer-1][2];
 								int prev_z =NN_Model->all_leyer_size[ID_layer-1][3];
 								//distinction btw 1st convolution layer and others
-								deque <int> temp_receive;
+								deque <int> temp_receive_id;
 								int curr_id_x;
 								int curr_id_y;
 								deque <int> check;
-								
+								deque <int> temp_receive_PE_id;
+								deque< NeuInformation > PE_table_prev;
 								for(int u=0;u<Use_Neu; u++)
 								{
 									curr_id_x =0;
@@ -525,40 +526,88 @@ if (reset.read() ) {
 										{
 											for(int c=0; c< kernel_y; c++)
 											{
-												//check.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
-												temp_receive.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
+												check.push_back((curr_id_x +b)*10000+(curr_id_y+c)*100+a);
+												temp_receive_id.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
+												
 											}
 											
-										}
+										}	
+
 									}
+									int PE_count =0;
+									int PE_id_curr;
 									if(ID_layer != 1)
 									{
-										receive_conv.push_back(temp_receive.size());
+										for(int d =0; d<temp_receive_id.size(); d++ )
+										{
+											done =0;
+											for(int e=0; e< NN_Model->all_leyer_ID_Group[ID_layer-2].size(); e++)
+											{
+												int temp_group = NN_Model->all_leyer_ID_Group[ID_layer-2][e];
+												PE_table_prev = NN_Model->Group_table[temp_group];
+												for(int f=0; f< PE_table_prev.size(); f++)
+												{
+													if(temp_receive_id[d] == PE_table_prev[f].ID_In_layer)
+													{
+														temp_receive_PE_id.push_back(NN_Model-> mapping_table[temp_group]);
+														done =1;
+														break;
+													}
+												}if(done ==1 )break;
+											}
+										}
+										receive_PE_ID_conv.push_back(temp_receive_PE_id); 
+										PE_id_curr = temp_receive_PE_id[0];
+										for(int g =0; g<temp_receive_PE_id.size();g++)
+										{											
+											if(PE_id_curr != temp_receive_PE_id[g+1])
+											{
+												PE_count = PE_count+1;
+												PE_id_curr = temp_receive_PE_id[g+1];
+											}
+
+										}
+										receive_conv.push_back(PE_count);
+										
+									}else
+									{
+										receive_PE_ID_conv.push_back(temp_receive_id);
 									}
 									
-									receive_PE_ID_conv.push_back(temp_receive);
-									temp_receive.clear();
 									//check.clear();
 									/*------Debugging-------*/
-									//if((ID_layer ==3)&&(PE_table[u].ID_In_layer == 1599))
+									//if((ID_layer ==1)&&(PE_table[u].ID_In_layer == 0))
 									//{
 									//	cout<<coord_xyz[u]<<"--"<<curr_id_x<<"--"<<curr_id_y<<endl;
 									//	for(int ch =0; ch< receive_PE_ID_conv[u].size(); ch++)
 									//	{
+									//		cout<<receive_PE_ID_conv[u][ch]<<"-";
+											//cout<< check[ch]<<"-";
+											
+									//	}	//cout<<receive_conv[u]<<"--";
+									//}
+									//if((ID_layer ==3)&&(PE_table[u].ID_In_layer == 1599))
+									//{
+									//	//cout<<ID_layer<<"-"<<temp_receive_PE_id.size()<<"--"<<temp_receive.size()<<"-"<<NN_Model->all_leyer_ID_Group[ID_layer-2].size()<<endl;
+									//	for(int ch =0; ch< temp_receive_id.size(); ch++)
+									//	{
+											//cout<<temp_receive_id[ch]<<"-";
 											//cout<<receive_PE_ID_conv[u][ch]<<"-";
 											//cout<< check[ch]<<"-";
 											
-									//	}	cout<<receive_conv[u]<<"--";
+									//	}	//cout<<receive_conv[u]<<"--";
 									//}
 									/*---------------------*/	
-
+									temp_receive_id.clear();
+									temp_receive_PE_id.clear();
+									check.clear();
 								}
 								if(ID_layer == 1)
 								{
 									//Take data from memory and prepare the data
 								
-									flag_p=1;
-									flag_f=1;
+									flag_p=0;
+									flag_f=0;
 								}else
 								{
 									// note down the receive ids
