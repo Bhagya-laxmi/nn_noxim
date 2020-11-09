@@ -511,7 +511,7 @@ if (reset.read() ) {
 								int curr_id_x;
 								int curr_id_y;
 								deque <int> check;
-								deque <int> temp_receive_PE_id;
+								deque <int> temp_receive_neu_id;
 								deque< NeuInformation > PE_table_prev;
 								for(int u=0;u<Use_Neu; u++)
 								{
@@ -549,29 +549,29 @@ if (reset.read() ) {
 												{
 													if(temp_receive_id[d] == PE_table_prev[f].ID_In_layer)
 													{
-														temp_receive_PE_id.push_back(NN_Model-> mapping_table[temp_group]);
+														temp_receive_neu_id.push_back(PE_table_prev[f].ID_Neu);
 														done =1;
 														break;
 													}
 												}if(done ==1 )break;
 											}
 										}
-										receive_PE_ID_conv.push_back(temp_receive_PE_id); 
-										PE_id_curr = temp_receive_PE_id[0];
-										for(int g =0; g<temp_receive_PE_id.size();g++)
-										{											
-											if(PE_id_curr != temp_receive_PE_id[g+1])
-											{
-												PE_count = PE_count+1;
-												PE_id_curr = temp_receive_PE_id[g+1];
-											}
+										receive_neu_ID_conv.push_back(temp_receive_neu_id); 
+										//PE_id_curr = temp_receive_neu_id[0];
+										//for(int g =0; g<temp_receive_neu_id.size();g++)
+										//{											
+										//	if(PE_id_curr != temp_receive_neu_id[g+1])
+										//	{
+										//		PE_count = PE_count+1;
+										//		PE_id_curr = temp_receive_neu_id[g+1];
+										//	}
 
-										}
-										receive_conv.push_back(PE_count);
+										//}
+										
 										
 									}else
 									{
-										receive_PE_ID_conv.push_back(temp_receive_id);
+										receive_neu_ID_conv.push_back(temp_receive_id);
 									}
 									
 									//check.clear();
@@ -579,27 +579,27 @@ if (reset.read() ) {
 									//if((ID_layer ==1)&&(PE_table[u].ID_In_layer == 0))
 									//{
 									//	cout<<coord_xyz[u]<<"--"<<curr_id_x<<"--"<<curr_id_y<<endl;
-									//	for(int ch =0; ch< receive_PE_ID_conv[u].size(); ch++)
+									//	for(int ch =0; ch< receive_neu_ID_conv[u].size(); ch++)
 									//	{
-									//		cout<<receive_PE_ID_conv[u][ch]<<"-";
+									//		cout<<receive_neu_ID_conv[u][ch]<<"-";
 											//cout<< check[ch]<<"-";
 											
 									//	}	//cout<<receive_conv[u]<<"--";
 									//}
-									//if((ID_layer ==3)&&(PE_table[u].ID_In_layer == 1599))
+									//if((ID_layer ==3)&&(PE_table[u].ID_In_layer == 0))
 									//{
-									//	//cout<<ID_layer<<"-"<<temp_receive_PE_id.size()<<"--"<<temp_receive.size()<<"-"<<NN_Model->all_leyer_ID_Group[ID_layer-2].size()<<endl;
+									//	cout<<ID_layer<<"-"<<temp_receive_neu_id.size()<<"-"<<NN_Model->all_leyer_ID_Group[ID_layer-2].size()<<endl;
 									//	for(int ch =0; ch< temp_receive_id.size(); ch++)
 									//	{
 											//cout<<temp_receive_id[ch]<<"-";
-											//cout<<receive_PE_ID_conv[u][ch]<<"-";
+									//		cout<<receive_neu_ID_conv[u][ch]<<"-";
 											//cout<< check[ch]<<"-";
 											
 									//	}	//cout<<receive_conv[u]<<"--";
 									//}
 									/*---------------------*/	
 									temp_receive_id.clear();
-									temp_receive_PE_id.clear();
+									temp_receive_neu_id.clear();
 									check.clear();
 								}
 								if(ID_layer == 1)
@@ -611,6 +611,15 @@ if (reset.read() ) {
 								}else
 								{
 									// note down the receive ids
+									receive_conv.assign(Use_Neu,NN_Model->all_leyer_size[ID_layer][4]* NN_Model->all_leyer_size[ID_layer][5]);
+									/*---------Debugging--------*/
+									//if((ID_layer ==3))
+									//{
+										//cout<< receive_conv[0];
+									//	cout<< receive_conv.size();
+									//}
+									
+									/*--------------------------*/
 									flag_p =0;
 									flag_f =0;
 								}

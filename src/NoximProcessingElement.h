@@ -80,7 +80,7 @@ SC_MODULE(NoximProcessingElement)
 
 	
 	deque<int> trans_PE_ID_conv;
-	deque <deque<int>> receive_PE_ID_conv;
+	deque <deque<int>> receive_neu_ID_conv;
 	deque <int> trans_conv;
 	deque <int> receive_conv;
 //*********************************************************************************************
