@@ -220,6 +220,7 @@ int sc_main(int arg_num, char *arg_vet[])
     srand(NoximGlobalParams::rnd_generator_seed);	// time(NULL));
 	//DEFAULT_RESET_TIME = # of simulation cycle
     sc_start(DEFAULT_RESET_TIME * CYCLE_PERIOD, SC_NS);
+	cout<<"Reset..0 ";
     reset.write(0);
 
     cout << " done! Now running for " << NoximGlobalParams::

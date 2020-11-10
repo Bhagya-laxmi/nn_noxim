@@ -31,7 +31,8 @@ void NoximProcessingElement::rxProcess()
 {	
 	if (reset.read() ) {
 		//cout<<endl;
-		//cout<<"PE Rx Reset process"<<endl;
+
+		//cout<<"PE Rx Reset process "<<reset.read()<<endl;
 		//ack_rx.write(0);
 		//current_level_rx = 0;
 		ack_rx.write(1);
@@ -227,6 +228,7 @@ if (reset.read() ) {
 				ID_group = k;
 				if(ID_group<NN_Model->Group_table.size())
 				{
+					
 					//cout<<"Loop 3"<<endl;
 					PE_enable = 1;
 
@@ -238,7 +240,12 @@ if (reset.read() ) {
 					Use_Neu = PE_table.size();
 					res.assign( Use_Neu, 0 );
 					
-
+					/*-------Debugging-------*/
+					//if(ID_layer == 1&& ID_group == 0)
+					//{
+					//	cout<<"Step "<<local_id<<endl;
+					//}
+					/*------------------------*/
 					for(int i = 0 ; i<Use_Neu ; i++)
 					{
 						//cout<<"Loop 4"<<endl;
@@ -252,6 +259,7 @@ if (reset.read() ) {
 					/*----------------------*/
 					if( Type_layer == 'f')
 					{
+						
 						if(ID_layer !=NN_Model->all_leyer_size.size()-1)
 						{
 						   //trans ids	
@@ -340,6 +348,7 @@ if (reset.read() ) {
 						int vertical=0;
 						if(Type_layer == 'c')
 						{
+							//cout<<"Conv"<<endl;
 							//trans PE ids are noted down
 							if(NN_Model->all_leyer_type[ID_layer+1] == 'p') //must consider stride
 							{
@@ -462,6 +471,8 @@ if (reset.read() ) {
 								}
 
 								/*---------Debugging-------*/
+								if(ID_layer == 1 && ID_group ==0)
+								cout<<"Trans id in layer: "<<trans_id_in_layer.size()<<endl;
 								//if((ID_layer ==3)&&(PE_table[1].ID_In_layer == 1))
 								//{
 									//cout<<coord_xyz[1]<<"--";
@@ -471,7 +482,7 @@ if (reset.read() ) {
 								/*------------------------*/
 							 //Converting the ID-in_layer to PE id
 							 deque< NeuInformation > PE_table_nxtlayer;
-							 
+							 trans_PE_ID_conv.clear();
 							 trans_conv.assign(Use_Neu,1); //transmitting count per neuron
 								for(int w=0; w< Use_Neu; w++)
 								{
@@ -488,9 +499,9 @@ if (reset.read() ) {
 												done =1;
 
 												/*---------Debugging---------*/
-												//if((ID_layer ==3)&&(PE_table[w].ID_In_layer == 1599))
+												//if((ID_layer ==1 &&ID_group ==0))
 												//{
-												//	cout<<trans_id_in_layer[w]<<"-"<<trans_PE_ID_conv[w]<<endl;
+												//	cout<<"-"<<trans_PE_ID_conv.size()<<endl;
 												//}
 												/*---------------------------*/
 												break;
@@ -499,7 +510,12 @@ if (reset.read() ) {
 										
 									}
 								}
-								
+								/*---------Debugging---------*/
+								if((ID_layer ==1 && ID_group ==0))
+								{
+									cout<<"-"<<local_id<<"-"<<trans_PE_ID_conv.size()<<endl;
+								}
+								/*---------------------------*/
 								int kernel_x= NN_Model->all_leyer_size[ID_layer][4];
 								int kernel_y= NN_Model->all_leyer_size[ID_layer][5];
 								
@@ -510,9 +526,10 @@ if (reset.read() ) {
 								deque <int> temp_receive_id;
 								int curr_id_x;
 								int curr_id_y;
-								deque <int> check;
+								//deque <int> check;
 								deque <int> temp_receive_neu_id;
 								deque< NeuInformation > PE_table_prev;
+								receive_neu_ID_conv.clear();
 								for(int u=0;u<Use_Neu; u++)
 								{
 									curr_id_x =0;
@@ -526,7 +543,7 @@ if (reset.read() ) {
 										{
 											for(int c=0; c< kernel_y; c++)
 											{
-												check.push_back((curr_id_x +b)*10000+(curr_id_y+c)*100+a);
+												//check.push_back((curr_id_x +b)*10000+(curr_id_y+c)*100+a);
 												temp_receive_id.push_back((curr_id_x +b)*prev_y+(curr_id_y+c)+a*prev_y*prev_x);
 												
 											}
@@ -600,13 +617,91 @@ if (reset.read() ) {
 									/*---------------------*/	
 									temp_receive_id.clear();
 									temp_receive_neu_id.clear();
-									check.clear();
+									//check.clear();
 								}
 								if(ID_layer == 1)
 								{
 									//Take data from memory and prepare the data
-								
-									flag_p=0;
+									deque <int> channels_in_group;
+									int chan_init = coord_xyz[0]%100;
+									channels_in_group.push_back(chan_init);
+									for(int g=0; g< Use_Neu; g++)
+									{
+										int chan_curr =coord_xyz[g]%100;
+										if(chan_curr != chan_init)
+										{
+											chan_init = chan_curr;
+											channels_in_group.push_back(chan_curr);
+										}
+									}
+									/*-------Debugging------*/
+									//if(ID_group == 47)
+									//{
+									//	for(int ch =0; ch< channels_in_group.size(); ch++)
+									//	{
+									//		cout<<channels_in_group[ch]<<"-";
+									//	}
+									//}
+									/*--------------------*/
+
+									//deque<deque <float>> conv_weight;
+									//deque<float> conv_bias;
+									//for(int h=0; h<channels_in_group.size(); h++)
+									//{
+									//	conv_weight.push_back(NN_Model -> all_conv_weight[channels_in_group[h]]);
+									//	conv_bias.push_back(NN_Model ->all_conv_bias[channels_in_group[h]]);
+									//}
+									/*-------------Debugging--------*/
+									//if(ID_group == 47)
+									//{
+									//	for(int ch =0; ch< conv_weight.size(); ch++)
+									//	{
+									//		for(int dh =0; dh<conv_weight[ch].size(); dh++ )
+									//		{
+									//			cout<< conv_weight[ch][dh]<<"--";
+									//		}
+									//		cout<<"#"<<conv_bias[ch]<<endl;
+									//	}
+									//}
+									/*------------------------------*/
+
+									//Perfomr MAC operation, add bias and apply activation function
+									deque <float> temp_conv_weight;
+									//float temp_conv_bias;
+									for(int i =0; i< Use_Neu ; i++)
+									{
+										int lay_neu = coord_xyz[i]%100;
+										
+										//for(int l=0; l<NN_Model ->all_conv_weight[lay_neu].size(); l++)
+										//{
+										//	temp_conv_weight.push_back(conv_weight[lay_neu][l]);
+										//}
+										
+										//temp_conv_bias = conv_bias[i];
+										float value=0.0;
+										
+										for(int j =0; j< kernel_x *kernel_y; j++)
+										{
+											float x = NN_Model ->all_conv_weight[lay_neu][j];
+											float y =  NN_Model-> all_data_in[in_data][receive_neu_ID_conv[i][j]];
+											//cout<< "conv weight: "<<x<<endl;
+											//cout<<" all data in: "<<y<<endl;
+											value = value + x*y; 
+										    
+										}
+										value = value + NN_Model ->all_conv_bias[lay_neu];
+
+										//Using relu function
+										if (value <= 0) 
+											res[i]=0;
+										else
+											res[i] = value;
+										/*---------Debugging----------*/
+										//cout<<"value: "<<value<<endl;
+										/*---------------------------*/
+										
+									}
+									flag_p=1;
 									flag_f=0;
 								}else
 								{
@@ -627,65 +722,7 @@ if (reset.read() ) {
 						}else{}
 						
 					}
-					/*
-					Use_Neu = PE_table.size();
-					for(int i = 0 ; i<Use_Neu ; i++)
-					{
-						Use_Neu_ID.push_back(PE_table[i].ID_Neu);
-					}
-
-					if(Type_layer != 'i')		//set should receive
-					{
-						flag_p = 0;
-						flag_f = 0;
-						receive = NN_Model-> all_leyer_size[ID_layer-1][0];
-						should_receive = receive;
-						receive_Neu_ID.clear();
-						receive_data.assign(receive , 0 );
-						
-						int temp_receive_start_ID = Use_Neu_ID[0] - PE_table[0].ID_In_layer - receive;
-						
-						for(int i = 0 ; i<receive ; i++)
-						{
-							receive_Neu_ID.push_back(temp_receive_start_ID+i);
-						}
-					}
-					else
-					{
-						flag_p=1;
-						flag_f=1;
-					}
 					
-					if (ID_layer != NN_Model->all_leyer_size.size()-1)		//set should sent
-					{
-						int i;
-						for(i = 0 ; i<NN_Model->all_leyer_ID_Group[ID_layer+1].size() ; i++)
-						{
-							int temp_Group = NN_Model->all_leyer_ID_Group[ID_layer+1][i];
-							trans_PE_ID.push_back(NN_Model-> mapping_table[temp_Group]);
-						}
-						trans = i;
-						should_trans = trans;
-					}
-
-					if (Type_layer == 'i')		//set input
-					{
-					      	deque< float> my_temp_data_in;
-					      	for(int j = 0; j<NN_Model->all_data_in.size() ; j++)
-							{
-								for(int i = 0; i<Use_Neu ; i++)
-								{
-									my_temp_data_in.push_back( NN_Model->all_data_in[j][ Use_Neu_ID[i] ] );
-
-								}	
-								my_data_in.push_back(my_temp_data_in);
-								my_temp_data_in.clear();
-					      	}
-					}
-					else
-					{
-						res.assign( Use_Neu, 0 );
-					}*/
 				}
 				break;
 			}
@@ -693,9 +730,18 @@ if (reset.read() ) {
 		computation_time = NoximGlobalParams::PE_computation_time;
         //cout<<"PE TX Reset end Process"<<endl;
 //**************************^^^^^^^^^^^^^^^^^^^^^**************************
-    	}
+    	/*-------------Debugging---------------*/
+		//if( ID_group < 84)
+		//{
+		  //cout<<"(Local id: "<<local_id<<")- Layer: "<<ID_layer<<" Neuron ids: "<<PE_table[0].ID_Neu<<" (Id in layer: "<<PE_table[0].ID_In_layer<<")--"<<PE_table[PE_table.size()-1].ID_Neu<<" (Id in layer: "<<PE_table[PE_table.size()-1].ID_In_layer<<")"<<endl;	
+		//}
+		
+		/*-------------------------------------*/
+		
+		}
 	else {
 		//cout<<"PE Tx  process"<<endl;
+		
 		NoximPacket packet;
 //********************NN-Noxim*****************tytyty****************trans
 		if(clean_all == false){
@@ -704,11 +750,74 @@ if (reset.read() ) {
 				if(PE_enable && ID_layer != NN_Model->all_leyer_size.size()-1 && flag_p ){
 					//**** 2018.09.17 edit by Yueh-Chi,Yang ****//
 					cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start sending..."<<endl;
-
-					for(int i = 0; i<trans ; i++){
+					
+					if( Type_layer == 'f')
+					{
+						for(int i = 0; i<trans ; i++)
+						{
 						packet.make(local_id, trans_PE_ID[i], getCurrentCycleNum(), Use_Neu+2);
 						packet_queue.push(packet);
+						}
+					}else
+					{
+						deque <int> trans_PE;
+						trans_PE.clear();
+						trans_PE.push_back(trans_PE_ID_conv[0]);
+						int req;
+						for(int m =0; m< trans_PE_ID_conv.size(); m++)
+						{
+							req =0;
+							for(int n=0; n< trans_PE.size();n++ )
+							{
+								if(trans_PE_ID_conv[m] == trans_PE[n])
+								{
+									req =0;
+									break;
+								}else
+								{
+									req =1;	
+								}
+								
+							}
+							if(req == 1) trans_PE.push_back(trans_PE_ID_conv[m]);
+
+						}
+
+						/*-------Debugging---------*/
+						//if(ID_layer == 1 && ID_group ==7)
+						//{
+						//	cout<< "Trans PE id size: "<<trans_PE.size()<<"--";
+						//	cout<<"first element: "<< trans_PE[0]<<"-"<<trans_PE[trans_PE.size()-1]<<endl;
+						//}
+						/*-------------------------*/
+						int packet_size =0;
+						for(int o=0;o<trans_PE.size();o++)
+						{
+							packet_size =0;
+							for(int p =0; p<trans_PE_ID_conv.size();p++ )
+							{
+								if(trans_PE[o] == trans_PE_ID_conv[p])
+								{
+									packet_size = packet_size +1;
+								}
+							}
+						packet.make(local_id, trans_PE[o], getCurrentCycleNum(), packet_size+2);
+						packet_queue.push(packet);	
+						}
+
+						/*--------------Debugging-------------*/
+						//if(ID_layer == 1 && ID_group ==0)
+						//{
+						//	for(int aa=0; aa<trans_PE_ID_conv.size(); aa++ )
+						//	{
+						//		cout<<trans_PE_ID_conv[aa]<<"--";
+						//	}
+						//	cout<<"Packet size: "<< packet_size<<"--"<<trans_PE_ID_conv.size()<<endl;
+						//}
+						
+						/*------------------------------------*/
 					}
+					
 					flag_p = 0;
 					transmittedAtPreviousCycle = true;
 				} 
