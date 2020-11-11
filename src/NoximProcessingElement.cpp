@@ -415,9 +415,15 @@ if (reset.read() ) {
 									}
 								}
 								/*------Debugging------*/
-								//if(ID_layer == 3){
-								//	cout<<":::"<<coord_needed_nxtLayer.size()<<endl;
+								//if(ID_layer == 1 && ID_group ==0){
+								//	cout<<"Coor nedded next layer size: "<<coord_needed_nxtLayer.size()<<endl;
+
+								//	for(int ab =0 ; ab<coord_needed_nxtLayer[0].size(); ab++ )
+								//	{
+								//		cout<<coord_needed_nxtLayer[0][ab]<<"--";
+								//	}
 								//}
+								//cout<<"Use neurons: "<<Use_Neu<<endl;
 								/*---------------------*/
 								int curr_id;
 								int tmp;
@@ -471,8 +477,15 @@ if (reset.read() ) {
 								}
 
 								/*---------Debugging-------*/
-								if(ID_layer == 1 && ID_group ==0)
-								cout<<"Trans id in layer: "<<trans_id_in_layer.size()<<endl;
+								//if(ID_layer == 1 && ID_group ==0)
+								//{
+								//	cout<<"Trans id in layer: "<<trans_id_in_layer.size()<<". Trans id in layer for gp 0 and layer 1: "<<endl;
+								//	for(int ab =0; ab< trans_id_in_layer.size(); ab++)
+								//	{
+								//		cout<<"("<< trans_id_in_layer[ab]<<")"<<"--";
+								//	}
+								//	cout<<".......";
+								//}
 								//if((ID_layer ==3)&&(PE_table[1].ID_In_layer == 1))
 								//{
 									//cout<<coord_xyz[1]<<"--";
@@ -483,6 +496,7 @@ if (reset.read() ) {
 							 //Converting the ID-in_layer to PE id
 							 deque< NeuInformation > PE_table_nxtlayer;
 							 trans_PE_ID_conv.clear();
+							 trans_conv.clear();
 							 trans_conv.assign(Use_Neu,1); //transmitting count per neuron
 								for(int w=0; w< Use_Neu; w++)
 								{
@@ -511,10 +525,14 @@ if (reset.read() ) {
 									}
 								}
 								/*---------Debugging---------*/
-								if((ID_layer ==1 && ID_group ==0))
-								{
-									cout<<"-"<<local_id<<"-"<<trans_PE_ID_conv.size()<<endl;
-								}
+								//if((ID_layer ==1 && ID_group ==0))
+								//{
+								//	cout<<"Trans PE ID conv: "<<trans_PE_ID_conv.size()<<". Trans PE id conv for layer 1, gp 0 "<<endl;
+								//	for(int ab =0; ab <trans_PE_ID_conv.size();ab++)
+								//	{
+								//		cout<<trans_PE_ID_conv[ab]<<"-";
+								//	}
+								//}
 								/*---------------------------*/
 								int kernel_x= NN_Model->all_leyer_size[ID_layer][4];
 								int kernel_y= NN_Model->all_leyer_size[ID_layer][5];
@@ -619,6 +637,7 @@ if (reset.read() ) {
 									temp_receive_neu_id.clear();
 									//check.clear();
 								}
+								receive_conv.clear();
 								if(ID_layer == 1)
 								{
 									//Take data from memory and prepare the data
@@ -664,7 +683,7 @@ if (reset.read() ) {
 									//	}
 									//}
 									/*------------------------------*/
-
+									
 									//Perfomr MAC operation, add bias and apply activation function
 									deque <float> temp_conv_weight;
 									//float temp_conv_bias;
@@ -706,7 +725,7 @@ if (reset.read() ) {
 								}else
 								{
 									// note down the receive ids
-									receive_conv.assign(Use_Neu,NN_Model->all_leyer_size[ID_layer][4]* NN_Model->all_leyer_size[ID_layer][5]);
+									receive_conv.assign(Use_Neu,NN_Model->all_leyer_size[ID_layer][4]* NN_Model->all_leyer_size[ID_layer][5]*NN_Model->all_leyer_size[ID_layer-1][3]);
 									/*---------Debugging--------*/
 									//if((ID_layer ==3))
 									//{
@@ -736,6 +755,28 @@ if (reset.read() ) {
 		  //cout<<"(Local id: "<<local_id<<")- Layer: "<<ID_layer<<" Neuron ids: "<<PE_table[0].ID_Neu<<" (Id in layer: "<<PE_table[0].ID_In_layer<<")--"<<PE_table[PE_table.size()-1].ID_Neu<<" (Id in layer: "<<PE_table[PE_table.size()-1].ID_In_layer<<")"<<endl;	
 		//}
 		
+		/*if(ID_group == 75) //Layer1:0,7,47 ;Layer3: 60
+		{
+			cout<<endl<<"trans PE id for layer 3, group 75: ";
+			for(int ab=0; ab< trans_PE_ID_conv.size(); ab++)
+			{
+				cout<<trans_PE_ID_conv[ab]<<"--";
+			}
+			cout<<"Size of group:("<<trans_PE_ID_conv.size()<<")"<<endl;
+			cout<<endl<< "Receive neuron id for layer 3, group 75: ";
+			for(int ab =0; ab <receive_neu_ID_conv[99].size(); ab++)
+			{
+
+				cout<<receive_neu_ID_conv[99][ab]<<"--";
+			}
+			cout<<"Size of group:("<<receive_neu_ID_conv[0].size()<<")"<<endl;
+			cout<<"...........";
+		} */
+
+		//if(ID_group ==60){
+
+		//	cout<< receive_conv.size()<<"("<<receive_conv[0]<<")"<<endl;
+		//}
 		/*-------------------------------------*/
 		
 		}
