@@ -1008,7 +1008,7 @@ if (reset.read() ) {
 										}if(needed == 1){trans_PE_ID.push_back(trans_PE_ID_pool[an][ao]);}
 									}
 								}
-
+								trans_pool.clear();
 								int count;
 								for(int au=0;au< trans_PE_ID.size();au++)
 								{
@@ -1023,7 +1023,7 @@ if (reset.read() ) {
 											}
 										}
 										
-									}trans_conv.push_back(count);
+									}trans_pool.push_back(count);
 								}
 
 
@@ -1039,7 +1039,7 @@ if (reset.read() ) {
 									cout<<endl<<"Final trans ids: "<<"....";
 									for(int ay=0; ay<trans_PE_ID.size();ay++)
 									{
-										cout<<"("<<trans_PE_ID[ay]<<"-"<<trans_conv[ay]<<")....";
+										cout<<"("<<trans_PE_ID[ay]<<"-"<<trans_pool[ay]<<")....";
 									}
 									
 								}*/

@@ -84,6 +84,7 @@ SC_MODULE(NoximProcessingElement)
 	deque <deque<int>> receive_neu_ID_conv;
 	deque <deque<int>> receive_neu_ID_pool;
 	deque <int> trans_conv;
+	deque <int> trans_pool;
 	deque <int> receive_conv;
 	deque <int> receive_pool;
 //*********************************************************************************************
