@@ -273,6 +273,7 @@ if (reset.read() ) {
 							should_trans = trans;
 							/*-------Debugging------*/
 							//cout<<"Size of next layer: "<<NN_Model->all_leyer_ID_Group[ID_layer].size()<<endl;
+							//cout<<ID_layer<<"-"<<ID_group<<"-"<< should_trans<<"-"<<trans_PE_ID[0]<<endl;
 							/*----------------------*/
 						}
 
@@ -1026,7 +1027,8 @@ if (reset.read() ) {
 									}trans_pool.push_back(count);
 								}
 
-
+								flag_f =0;
+								flag_p =0;
 								/*--------------Debugging-----------------*/
 								/*if(ID_group == 48)
 								{
@@ -1048,6 +1050,23 @@ if (reset.read() ) {
 							}else if( NN_Model -> all_leyer_type[ID_layer+1]=='f')
 							{
 								//(Step3: if next layer is FC)
+								trans_PE_ID.clear();
+								int as;
+								for( as = 0 ; as<NN_Model->all_leyer_ID_Group[ID_layer].size() ; as++)
+								{
+									int temp_Group = NN_Model->all_leyer_ID_Group[ID_layer][as];
+									trans_PE_ID.push_back(NN_Model-> mapping_table[temp_Group]);
+								}
+								trans = as;
+								should_trans = trans;
+
+								flag_p =0;
+								flag_f =0;
+								/*---------------Debugging----------------*/
+								//cout<<"Current layer is pooling and next is fully connected.....";
+								//cout<<"("<<ID_group<<")-("<<ID_layer<<")-("<<trans<<")-("<<trans_PE_ID[0]<<")-("<<trans_PE_ID[1]<<endl;
+								/*----------------------------------------*/
+
 							}
 							
 							
