@@ -78,7 +78,7 @@ SC_MODULE(NoximProcessingElement)
 	int computation_time;
 	int temp_computation_time;
 
-	
+	/*Convolution and Pooling layers*/
 	deque<int> trans_PE_ID_conv;
 	deque<deque<int>> trans_PE_ID_pool;
 	deque <deque<int>> receive_neu_ID_conv;
@@ -87,6 +87,7 @@ SC_MODULE(NoximProcessingElement)
 	deque <int> trans_pool;
 	deque <int> receive_conv;
 	deque <int> receive_pool;
+	int start_index;
 //*********************************************************************************************
 	
 	// Functions
@@ -141,9 +142,9 @@ float fixed_sim(double long d);
     // Constructor
     SC_CTOR(NoximProcessingElement) {
 		//cout<< "PE executing"<<endl;
-	SC_METHOD(rxProcess);
-	sensitive << reset;
-	sensitive << clock.pos();
+	//SC_METHOD(rxProcess);
+	//sensitive << reset;
+	//sensitive << clock.pos();
 
 	SC_METHOD(txProcess);
 	sensitive << reset;

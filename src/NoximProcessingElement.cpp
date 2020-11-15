@@ -757,7 +757,7 @@ if (reset.read() ) {
 										
 									}
 									flag_p=1;
-									flag_f=0;
+									flag_f=1;
 								}else
 								{
 									// note down the receive ids
@@ -1087,9 +1087,9 @@ if (reset.read() ) {
 		  //cout<<"(Local id: "<<local_id<<")- Layer: "<<ID_layer<<" Neuron ids: "<<PE_table[0].ID_Neu<<" (Id in layer: "<<PE_table[0].ID_In_layer<<")--"<<PE_table[PE_table.size()-1].ID_Neu<<" (Id in layer: "<<PE_table[PE_table.size()-1].ID_In_layer<<")"<<endl;	
 		//}
 		
-		/*if(ID_group == 7) //Layer1:0,7,47 ;Layer3: 60
+		/*if(ID_group == 47  ) //Layer1:0,7,47 ;Layer3: 60
 		{
-			cout<<endl<<"trans PE id for layer 3, group 75: ";
+			cout<<endl<<"trans PE id for layer 1, group " <<ID_group<<": ";
 			for(int ab=0; ab< trans_PE_ID_conv.size(); ab++)
 			{
 				cout<<trans_PE_ID_conv[ab]<<"--";
@@ -1101,7 +1101,7 @@ if (reset.read() ) {
 			{
 				cout<<"("<<trans_PE_ID[ap]<<"-"<<trans_conv[ap]<<")..";
 			}
-			cout<<endl<< "Receive neuron id for layer 3, group 75: ";
+			cout<<endl<< "Receive neuron id for layer 1, group " <<ID_group<<": ";
 			for(int ab =0; ab <receive_neu_ID_conv[0].size(); ab++)
 			{
 
@@ -1130,73 +1130,53 @@ if (reset.read() ) {
 					//**** 2018.09.17 edit by Yueh-Chi,Yang ****//
 					cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start sending..."<<endl;
 					
-					if( Type_layer == 'f')
+					if( Type_layer == 'f' || NN_Model -> all_leyer_type[ID_layer+1]=='f')
 					{
 						for(int i = 0; i<trans ; i++)
 						{
 						packet.make(local_id, trans_PE_ID[i], getCurrentCycleNum(), Use_Neu+2);
 						packet_queue.push(packet);
 						}
+
+						/*--------------Debugging-----------*/
+
+						/*----------------------------------*/
+						
 					}else
 					{
-						/*deque <int> trans_PE;
-						trans_PE.clear();
-						trans_PE.push_back(trans_PE_ID_conv[0]);
-						int req;
-						for(int m =0; m< trans_PE_ID_conv.size(); m++)
+						if( Type_layer == 'c')
 						{
-							req =0;
-							for(int n=0; n< trans_PE.size();n++ )
+							for(int ar =0; ar< trans_PE_ID.size(); ar++)
 							{
-								if(trans_PE_ID_conv[m] == trans_PE[n])
-								{
-									req =0;
-									break;
-								}else
-								{
-									req =1;	
-								}
-								
-							}
-							if(req == 1) trans_PE.push_back(trans_PE_ID_conv[m]);
+								packet.make(local_id, trans_PE_ID[ar], getCurrentCycleNum(), trans_conv[ar]+2);
+								packet_queue.push(packet);
 
-						}*/
-
-						/*-------Debugging---------*/
-						//if(ID_layer == 1 && ID_group ==7)
-						//{
-						//	cout<< "Trans PE id size: "<<trans_PE.size()<<"--";
-						//	cout<<"first element: "<< trans_PE[0]<<"-"<<trans_PE[trans_PE.size()-1]<<endl;
-						//}
-						/*-------------------------*/
-						/*int packet_size =0;
-						for(int o=0;o<trans_PE.size();o++)
-						{
-							packet_size =0;
-							for(int p =0; p<trans_PE_ID_conv.size();p++ )
-							{
-								if(trans_PE[o] == trans_PE_ID_conv[p])
-								{
-									packet_size = packet_size +1;
-								}
+								/*--------------Debugging-----------*/
+								//if(ID_group >= 0 && ID_group <= 47)
+								//{
+								//	cout<<"Packet Checking....";
+								//	cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
+								//}
+								/*----------------------------------*/
 							}
-						packet.make(local_id, trans_PE[o], getCurrentCycleNum(), packet_size+2);
-						packet_queue.push(packet);	
+							/*---------Debugging---------------*/
+							//cout<<"Packet Queue Size: "<<packet_queue.size();
+							/*---------------------------------*/
+							
 						}
-						*/
-						/*--------------Debugging-------------*/
-						//if(ID_layer == 1 && ID_group ==0)
-						//{
-						//	for(int aa=0; aa<trans_PE_ID_conv.size(); aa++ )
-						//	{
-						//		cout<<trans_PE_ID_conv[aa]<<"--";
-						//	}
-						//	cout<<"Packet size: "<< packet_size<<"--"<<trans_PE_ID_conv.size()<<endl;
-						//}
+						else if(Type_layer == 'p')
+						{
+							for(int ar =0; ar< trans_PE_ID.size(); ar++)
+							{
+								packet.make(local_id, trans_PE_ID[ar], getCurrentCycleNum(), trans_pool[ar]+2);
+								packet_queue.push(packet);
+							}
+							/*--------------Debugging-----------*/
 						
-						/*------------------------------------*/
-						
+							/*----------------------------------*/
+						}	
 					}
+					
 					
 					flag_p = 0;
 					transmittedAtPreviousCycle = true;
@@ -1210,6 +1190,9 @@ if (reset.read() ) {
 			if (!packet_queue.empty()) {
 				//NoximFlit flit = nextFlit();	// Generate a new flit
 				
+				/*------------Debugging----------------*/
+				//cout<<"Packet Size: "<<packet_queue.size()<<endl;
+				/*-------------------------------------*/
 				NoximFlit flit = nextFlit(ID_layer, in_data);	// tytyty Generate a new flit
         			//NoximFlit flit = nextFlit(ID_layer);	// tytyty Generate a new flit
 				//if (NoximGlobalParams::verbose_mode > VERBOSE_OFF) {
@@ -1235,6 +1218,12 @@ if (reset.read() ) {
 				flag_f = 0;
 			}
 		}
+		/*-------Debugging--------*/
+		if(ID_group ==0)
+		{
+			cout<<"Ack tx signal: "<<ack_tx<<"--";
+		}
+		/*------------------------*/
 		//cout<<"PE TX end Process"<<endl;	
 //**************************^^^^^^^^^^^^^^^^^^^^^**************************
 }
@@ -1265,6 +1254,7 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 		flit.flit_type = FLIT_TYPE_HEAD;
 		flit.src_Neu_id = 0;
 		flit.data = 0;
+		start_index =0;
 	}
 	
     else if (packet.flit_left == 1) {
@@ -1276,18 +1266,72 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 //************************NN-Noxim*****************tytyty**************setflit_data
     else{
 	flit.flit_type = FLIT_TYPE_BODY;
-	flit.src_Neu_id = Use_Neu_ID[flit.sequence_no-1];
-	if(Type_layer=='i')
-		flit.data = my_data_in[in_data][flit.sequence_no-1];
- 		//flit.data = my_data_in[flit.sequence_no-1];
-	else
-		flit.data = res[flit.sequence_no-1];
+		if(Type_layer == 'f' || NN_Model -> all_leyer_type[ID_layer+1]=='f')
+		{
+			flit.src_Neu_id = Use_Neu_ID[flit.sequence_no-1];
+			//if(Type_layer=='i')
+				//flit.data = my_data_in[in_data][flit.sequence_no-1];
+				//flit.data = my_data_in[flit.sequence_no-1];
+			//else
+			flit.data = res[flit.sequence_no-1];
+		}else if( Type_layer =='c')
+		{
+			int pe_id = packet.dst_id;
+			for( int ag = start_index; ag< trans_PE_ID_conv.size(); ag++)
+			{
+				if(trans_PE_ID_conv[ag] == pe_id){
+					start_index = ag+1;
+					break;
+				}
+			}
+			flit.src_Neu_id = Use_Neu_ID[start_index-1];
+			flit.data = res[start_index-1];
+			/*--------------Debugging-----------------*/
+			//if(ID_group == 0)
+			//{
+			//	cout<<"("<<flit.src_Neu_id<<")--";
+			//}
+			/*----------------------------------------*/
+		}else
+		{
+			int pe_id = packet.dst_id;
+			int done;
+			for( int ag = start_index; ag< trans_PE_ID_pool.size(); ag++)
+			{
+				done =0;
+				for(int ah=0; ah<trans_PE_ID_pool[ag].size(); ah++)
+				{
+					if(trans_PE_ID_pool[ag][ah] == pe_id)
+					{
+						start_index = ag+1;
+						done =1;
+						break;
+					}
+				}if(done == 1) break;
+				
+			}
+			flit.src_Neu_id = Use_Neu_ID[start_index-1];
+			flit.data = res[start_index-1];
+		}
+		
     }
 //************************************^^^^^^^^^^^^^^^^^^^^^^^^*********************
-
+	
     packet_queue.front().flit_left--;
     if (packet_queue.front().flit_left == 0)
 	packet_queue.pop();
+
+	/*------------Debugging--------------*/
+	//if(ID_group == 0)
+	//{
+		//cout<<"(flit Type: "<<flit.flit_type<<"--";
+		//cout<<"Source Neu ID: "<<flit.src_Neu_id<<"--";
+		//cout<<"Sequence No: "<<flit.sequence_no<<"--";
+		//cout<<"Packet size: "<<packet.size<<"--";
+		//cout<<"Packet flit left: "<<packet.flit_left<<"--";
+		//cout<<"Start Index: "<<start_index<<")--";
+	//}
+	/*-----------------------------------*/
 
     return flit;
 }
