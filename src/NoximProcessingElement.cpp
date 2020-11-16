@@ -491,13 +491,17 @@ if (reset.read() ) {
 									}
 								}
 								/*------Debugging------*/
-								//if(ID_layer == 1 && ID_group ==0){
+								//if(ID_group ==3){
 								//	cout<<"Coor nedded next layer size: "<<coord_needed_nxtLayer.size()<<endl;
-
-								//	for(int ab =0 ; ab<coord_needed_nxtLayer[0].size(); ab++ )
+								//	for(int aa =0; aa<coord_needed_nxtLayer.size(); aa++ )
 								//	{
-								//		cout<<coord_needed_nxtLayer[0][ab]<<"--";
-								//	}
+								//		cout<<"(";
+								//		for(int ab =0 ; ab<coord_needed_nxtLayer[aa].size(); ab++ )
+								//		{
+								//			cout<<coord_needed_nxtLayer[aa][ab]<<"--";
+								//		}
+								//		cout<<")";
+								//	}	
 								//}
 								//cout<<"Use neurons: "<<Use_Neu<<endl;
 								/*---------------------*/
@@ -553,7 +557,7 @@ if (reset.read() ) {
 								}
 
 								/*---------Debugging-------*/
-								//if(ID_layer == 1 && ID_group ==0)
+								//if(ID_group ==3)
 								//{
 								//	cout<<"Trans id in layer: "<<trans_id_in_layer.size()<<". Trans id in layer for gp 0 and layer 1: "<<endl;
 								//	for(int ab =0; ab< trans_id_in_layer.size(); ab++)
@@ -562,9 +566,13 @@ if (reset.read() ) {
 								//	}
 								//	cout<<".......";
 								//}
-								//if((ID_layer ==3)&&(PE_table[1].ID_In_layer == 1))
+								//if((ID_group ==3))
 								//{
-									//cout<<coord_xyz[1]<<"--";
+								//	for(int az =0; az<coord_xyz.size();az++)
+								//	{
+								//		cout<<coord_xyz[az]<<"--";
+								//	}
+									
 									//cout<<"Size: "<<temp_trans_xyz[1].size()<<"--"<<temp_trans_xyz[1][0]<<endl;
 
 								//}
@@ -589,9 +597,9 @@ if (reset.read() ) {
 												done =1;
 
 												/*---------Debugging---------*/
-												//if((ID_layer ==1 &&ID_group ==0))
+												//if(ID_group ==3)
 												//{
-												//	cout<<"-"<<trans_PE_ID_conv.size()<<endl;
+												//	cout<<"-"<<PE_table_nxtlayer[e].ID_In_layer;
 												//}
 												/*---------------------------*/
 												break;
@@ -601,9 +609,10 @@ if (reset.read() ) {
 									}
 								}
 								/*---------Debugging---------*/
-								//if((ID_layer ==1 && ID_group ==0))
+								//if(ID_group ==3)
 								//{
-								//	cout<<"Trans PE ID conv: "<<trans_PE_ID_conv.size()<<". Trans PE id conv for layer 1, gp 0 "<<endl;
+									//cout<<"Trans PE ID conv: "<<trans_PE_ID_conv.size()<<". Trans PE id conv for layer 1, gp 0 "<<endl;
+									
 								//	for(int ab =0; ab <trans_PE_ID_conv.size();ab++)
 								//	{
 								//		cout<<trans_PE_ID_conv[ab]<<"-";
@@ -721,7 +730,7 @@ if (reset.read() ) {
 									
 									//check.clear();
 									/*------Debugging-------*/
-									//if((ID_layer ==1)&&(PE_table[u].ID_In_layer == 0))
+									//if(ID_group == 2)
 									//{
 									//	cout<<coord_xyz[u]<<"--"<<curr_id_x<<"--"<<curr_id_y<<endl;
 									//	for(int ch =0; ch< receive_neu_ID_conv[u].size(); ch++)
@@ -816,8 +825,15 @@ if (reset.read() ) {
 											//cout<< "conv weight: "<<x<<endl;
 											//cout<<" all data in: "<<y<<endl;
 											value = value + x*y; 
+											/*------Debugging--------*/
+											if(ID_group == 2 && i == 98)
+											{
+												cout<<"("<<x<<"--"<<y<<"--"<<receive_neu_ID_conv[i][j]<<")--";
+											}
+											/*-----------------------*/
 										    
 										}
+										
 										value = value + NN_Model ->all_conv_bias[lay_neu];
 
 										//Using relu function
@@ -827,6 +843,7 @@ if (reset.read() ) {
 											res[i] = value;
 										/*---------Debugging----------*/
 										//cout<<"value: "<<value<<endl;
+										
 										/*---------------------------*/
 										
 									}
@@ -1161,28 +1178,28 @@ if (reset.read() ) {
 		  //cout<<"(Local id: "<<local_id<<")- Layer: "<<ID_layer<<" Neuron ids: "<<PE_table[0].ID_Neu<<" (Id in layer: "<<PE_table[0].ID_In_layer<<")--"<<PE_table[PE_table.size()-1].ID_Neu<<" (Id in layer: "<<PE_table[PE_table.size()-1].ID_In_layer<<")"<<endl;	
 		//}
 		
-		/*if(ID_group == 47  ) //Layer1:0,7,47 ;Layer3: 60
+		/*if(ID_group == 2  ) //Layer1:0,7,47 ;Layer3: 60
 		{
-			cout<<endl<<"trans PE id for layer 1, group " <<ID_group<<": ";
-			for(int ab=0; ab< trans_PE_ID_conv.size(); ab++)
-			{
-				cout<<trans_PE_ID_conv[ab]<<"--";
-			}
-			cout<<"Size of group:("<<trans_PE_ID_conv.size()<<")"<<endl;
+			//cout<<endl<<"trans PE id for layer 1, group " <<ID_group<<": ";
+			//for(int ab=0; ab< trans_PE_ID_conv.size(); ab++)
+			//{
+			//	cout<<trans_PE_ID_conv[ab]<<"--";
+			//}
+			//cout<<"Size of group:("<<trans_PE_ID_conv.size()<<")"<<endl;
 
-			cout<<"Final Trans PE ids: "<<".....";
-			for(int ap=0;ap<trans_PE_ID.size();ap++)
-			{
-				cout<<"("<<trans_PE_ID[ap]<<"-"<<trans_conv[ap]<<")..";
-			}
+			//cout<<"Final Trans PE ids: "<<".....";
+			//for(int ap=0;ap<trans_PE_ID.size();ap++)
+			//{
+			//	cout<<"("<<trans_PE_ID[ap]<<"-"<<trans_conv[ap]<<")..";
+			//}
 			cout<<endl<< "Receive neuron id for layer 1, group " <<ID_group<<": ";
-			for(int ab =0; ab <receive_neu_ID_conv[0].size(); ab++)
+			for(int ab =0; ab <receive_neu_ID_conv[85].size(); ab++)
 			{
 
-				cout<<receive_neu_ID_conv[0][ab]<<"--";
+				cout<<receive_neu_ID_conv[85][ab]<<"--";
 			}
-			cout<<"Size of group:("<<receive_neu_ID_conv[0].size()<<")"<<endl;
-			cout<<"...........";
+			//cout<<"Size of group:("<<receive_neu_ID_conv[0].size()<<")"<<endl;
+			//cout<<"...........";
 		} */
 
 		//if(ID_group ==60){
@@ -1361,9 +1378,9 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 			flit.src_Neu_id = Use_Neu_ID[start_index-1];
 			flit.data = res[start_index-1];
 			/*--------------Debugging-----------------*/
-			//if(ID_group == 0)
+			//if(ID_group == 3 && pe_id == 49)
 			//{
-			//	cout<<"("<<flit.src_Neu_id<<")--";
+			//	cout<<"("<<flit.src_Neu_id<<")--("<<start_index<<")--";
 			//}
 			/*----------------------------------------*/
 		}else

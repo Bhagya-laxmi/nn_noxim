@@ -528,7 +528,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	//cout<<"All data in"<<endl;
 	//for( int i =0; i< all_data_in.size();i++){
 	//	for( int j=0; j< all_data_in[i].size();j++ ){
-    //         cout<< all_data_in[i][j]<<"--";
+      //       cout<<"( "<<j<<": "<< all_data_in[i][j]<<")--";
 	//	}	
 	//}
 	//cout<<endl;
