@@ -142,9 +142,9 @@ float fixed_sim(double long d);
     // Constructor
     SC_CTOR(NoximProcessingElement) {
 		//cout<< "PE executing"<<endl;
-	//SC_METHOD(rxProcess);
-	//sensitive << reset;
-	//sensitive << clock.pos();
+	SC_METHOD(rxProcess);
+	sensitive << reset;
+	sensitive << clock.pos();
 
 	SC_METHOD(txProcess);
 	sensitive << reset;

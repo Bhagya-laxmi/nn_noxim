@@ -48,6 +48,71 @@ void NoximProcessingElement::rxProcess()
 		}
         //cout<<"PE RX Reset end Process"<<endl;
 //**********************^^^^^^^^^^^^^^**************************
+
+	//Conversion of receive_neu_ID_conv and receive_neu_ID_pool into receive_Neu_ID
+	if(Type_layer == 'c' && ID_layer != 1)
+	{
+		int needed=0;
+		receive_Neu_ID.clear();
+		receive_Neu_ID.push_back(receive_neu_ID_conv[0][0]);
+		for( int ba = 0; ba <receive_neu_ID_conv.size() ; ba++)
+		{
+			for(int bb =0; bb< receive_neu_ID_conv[ba].size(); bb++)
+			{
+				needed = 0;
+				for(int bc =0; bc< receive_Neu_ID.size(); bc++)
+				{
+					if(receive_neu_ID_conv[ba][bb] == receive_Neu_ID[bc])
+					{
+						needed = 0;
+						break;
+					}else
+					{
+						needed=1;
+					}
+					
+				}if(needed ==1) receive_Neu_ID.push_back(receive_neu_ID_conv[ba][bb]);
+			}
+		}
+
+	}else if(Type_layer == 'p')
+	{
+		int needed=0;
+		receive_Neu_ID.clear();
+		receive_Neu_ID.push_back(receive_neu_ID_pool[0][0]);
+		for( int ba = 0; ba <receive_neu_ID_pool.size() ; ba++)
+		{
+			for(int bb =0; bb< receive_neu_ID_pool[ba].size(); bb++)
+			{
+				needed =0;
+				for(int bc =0; bc< receive_Neu_ID.size(); bc++)
+				{
+					if(receive_neu_ID_pool[ba][bb] == receive_Neu_ID[bc])
+					{
+						needed =0;
+						break;
+					}else
+					{
+						needed =1;
+					}
+					
+				}if(needed ==1) receive_Neu_ID.push_back(receive_neu_ID_pool[ba][bb]);
+			}
+		}
+	}
+	receive = receive_Neu_ID.size();
+	receive_data.assign(receive , 0 );
+	/*----------------Debugging---------------*/
+	//if(ID_group == 48)
+	//{
+	//	cout<<"Receive neuron ids for Group "<<ID_group<<"--";
+	//	for(int i=0; i<receive_Neu_ID.size(); i++ )
+	//	{
+	//		cout<<"("<<receive_Neu_ID[i]<<")--";
+	//	}
+	//cout<<"Size: "<<receive_Neu_ID.size()<<endl;
+	//}
+	/*----------------------------------------*/
     	} 
 	else {
 		//cout<<"PE Rx process"<<endl;
@@ -94,62 +159,71 @@ void NoximProcessingElement::rxProcess()
 					//int y_size_last_layer = NN_Model->all_leyer_size[ID_layer-1][2];
 					//int x_size_layer = NN_Model->all_leyer_size[ID_layer][1];
 					//int n_size_layer = NN_Model->all_leyer_size[ID_layer][3];
-					for (int j = 0 ; j<receive ; j++)  //receive
-					{					
-						for (int i = 0 ; i<Use_Neu ; i++)  //Use_Neu
-						{
-							//********************fully connected********************** //
-							if(Type_layer =='f')
-							{
-								float weight_tmp = PE_table[i].weight[j]; //PE_table[i].weight[j];
-								//cout<<weight_tmp<<endl;
-								res[i] += receive_data[j] * weight_tmp;  //res[i] += receive_data[j] * weight_tmp;
-											//char fileID_t[10];
-											//cout <<res[j]<<endl;
-								/*if((local_id == 13)&&(i==0)){
-									
-							    cout<<"Receive data: "<<receive_data[j]<<"--Weight: "<<weight_tmp<<endl;
-								}*/
-								//cout<<"i: "<<i<<"--------receive: "<<receive<<endl;
-								if (j==receive-1) //(j==receive-1)
-								{
-									float bias_tmp = PE_table[i].weight.back();  //bias_tmp = PE_table[i].weight.back();
-									//cout<<"bias "<<bias_tmp<<endl;
-									res[i] += bias_tmp;		//res[i] += bias_tmp;				// act fun & compute complete 
-									//cout<< res[j]<<endl;
-									if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
-									{
-										if (res[i] <= 0) 
-											res[i]=0;				
-									}
-									else if ( NN_Model->all_leyer_size[ID_layer].back() == TANH )//tanh
-									{
-										res[i]= 2/(1+exp(-2*res[i]))-1;		
-									}
-									else if ( NN_Model->all_leyer_size[ID_layer].back() == SIGMOID )//sigmoid
-									{
-										//cout<<"Sigmoid"<<endl;
-										res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
-									}
-									else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
-									{}
 
-									if (ID_layer == NN_Model->all_leyer_size.size()-1)
+					if(Type_layer == 'f')
+					{
+						for (int j = 0 ; j<receive ; j++)  //receive
+						{					
+							for (int i = 0 ; i<Use_Neu ; i++)  //Use_Neu
+							{
+								//********************fully connected********************** //
+								if(Type_layer =='f')
+								{
+									float weight_tmp = PE_table[i].weight[j]; //PE_table[i].weight[j];
+									//cout<<weight_tmp<<endl;
+									res[i] += receive_data[j] * weight_tmp;  //res[i] += receive_data[j] * weight_tmp;
+												//char fileID_t[10];
+												//cout <<res[j]<<endl;
+									//if((local_id == 13)&&(i==0)){
+										
+									//cout<<"Receive data: "<<receive_data[j]<<"--Weight: "<<weight_tmp<<endl;
+									//}
+									//cout<<"i: "<<i<<"--------receive: "<<receive<<endl;
+									if (j==receive-1) //(j==receive-1)
 									{
-										//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
-										char output_file[11];
-										sprintf(output_file,"output.txt");
-										fstream file_o;
-										file_o.open( output_file ,ios::out|ios::app);
-										file_o << "No." << i << " output neuron result: ";
-										file_o << res[i] << endl; //file_o << res[i] << endl;
+										float bias_tmp = PE_table[i].weight.back();  //bias_tmp = PE_table[i].weight.back();
+										//cout<<"bias "<<bias_tmp<<endl;
+										res[i] += bias_tmp;		//res[i] += bias_tmp;				// act fun & compute complete 
+										//cout<< res[j]<<endl;
+										if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
+										{
+											if (res[i] <= 0) 
+												res[i]=0;				
+										}
+										else if ( NN_Model->all_leyer_size[ID_layer].back() == TANH )//tanh
+										{
+											res[i]= 2/(1+exp(-2*res[i]))-1;		
+										}
+										else if ( NN_Model->all_leyer_size[ID_layer].back() == SIGMOID )//sigmoid
+										{
+											//cout<<"Sigmoid"<<endl;
+											res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
+										}
+										else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
+										{}
+
+										if (ID_layer == NN_Model->all_leyer_size.size()-1)
+										{
+											//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
+											char output_file[11];
+											sprintf(output_file,"output.txt");
+											fstream file_o;
+											file_o.open( output_file ,ios::out|ios::app);
+											file_o << "No." << i << " output neuron result: ";
+											file_o << res[i] << endl; //file_o << res[i] << endl;
+										}
 									}
 								}
 							}
 						}
-					}
-					flag_p = 1; 
-					flag_f = 1; 
+					}else if(Type_layer == 'c')
+					{
+
+					}else if(Type_layer =='p')
+					{}
+					
+					//flag_p = 1; 
+					//flag_f = 1; 
 					temp_computation_time = sc_simulation_time();
 				}
 			}
@@ -1172,7 +1246,7 @@ if (reset.read() ) {
 								packet_queue.push(packet);
 							}
 							/*--------------Debugging-----------*/
-						
+							cout<<"Pooling layer, Local id:  "<<local_id<<endl;
 							/*----------------------------------*/
 						}	
 					}
@@ -1219,10 +1293,10 @@ if (reset.read() ) {
 			}
 		}
 		/*-------Debugging--------*/
-		if(ID_group ==0)
-		{
-			cout<<"Ack tx signal: "<<ack_tx<<"--";
-		}
+		//if(ID_group ==0)
+		//{
+		//	cout<<"Ack tx signal: "<<ack_tx<<"--";
+		//}
 		/*------------------------*/
 		//cout<<"PE TX end Process"<<endl;	
 //**************************^^^^^^^^^^^^^^^^^^^^^**************************

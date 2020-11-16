@@ -100,3 +100,5 @@
 109: ProcessingElement[36] SENDING [type: B, seq: 5, 36-->56], src_Neu_id = 3616, data = 6.26148
 110: ProcessingElement[36] SENDING [type: B, seq: 6, 36-->56], src_Neu_id = 3617, data = 0
 111: ProcessingElement[36] SENDING [type: B, seq: 7, 36-->56], src_Neu_id = 3618, data = 0
+308: ProcessingElement[36] SENDING [type: B, seq: 8, 36-->56], src_Neu_id = 3619, data = 0
+309: ProcessingElement[36] SENDING [type: T, seq: 9, 36-->56], src_Neu_id = 0, data = 0
