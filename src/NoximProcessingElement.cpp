@@ -101,6 +101,7 @@ void NoximProcessingElement::rxProcess()
 		}
 	}
 	receive = receive_Neu_ID.size();
+	should_receive = receive;
 	receive_data.assign(receive , 0 );
 	/*----------------Debugging---------------*/
 	//if(ID_group == 48)
@@ -220,10 +221,45 @@ void NoximProcessingElement::rxProcess()
 					{
 
 					}else if(Type_layer =='p')
-					{}
+					{
+						int index;
+						float value =0.0;
+						for(int bc =0; bc< Use_Neu; bc++)
+						{
+							value =0;
+							for(int bd =0; bd< receive_neu_ID_pool[bc].size();bd++)
+							{
+								for(int be=0; be< receive_Neu_ID.size(); be++)
+								{
+									if(receive_neu_ID_pool[bc][bd] == receive_Neu_ID[be] )
+									{
+										index = be;
+										break;
+									}
+								}
+								if ( NN_Model->all_leyer_size[ID_layer].back() == AVERAGE )//relu
+								{
+									value = value + receive_data[index];	 					
+								}
+								
+							} 
+							value = value / (NN_Model->all_leyer_size[ID_layer][4]*NN_Model->all_leyer_size[ID_layer][5]);
+							res[bc] = value;
+						}
+						/*---------------Debugging----------------*/
+						//if(ID_group == 50)
+						//{
+						//	cout<<"Pooling data for group "<<ID_group<<"::(";
+						//	for(int vv =0; vv< res.size(); vv++)
+						//	{
+						//		cout<<vv<<"**" <<res[vv]<<")--(";
+						//	}
+						//}
+						/*----------------------------------------*/
+					}
 					
-					//flag_p = 1; 
-					//flag_f = 1; 
+					flag_p = 1; 
+					flag_f = 1; 
 					temp_computation_time = sc_simulation_time();
 				}
 			}
@@ -826,10 +862,10 @@ if (reset.read() ) {
 											//cout<<" all data in: "<<y<<endl;
 											value = value + x*y; 
 											/*------Debugging--------*/
-											if(ID_group == 2 && i == 98)
-											{
-												cout<<"("<<x<<"--"<<y<<"--"<<receive_neu_ID_conv[i][j]<<")--";
-											}
+											//if(ID_group == 2 && i == 98)
+											//{
+											//	cout<<"("<<x<<"--"<<y<<"--"<<receive_neu_ID_conv[i][j]<<")--";
+											//}
 											/*-----------------------*/
 										    
 										}
@@ -1178,26 +1214,31 @@ if (reset.read() ) {
 		  //cout<<"(Local id: "<<local_id<<")- Layer: "<<ID_layer<<" Neuron ids: "<<PE_table[0].ID_Neu<<" (Id in layer: "<<PE_table[0].ID_In_layer<<")--"<<PE_table[PE_table.size()-1].ID_Neu<<" (Id in layer: "<<PE_table[PE_table.size()-1].ID_In_layer<<")"<<endl;	
 		//}
 		
-		/*if(ID_group == 2  ) //Layer1:0,7,47 ;Layer3: 60
+		/*if(ID_group == 48  ) //Layer1:0,7,47 ;Layer3: 60
 		{
-			//cout<<endl<<"trans PE id for layer 1, group " <<ID_group<<": ";
-			//for(int ab=0; ab< trans_PE_ID_conv.size(); ab++)
-			//{
-			//	cout<<trans_PE_ID_conv[ab]<<"--";
-			//}
+			cout<<endl<<"trans PE id for layer "<<ID_layer<<", group " <<ID_group<<": ";
+			for(int ab=0; ab< trans_PE_ID_pool.size(); ab++)
+			{
+				cout<<")--(";
+				for(int cc =0; cc<trans_PE_ID_pool[ab].size();cc++)
+				{
+					cout<<trans_PE_ID_pool[ab][cc]<<"--";
+				}
+				
+			}
 			//cout<<"Size of group:("<<trans_PE_ID_conv.size()<<")"<<endl;
 
-			//cout<<"Final Trans PE ids: "<<".....";
-			//for(int ap=0;ap<trans_PE_ID.size();ap++)
-			//{
-			//	cout<<"("<<trans_PE_ID[ap]<<"-"<<trans_conv[ap]<<")..";
-			//}
-			cout<<endl<< "Receive neuron id for layer 1, group " <<ID_group<<": ";
-			for(int ab =0; ab <receive_neu_ID_conv[85].size(); ab++)
+			cout<<"Final Trans PE ids: "<<".....";
+			for(int ap=0;ap<trans_PE_ID.size();ap++)
 			{
-
-				cout<<receive_neu_ID_conv[85][ab]<<"--";
+				cout<<"("<<trans_PE_ID[ap]<<"-"<<trans_pool[ap]<<")..";
 			}
+			//cout<<endl<< "Receive neuron id for layer 1, group " <<ID_group<<": ";
+			//for(int ab =0; ab <receive_neu_ID_conv[85].size(); ab++)
+			//{
+
+			//	cout<<receive_neu_ID_conv[85][ab]<<"--";
+			//}
 			//cout<<"Size of group:("<<receive_neu_ID_conv[0].size()<<")"<<endl;
 			//cout<<"...........";
 		} */
@@ -1263,7 +1304,12 @@ if (reset.read() ) {
 								packet_queue.push(packet);
 							}
 							/*--------------Debugging-----------*/
-							cout<<"Pooling layer, Local id:  "<<local_id<<endl;
+							//cout<<"Pooling layer, Local id:  "<<local_id<<endl;
+							//if(ID_group == 48)
+							//{
+							//	cout<<"Packet Checking....";
+							//	cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
+							//}
 							/*----------------------------------*/
 						}	
 					}

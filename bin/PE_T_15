@@ -100,5 +100,5 @@
 109: ProcessingElement[15] SENDING [type: B, seq: 9, 15-->52], src_Neu_id = 1592, data = 0
 110: ProcessingElement[15] SENDING [type: B, seq: 10, 15-->52], src_Neu_id = 1593, data = 0
 111: ProcessingElement[15] SENDING [type: B, seq: 11, 15-->52], src_Neu_id = 1594, data = 0
-430: ProcessingElement[15] SENDING [type: B, seq: 12, 15-->52], src_Neu_id = 1595, data = 0
-431: ProcessingElement[15] SENDING [type: T, seq: 13, 15-->52], src_Neu_id = 0, data = 0
+112: ProcessingElement[15] SENDING [type: B, seq: 12, 15-->52], src_Neu_id = 1595, data = 0
+113: ProcessingElement[15] SENDING [type: T, seq: 13, 15-->52], src_Neu_id = 0, data = 0
