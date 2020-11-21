@@ -79,6 +79,7 @@ SC_MODULE(NoximProcessingElement)
 	int temp_computation_time;
 
 	/*Convolution and Pooling layers*/
+	deque<int> coord_xyz;
 	deque<int> trans_PE_ID_conv;
 	deque<deque<int>> trans_PE_ID_pool;
 	deque <deque<int>> receive_neu_ID_conv;

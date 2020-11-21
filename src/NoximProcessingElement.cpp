@@ -201,7 +201,9 @@ void NoximProcessingElement::rxProcess()
 											res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
 										}
 										else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
-										{}
+										{
+											
+										}
 
 										if (ID_layer == NN_Model->all_leyer_size.size()-1)
 										{
@@ -219,6 +221,71 @@ void NoximProcessingElement::rxProcess()
 						}
 					}else if(Type_layer == 'c')
 					{
+						int offset_conv=0;
+						for(int bf=0; bf<ID_layer; bf++)
+						{
+							if(NN_Model->all_leyer_type[bf] =='c')
+							{
+								offset_conv = offset_conv + NN_Model->all_leyer_size[bf][3];
+							}
+						}
+						deque <int> deq_data;
+						deque <float>deq_kernel;
+						for(int bg=0 ; bg < Use_Neu; bg++)
+						{
+							//Idea: First accumulate the prev layer data in the order in a temp variable
+							//then accumulate kernel values in order, consider index
+							//multiply these two temp deques element-wise
+							//Repeat for each neuron
+							deq_data.clear();
+							deq_kernel.clear();
+							int layer_neu = coord_xyz[bg]%100;
+							for(int bh=0; bh< receive_neu_ID_conv[bg].size(); bh++)
+							{
+								for(int bi=0; bi< receive_Neu_ID.size();bi++)
+								{
+									if(receive_neu_ID_conv[bg][bh] == receive_Neu_ID[bi] )
+									{
+										deq_data.push_back(receive_data[bi]);
+										break;
+									}
+								}
+							}
+							
+							for(int bj=0; bj<NN_Model->all_leyer_size[ID_layer-1][3]; bj++)
+							{
+								for(int bk=0; bk< NN_Model->all_leyer_size[ID_layer][4]*NN_Model->all_leyer_size[ID_layer][5]; bk++)
+								{
+									deq_kernel.push_back(NN_Model->all_conv_weight[bj+offset_conv + (coord_xyz[bg]%100)*NN_Model->all_leyer_size[ID_layer][6]][bk]);
+								}
+								 
+							}
+
+							/*--------------Debugging----------------*/
+							//if(ID_group == 61)
+							//{
+							//	cout<<"Kernel is: "<<deq_data.size()<<"::"<<deq_kernel.size()<<": ";
+							//	for(int gg =0; gg< 25; gg++)
+							//	{
+							//		cout<<deq_kernel[gg]<<")--(";
+							//	}
+							//	cout<<endl;
+							//}
+							/*---------------------------------------*/
+							float value;
+							
+							for(int bl =0; bl<deq_kernel.size() ; bl++)
+							{
+								value = value + deq_kernel[bl] *deq_data[bl];
+							}
+							//Add bias
+							value = value + NN_Model->all_conv_bias[offset_conv + (coord_xyz[bg]%100)];
+							if (value <= 0) 
+								res[bg]=0;
+							else
+								res[bg] =value; 
+
+						}
 
 					}else if(Type_layer =='p')
 					{
@@ -413,7 +480,7 @@ if (reset.read() ) {
 						int layer_z = NN_Model->all_leyer_size[ID_layer][3];
 						int done = 0;
 						int temp_coord;
-						deque<int> coord_xyz;
+						coord_xyz.clear();
 						
 						for(int i=0; i<Use_Neu; i++)
 						{
