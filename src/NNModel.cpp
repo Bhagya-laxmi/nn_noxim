@@ -268,6 +268,8 @@ bool NNModel::load()//M_fname Useless tytyty
 		   {
 			   fin_w >> temp_w;
 			   all_conv_bias.push_back(temp_w);   //Bias for each filter
+
+			   
 		   }
 	   }
 

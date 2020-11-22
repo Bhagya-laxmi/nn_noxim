@@ -10,4 +10,4 @@ Convolution 10 10 16 5 5 6 1 0 relu
 Pooling 5 5 16 2 2 2 average
 Dense 120 relu
 Dense 84 relu
-Dense 10 relu
+Dense 10 softmax

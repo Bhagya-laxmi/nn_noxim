@@ -229,8 +229,9 @@ void NoximProcessingElement::rxProcess()
 								offset_conv = offset_conv + NN_Model->all_leyer_size[bf][3];
 							}
 						}
-						deque <int> deq_data;
+						deque <float> deq_data;
 						deque <float>deq_kernel;
+						float value;
 						for(int bg=0 ; bg < Use_Neu; bg++)
 						{
 							//Idea: First accumulate the prev layer data in the order in a temp variable
@@ -261,30 +262,44 @@ void NoximProcessingElement::rxProcess()
 								 
 							}
 
-							/*--------------Debugging----------------*/
-							//if(ID_group == 61)
-							//{
-							//	cout<<"Kernel is: "<<deq_data.size()<<"::"<<deq_kernel.size()<<": ";
-							//	for(int gg =0; gg< 25; gg++)
-							//	{
-							//		cout<<deq_kernel[gg]<<")--(";
-							//	}
-							//	cout<<endl;
-							//}
-							/*---------------------------------------*/
-							float value;
 							
+							value =0.0;
 							for(int bl =0; bl<deq_kernel.size() ; bl++)
 							{
 								value = value + deq_kernel[bl] *deq_data[bl];
+								/*--------------Debugging---------------*/
+								/*if(ID_group == 75 && bg== 0)
+								{
+									cout<<"("<<deq_kernel[bl]<<":"<<deq_data[bl]<<":"<<value<<")";
+								}*/
+								/*--------------------------------------*/
 							}
 							//Add bias
 							value = value + NN_Model->all_conv_bias[offset_conv + (coord_xyz[bg]%100)];
+							/*--------Debugging--------------*/
+							/*if(ID_group == 75 && bg ==0)
+							{
+								cout<<endl<<"Bias: "<< NN_Model->all_conv_bias[offset_conv + (coord_xyz[bg]%100)]<<endl;
+								cout<< "Final Value: "<<value<<endl;
+							}*/
+							/*-------------------------------*/
 							if (value <= 0) 
 								res[bg]=0;
 							else
 								res[bg] =value; 
 
+							
+							/*--------------Debugging----------------*/
+							//if(ID_group == 60 && bg ==0)
+							//{
+							//	cout<<"Conv data is: ";
+							//	for(int gg =0; gg< 25; gg++)
+							//	{
+							//		cout<<deq_data[gg]<<")--(";
+							//	}
+							//	cout<<endl;
+							//}
+							/*---------------------------------------*/
 						}
 
 					}else if(Type_layer =='p')
@@ -306,7 +321,13 @@ void NoximProcessingElement::rxProcess()
 								}
 								if ( NN_Model->all_leyer_size[ID_layer].back() == AVERAGE )//relu
 								{
-									value = value + receive_data[index];	 					
+									value = value + receive_data[index];
+									/*-----------Debugging--------------*/
+									if(ID_group == 76 && bc == 16)
+									{
+										cout<<receive_data[index]<<"--";
+									}
+									/*----------------------------------*/	 					
 								}
 								
 							} 
@@ -314,13 +335,14 @@ void NoximProcessingElement::rxProcess()
 							res[bc] = value;
 						}
 						/*---------------Debugging----------------*/
-						//if(ID_group == 50)
+						//if(ID_group == 76 && bc == 16)
 						//{
-						//	cout<<"Pooling data for group "<<ID_group<<"::(";
-						//	for(int vv =0; vv< res.size(); vv++)
-						//	{
-						//		cout<<vv<<"**" <<res[vv]<<")--(";
-						//	}
+							//cout<<"Pooling data for group "<<ID_group<<"::(";
+							//for(int vv =0; vv< res.size(); vv++)
+							//{
+							//	cout<<vv<<"**" <<res[vv]<<")--(";
+							//}
+							
 						//}
 						/*----------------------------------------*/
 					}
