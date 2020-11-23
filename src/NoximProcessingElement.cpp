@@ -159,8 +159,9 @@ void NoximProcessingElement::rxProcess()
 					//int x_size_last_layer = NN_Model->all_leyer_size[ID_layer-1][1];
 					//int y_size_last_layer = NN_Model->all_leyer_size[ID_layer-1][2];
 					//int x_size_layer = NN_Model->all_leyer_size[ID_layer][1];
-					//int n_size_layer = NN_Model->all_leyer_size[ID_layer][3];
-
+					//int n_size_layer = NN_Model->all_leyer_size[ID_layer][3];					
+					int denominator_ready =0;
+					float denominator_value =0.0;
 					if(Type_layer == 'f')
 					{
 						for (int j = 0 ; j<receive ; j++)  //receive
@@ -186,6 +187,16 @@ void NoximProcessingElement::rxProcess()
 										//cout<<"bias "<<bias_tmp<<endl;
 										res[i] += bias_tmp;		//res[i] += bias_tmp;				// act fun & compute complete 
 										//cout<< res[j]<<endl;
+
+										if(ID_layer == NN_Model->all_leyer_size.size()-1 && denominator_ready == 0)
+										{
+											denominator_ready = 1;
+											for(int fd =0; fd< 10; fd++)
+											{
+												denominator_value = denominator_value + exp(res[fd]);
+											}
+										}
+										
 										if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
 										{
 											if (res[i] <= 0) 
@@ -201,8 +212,8 @@ void NoximProcessingElement::rxProcess()
 											res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
 										}
 										else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
-										{
-											
+										{											
+											res[i] = exp(res[i])/denominator_value;
 										}
 
 										if (ID_layer == NN_Model->all_leyer_size.size()-1)
@@ -323,10 +334,10 @@ void NoximProcessingElement::rxProcess()
 								{
 									value = value + receive_data[index];
 									/*-----------Debugging--------------*/
-									if(ID_group == 76 && bc == 16)
-									{
-										cout<<receive_data[index]<<"--";
-									}
+									//if(ID_group == 76 && bc == 16)
+									//{
+									//	cout<<receive_data[index]<<"--";
+									//}
 									/*----------------------------------*/	 					
 								}
 								
