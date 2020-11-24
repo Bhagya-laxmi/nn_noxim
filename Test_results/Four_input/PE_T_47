@@ -1,0 +1,6 @@
+10: ProcessingElement[47] SENDING [type: H, seq: 0, 47-->59], src_Neu_id = 0, data = 0
+11: ProcessingElement[47] SENDING [type: B, seq: 1, 47-->59], src_Neu_id = 4700, data = 0
+12: ProcessingElement[47] SENDING [type: B, seq: 2, 47-->59], src_Neu_id = 4701, data = 0
+13: ProcessingElement[47] SENDING [type: B, seq: 3, 47-->59], src_Neu_id = 4702, data = 0
+14: ProcessingElement[47] SENDING [type: B, seq: 4, 47-->59], src_Neu_id = 4703, data = 0
+15: ProcessingElement[47] SENDING [type: T, seq: 5, 47-->59], src_Neu_id = 0, data = 0

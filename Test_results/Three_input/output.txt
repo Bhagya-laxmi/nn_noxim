@@ -1,0 +1,10 @@
+No.0 output neuron result: 1.26812e-18
+No.1 output neuron result: 6.71906e-17
+No.2 output neuron result: 4.63399e-14
+No.3 output neuron result: 1
+No.4 output neuron result: 1.27694e-18
+No.5 output neuron result: 1.00095e-16
+No.6 output neuron result: 5.63964e-23
+No.7 output neuron result: 6.07841e-16
+No.8 output neuron result: 2.9999e-10
+No.9 output neuron result: 3.48661e-12

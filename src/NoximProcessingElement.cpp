@@ -160,7 +160,6 @@ void NoximProcessingElement::rxProcess()
 					//int y_size_last_layer = NN_Model->all_leyer_size[ID_layer-1][2];
 					//int x_size_layer = NN_Model->all_leyer_size[ID_layer][1];
 					//int n_size_layer = NN_Model->all_leyer_size[ID_layer][3];					
-					int denominator_ready =0;
 					float denominator_value =0.0;
 					if(Type_layer == 'f')
 					{
@@ -171,32 +170,27 @@ void NoximProcessingElement::rxProcess()
 								//********************fully connected********************** //
 								if(Type_layer =='f')
 								{
-									float weight_tmp = PE_table[i].weight[j]; //PE_table[i].weight[j];
-									//cout<<weight_tmp<<endl;
-									res[i] += receive_data[j] * weight_tmp;  //res[i] += receive_data[j] * weight_tmp;
-												//char fileID_t[10];
-												//cout <<res[j]<<endl;
-									//if((local_id == 13)&&(i==0)){
-										
-									//cout<<"Receive data: "<<receive_data[j]<<"--Weight: "<<weight_tmp<<endl;
-									//}
-									//cout<<"i: "<<i<<"--------receive: "<<receive<<endl;
+									float weight_tmp = PE_table[i].weight[j]; 
+									
+									res[i] += receive_data[j] * weight_tmp;  
+									/*---------------------------Debugging----------------------------*/
+									/*if(ID_group == 83 && i ==2)
+									{
+										cout<<"("<<res[i]<<")";
+									}*/
+									/*----------------------------------------------------------------*/
+			
 									if (j==receive-1) //(j==receive-1)
 									{
-										float bias_tmp = PE_table[i].weight.back();  //bias_tmp = PE_table[i].weight.back();
-										//cout<<"bias "<<bias_tmp<<endl;
-										res[i] += bias_tmp;		//res[i] += bias_tmp;				// act fun & compute complete 
-										//cout<< res[j]<<endl;
+										float bias_tmp = PE_table[i].weight.back();  
 
-										if(ID_layer == NN_Model->all_leyer_size.size()-1 && denominator_ready == 0)
+										res[i] += bias_tmp;				// act fun & compute complete 
+										/*---------------------------Debugging----------------------------*/
+										/*if(ID_group == 83)
 										{
-											denominator_ready = 1;
-											for(int fd =0; fd< 10; fd++)
-											{
-												denominator_value = denominator_value + exp(res[fd]);
-											}
-										}
-										
+											cout<<"Neuron "<<i<<": "<<res[i]<<endl;
+										}*/
+										/*----------------------------------------------------------------*/
 										if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
 										{
 											if (res[i] <= 0) 
@@ -213,10 +207,26 @@ void NoximProcessingElement::rxProcess()
 										}
 										else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
 										{											
-											res[i] = exp(res[i])/denominator_value;
+											res[i] = exp(res[i]);
+											
+											if(ID_layer == NN_Model->all_leyer_size.size()-1 && i == 9)
+											{
+												for(int fd =0; fd< NN_Model->all_leyer_size[ID_layer].front(); fd++)
+												{
+													denominator_value += res[fd];
+													/*----------------Debugging------------*/
+													
+													/*if( fd== 9)
+													{
+														cout<< "Denominator: "<< denominator_value<<endl;
+													}
+													cout<<res[fd]<<"-"<<exp(res[fd])<<endl;*/
+													/*-------------------------------------*/
+												}
+											}
 										}
 
-										if (ID_layer == NN_Model->all_leyer_size.size()-1)
+										if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() != SOFTMAX)
 										{
 											//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
 											char output_file[11];
@@ -229,6 +239,22 @@ void NoximProcessingElement::rxProcess()
 									}
 								}
 							}
+						}
+						if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX)
+						{
+							//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
+							for(int ff=0; ff< NN_Model->all_leyer_size[ID_layer].front(); ff++)
+							{
+								res[ff] = res[ff]/denominator_value;
+								
+								char output_file[11];
+								sprintf(output_file,"output.txt");
+								fstream file_o;
+								file_o.open( output_file ,ios::out|ios::app);
+								file_o << "No." << ff << " output neuron result: ";
+								file_o << res[ff] << endl; //file_o << res[i] << endl;
+							}
+							
 						}
 					}else if(Type_layer == 'c')
 					{
