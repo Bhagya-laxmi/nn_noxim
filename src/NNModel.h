@@ -50,6 +50,7 @@ struct NeuInformation {
 	int sta_y; 
 	int end_y; 
 	int ID_conv;
+	int ID_pool;
 };
 
 /*struct Neu_table {
@@ -72,6 +73,8 @@ class NNModel {
 	deque < int > mapping_table;
 	deque< deque< float > > all_conv_weight;
 	deque <float> all_conv_bias;
+	deque <deque<deque<int>>>> all_conv_coord;
+	deque <deque <deque<int>>>> all_pool_coord;
         //deque < deque< NeuInformation > > PE_table;
         //deque < NeuInformation > Neu_table;
         //deque < NeuInformation > Neu_table_4G;

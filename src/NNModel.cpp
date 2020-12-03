@@ -232,6 +232,9 @@ bool NNModel::load()//M_fname Useless tytyty
 	int temp_ID_In_Group=0;
 	float temp_w;
 	int temp_ID_conv = -1;
+	int temp_ID_pool =-1;
+	int done_c = 0;
+	int done_p = 0;
 	deque < float > temp_conv_weight;
 	int temp_layer_maxID = all_leyer_size[temp_layer][0]; //Starting with layer 1
 	//cout<<"Max id: "<<temp_layer_maxID<<endl;
@@ -300,6 +303,15 @@ bool NNModel::load()//M_fname Useless tytyty
 		if(temp_ID_Neu < temp_layer_maxID){									
 			NeuInfo.ID_layer = temp_layer;
 			NeuInfo.ID_In_layer = temp_ID_In_layer;
+			if(all_leyer_type[temp_layer] == 'c' && done_c == 0)
+			{
+				NeuInfo.ID_conv == ++temp_ID_conv;
+				done_c =1;
+			}else if (all_leyer_type[temp_layer] == 'p' && done_p == 0)
+			{
+				NeuInfo.ID_pool = ++temp_ID_pool;
+				done_p = 1;
+			}
 
 			if( temp_ID_In_Group >=  NoximGlobalParams::group_neu_num){					//** 2018.09.01 edit by Yueh-Chi,Yang **// change group
 				Group_table.push_back(temp_Group_table);
@@ -311,6 +323,15 @@ bool NNModel::load()//M_fname Useless tytyty
 			}
 			NeuInfo.ID_In_Group = temp_ID_In_Group;
 			NeuInfo.ID_Group = temp_ID_Group;
+			/*----------------Debugging-----------------*/
+			/*if( temp_layer == 1 || temp_layer == 3)
+			{
+				cout<< "ID Conv : "<<temp_ID_conv<<"--"; 
+			}else if( temp_layer == 2 || temp_layer == 4)
+			{
+				cout<<"ID_pool: "<<temp_ID_pool<<"--";
+			}*/
+			/*------------------------------------------*/
 		}
 		else{													//change layer and group
 			//cout<<"Temp id in layer: "<<temp_ID_In_layer<<endl;
@@ -334,6 +355,8 @@ bool NNModel::load()//M_fname Useless tytyty
 			NeuInfo.ID_In_Group = temp_ID_In_Group;
 			temp_layer_maxID += all_leyer_size[temp_layer][0];
 
+			done_c =0;
+			done_p =0;
 			temp_bias.clear();
 			if(all_leyer_type[temp_layer]=='f')
 			{
@@ -396,7 +419,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<"model & group complete"<<endl;
     
 	
-	 //Reverse Eng
+	 /*-------------------Debugging---------------------*/
 	/*
 	 cout<< Group_table[1][0].Type_layer<<endl;
 	 cout<< Group_table[50][0].Type_layer<<endl;;
@@ -467,6 +490,7 @@ bool NNModel::load()//M_fname Useless tytyty
              cout<< all_leyer_type[i]<<"--";	
 		}
 	cout<<endl; */
+	/*-----------------------------------*/
 //******************print floorplan****************
 
 	cout<<"Hardware floorplan:"<<endl;
@@ -537,6 +561,31 @@ bool NNModel::load()//M_fname Useless tytyty
 	//cout<<"Size of input: "<<all_data_in[0].size()<<endl;
 	/*----------------------------------*/
 	
+	//******************Save the coordinates for 2d Convolution and Pooling****************
+	all_conv_coord.clear();
+	all_pool_coord.clear();
+	
+	for(int ab =0; ab< all_leyer_size.size(); ab++)
+	{
+		if(all_leyer_type[ab] == 'c')
+		{
+			int coord_x =all_leyer_size[ab][1];
+			int coord_y=all_leyer_size[ab][2];
+			int kernel_x = all_leyer_size[ab][4];
+			int kernel_y= all_leyer_size[ab][5];
+			int padding = all_leyer_size[ab][8];
+			
+		}
+		else if(all_leyer_type[ab] == 'p')
+		{
+			int coord_x =all_leyer_size[ab][1];
+			int coord_y=all_leyer_size[ab][2];
+			int kernel_x = all_leyer_size[ab][4];
+			int kernel_y= all_leyer_size[ab][5];
+			int stride = all_leyer_size[ab][6];
+		}
+	}
+
     	return true;
 }
 
