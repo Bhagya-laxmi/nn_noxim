@@ -564,27 +564,130 @@ bool NNModel::load()//M_fname Useless tytyty
 	//******************Save the coordinates for 2d Convolution and Pooling****************
 	all_conv_coord.clear();
 	all_pool_coord.clear();
-	
+	deque< int> temp_cell;
+	deque < deque<int>> temp_matrix;
 	for(int ab =0; ab< all_leyer_size.size(); ab++)
 	{
 		if(all_leyer_type[ab] == 'c')
 		{
-			int coord_x =all_leyer_size[ab][1];
-			int coord_y=all_leyer_size[ab][2];
+			int coord_x = all_leyer_size[ab][1];
+			int coord_y = all_leyer_size[ab][2];
+			int coordPrev_x = all_leyer_size[ab-1][1];
+			int coordPrev_y = all_leyer_size[ab-1][2];
 			int kernel_x = all_leyer_size[ab][4];
-			int kernel_y= all_leyer_size[ab][5];
+			int kernel_y = all_leyer_size[ab][5];
+			int kernel_z = all_leyer_size[ab][6];
 			int padding = all_leyer_size[ab][8];
+
+			if(padding == 0){
+				for(int aa =0; aa< coord_x; aa++)
+				{
+					for(int bb =0; bb < coord_y; bb++)
+					{
+						for(int cc =0; cc< kernel_z; cc++)
+						{
+							for(int dd =0; dd< kernel_x; dd++)
+							{
+								for(int ee =0; ee<kernel_y; ee++)
+								{
+									temp_cell.push_back((aa+dd)*coordPrev_y + (ee+ bb) + cc*coordPrev_x*coordPrev_y);
+								}
+							}
+						}
+						temp_matrix.push_back(temp_cell);
+						temp_cell.clear();
+					}
+				}
+			all_conv_coord.push_back(temp_matrix);
+			temp_matrix.clear();
+			}else if(padding == 1)
+			{}
 			
 		}
 		else if(all_leyer_type[ab] == 'p')
 		{
 			int coord_x =all_leyer_size[ab][1];
 			int coord_y=all_leyer_size[ab][2];
+			int coordPrev_x = all_leyer_size[ab-1][1];
+			int coordPrev_y = all_leyer_size[ab-1][2];
 			int kernel_x = all_leyer_size[ab][4];
 			int kernel_y= all_leyer_size[ab][5];
 			int stride = all_leyer_size[ab][6];
+			int horizontal =0;
+			int vertical =0;
+			temp_matrix.clear();
+			temp_cell.clear();
+
+			for(int aa =0; aa< coord_x; aa++)
+			{
+				for(int bb =0; bb<coord_y; bb++)
+				{
+					if(aa >0){vertical =1;}
+					if(bb >0){horizontal =1;}
+					if(horizontal ==0 && vertical ==0) //0,0
+					{
+						for(int cc=0; cc<kernel_x; cc++)
+						{
+							for(int dd =0; dd< kernel_y; dd++)
+							{
+								temp_cell.push_back((aa+cc)*coordPrev_y+(bb+dd));
+							}
+						}
+
+					}else if(horizontal ==0 && vertical ==1)
+					{
+						for(int cc=0; cc<kernel_x; cc++)
+						{
+							for(int dd =0; dd< kernel_y; dd++)
+							{
+								temp_cell.push_back((aa*stride+cc)*coordPrev_y+(bb+dd));
+							}
+						}										
+					}else if(horizontal ==1 && vertical == 0)
+					{
+						for(int cc=0; cc<kernel_x; cc++)
+						{
+							for(int dd =0; dd< kernel_y; dd++)
+							{
+								temp_cell.push_back((aa+cc)*coordPrev_y+(bb*stride+dd));
+							}
+						}
+					}else if(horizontal ==1 && vertical == 1)
+					{
+						for(int cc=0; cc<kernel_x; cc++)
+						{
+							for(int dd =0; dd< kernel_y; dd++)
+							{
+								temp_cell.push_back((aa*stride+cc)*coordPrev_y+(bb*stride+dd));
+							}
+						}	
+					}
+					horizontal =0;
+					vertical =0;
+					temp_matrix.push_back(temp_cell);
+					temp_cell.clear();
+				}
+			}
+			all_pool_coord.push_back(temp_matrix);
+			temp_matrix.clear();
 		}
 	}
+
+	/*--------------------Debugging-----------------------*/
+	//cout<<"Conv deque Size: "<<all_conv_coord.size()<<" Size zero: "<<all_conv_coord[0].size()<<"Size One: "<<all_conv_coord[1].size() <<endl;
+	/*for(int gg =0; gg< all_conv_coord[1][0].size(); gg++)
+	{
+		cout<<all_conv_coord[1][0][gg]<<"--";
+	}
+	cout<<all_conv_coord[1][0].size()<<endl;*/
+	cout<<"Pool deque Size: "<<all_pool_coord.size()<<" Size zero: "<<all_pool_coord[0].size()<<"Size One: "<<all_pool_coord[1].size() <<endl;
+	for(int gg=0; gg<all_pool_coord[0][1].size(); gg++)
+	{
+		cout<<all_pool_coord[0][1][gg]<<"--";
+	}
+	cout<<"All pool Zero: "<< all_pool_coord[0][0][0]<<endl;
+	cout<<"size: "<< all_pool_coord[0][0].size()<<endl;
+	/*----------------------------------------------------*/
 
     	return true;
 }
