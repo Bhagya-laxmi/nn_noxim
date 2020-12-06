@@ -15,6 +15,9 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "functional": "cpp",
+        "*.tcc": "cpp",
+        "unordered_map": "cpp"
     }
 }

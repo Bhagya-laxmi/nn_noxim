@@ -146,7 +146,7 @@ float fixed_sim(double long d);
 	SC_METHOD(rxProcess);
 	sensitive << reset;
 	sensitive << clock.pos();
-
+	
 	SC_METHOD(txProcess);
 	sensitive << reset;
 	sensitive << clock.pos();

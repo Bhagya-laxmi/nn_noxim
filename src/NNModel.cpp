@@ -231,11 +231,10 @@ bool NNModel::load()//M_fname Useless tytyty
 	int temp_ID_Group=0;
 	int temp_ID_In_Group=0;
 	float temp_w;
-	int temp_ID_conv = -1;
+	int temp_ID_conv = 0;
 	int temp_ID_pool =-1;
-	int done_c = 0;
-	int done_p = 0;
-	deque < float > temp_conv_weight;
+
+	deque <deque<float>> temp_conv_weight;
 	int temp_layer_maxID = all_leyer_size[temp_layer][0]; //Starting with layer 1
 	//cout<<"Max id: "<<temp_layer_maxID<<endl;
 	Group_table.clear();
@@ -251,44 +250,47 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<"weight file loading (filename: " << NoximGlobalParams::NNweight_filename << ")..."<<endl;	//** 2018.09.02 edit by Yueh-Chi,Yang **//
     
 	//Save convolution weights and bias for each filter
+	deque<float> temp_weights;
+	deque<float> temp_bias_conv;
 	for(int i =0; i< all_leyer_type.size(); i++)
 	{
        if(all_leyer_type[i] == 'c')
 	   {
 		   kernel_size = all_leyer_size[i][4] * all_leyer_size[i][5];
+		   temp_conv_weight.clear();
+		   temp_bias_conv.clear();
 		   for(int j=0; j< all_leyer_size[i][3]*all_leyer_size[i][6];j++)
 		   {
-			   temp_conv_weight.clear();
+			   temp_weights.clear();
 			   for(int l=0; l<kernel_size;l++)
 			   {
 				   fin_w >> temp_w;
-				   temp_conv_weight.push_back(temp_w);
+				   temp_weights.push_back(temp_w);
 			   }
-			   all_conv_weight.push_back(temp_conv_weight);//Convolution kernel weights
+			   temp_conv_weight.push_back(temp_weights);//Convolution kernel weights
 		   }
-
+			all_conv_weight.push_back(temp_conv_weight);
 		   for( int m =0; m < all_leyer_size[i][3];m++)
 		   {
 			   fin_w >> temp_w;
-			   all_conv_bias.push_back(temp_w);   //Bias for each filter
-
-			   
+			   temp_bias_conv.push_back(temp_w);   //Bias for each filter   
 		   }
+		   all_conv_bias.push_back(temp_bias_conv);
 	   }
 
 	}
 
 	/*--------------Debugging---------------------------*/
-    /*cout<< all_conv_bias.size()<<endl;
-    for( int p=0; p< all_conv_bias.size();p++)
+    /*cout<< all_conv_bias.size()<<"--"<<all_conv_bias[1].size()<<endl;
+    for( int p=0; p< all_conv_bias[1].size();p++)
 	{
-		cout<<all_conv_bias[p]<<"-----";
+		cout<<all_conv_bias[1][p]<<"-----";
 	}
 	cout<<endl;
 	cout<<all_conv_weight.size()<<endl;
 	for( int p=0; p< 25;p++)
 	{
-		cout<<all_conv_weight[7][p]<<"---";
+		cout<<all_conv_weight[1][1][p]<<"---";
 	}
 	cout<<endl;*/
 	/*--------------------------------------------------*/
@@ -303,14 +305,16 @@ bool NNModel::load()//M_fname Useless tytyty
 		if(temp_ID_Neu < temp_layer_maxID){									
 			NeuInfo.ID_layer = temp_layer;
 			NeuInfo.ID_In_layer = temp_ID_In_layer;
-			if(all_leyer_type[temp_layer] == 'c' && done_c == 0)
+			if(all_leyer_type[temp_layer] == 'c')
+			{	
+				NeuInfo.ID_conv = temp_ID_conv;
+				//cout<<"("<< temp_ID_Neu<<"--"<<NeuInfo.ID_conv<<")--";
+
+			}else if (all_leyer_type[temp_layer] == 'p' )
 			{
-				NeuInfo.ID_conv == ++temp_ID_conv;
-				done_c =1;
-			}else if (all_leyer_type[temp_layer] == 'p' && done_p == 0)
-			{
-				NeuInfo.ID_pool = ++temp_ID_pool;
-				done_p = 1;
+				NeuInfo.ID_pool = temp_ID_pool;
+				//cout<<"("<< temp_ID_Neu<<"--"<<NeuInfo.ID_pool<<")--";
+
 			}
 
 			if( temp_ID_In_Group >=  NoximGlobalParams::group_neu_num){					//** 2018.09.01 edit by Yueh-Chi,Yang **// change group
@@ -355,8 +359,19 @@ bool NNModel::load()//M_fname Useless tytyty
 			NeuInfo.ID_In_Group = temp_ID_In_Group;
 			temp_layer_maxID += all_leyer_size[temp_layer][0];
 
-			done_c =0;
-			done_p =0;
+
+			if(all_leyer_type[temp_layer] == 'c' )
+			{	
+				
+				NeuInfo.ID_conv = ++temp_ID_conv;
+				//cout<<"("<< temp_ID_Neu<<"--"<<NeuInfo.ID_conv<<")--";
+
+			}else if (all_leyer_type[temp_layer] == 'p' )
+			{
+				NeuInfo.ID_pool = ++temp_ID_pool;
+				//cout<<"("<< temp_ID_Neu<<"--"<<NeuInfo.ID_pool<<")--";
+
+			}
 			temp_bias.clear();
 			if(all_leyer_type[temp_layer]=='f')
 			{
@@ -673,20 +688,21 @@ bool NNModel::load()//M_fname Useless tytyty
 		}
 	}
 
+	cout<<"Convolution and Pooling layer's related activities are completed."<<endl;
 	/*--------------------Debugging-----------------------*/
 	//cout<<"Conv deque Size: "<<all_conv_coord.size()<<" Size zero: "<<all_conv_coord[0].size()<<"Size One: "<<all_conv_coord[1].size() <<endl;
-	/*for(int gg =0; gg< all_conv_coord[1][0].size(); gg++)
+	/*for(int gg =0; gg< all_conv_coord[1][99].size(); gg++)
 	{
-		cout<<all_conv_coord[1][0][gg]<<"--";
-	}
-	cout<<all_conv_coord[1][0].size()<<endl;*/
-	cout<<"Pool deque Size: "<<all_pool_coord.size()<<" Size zero: "<<all_pool_coord[0].size()<<"Size One: "<<all_pool_coord[1].size() <<endl;
-	for(int gg=0; gg<all_pool_coord[0][1].size(); gg++)
+		cout<<all_conv_coord[1][99][gg]<<"--";
+	}*/
+	//cout<<all_conv_coord[1][0].size()<<endl;
+	//cout<<"Pool deque Size: "<<all_pool_coord.size()<<" Size zero: "<<all_pool_coord[0].size()<<"Size One: "<<all_pool_coord[1].size() <<endl;
+	/*for(int gg=0; gg<all_pool_coord[1][24].size(); gg++)
 	{
-		cout<<all_pool_coord[0][1][gg]<<"--";
-	}
-	cout<<"All pool Zero: "<< all_pool_coord[0][0][0]<<endl;
-	cout<<"size: "<< all_pool_coord[0][0].size()<<endl;
+		cout<<all_pool_coord[1][24][gg]<<"--";
+	}*/
+	//cout<<"All pool Zero: "<< all_pool_coord[0][0][0]<<endl;
+	//cout<<"size: "<< all_pool_coord[0][0].size()<<endl;
 	/*----------------------------------------------------*/
 
     	return true;
