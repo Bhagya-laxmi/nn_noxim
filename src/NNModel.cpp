@@ -235,6 +235,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	int temp_ID_pool =-1;
 
 	deque <deque<float>> temp_conv_weight;
+	deque<deque<deque<float>>> temp_conv_weight_layer;
 	int temp_layer_maxID = all_leyer_size[temp_layer][0]; //Starting with layer 1
 	//cout<<"Max id: "<<temp_layer_maxID<<endl;
 	Group_table.clear();
@@ -259,17 +260,25 @@ bool NNModel::load()//M_fname Useless tytyty
 		   kernel_size = all_leyer_size[i][4] * all_leyer_size[i][5];
 		   temp_conv_weight.clear();
 		   temp_bias_conv.clear();
-		   for(int j=0; j< all_leyer_size[i][3]*all_leyer_size[i][6];j++)
+		   temp_conv_weight_layer.clear();
+		   for(int j=0; j< all_leyer_size[i][3];j++)
 		   {
-			   temp_weights.clear();
-			   for(int l=0; l<kernel_size;l++)
-			   {
-				   fin_w >> temp_w;
-				   temp_weights.push_back(temp_w);
-			   }
-			   temp_conv_weight.push_back(temp_weights);//Convolution kernel weights
+				
+				for(int q=0;q<all_leyer_size[i][6];q++)
+				{
+					temp_weights.clear();
+					for(int l=0; l<kernel_size;l++)
+					{
+						fin_w >> temp_w;
+						temp_weights.push_back(temp_w);
+					}
+					temp_conv_weight.push_back(temp_weights);//Convolution kernel weights
+				}
+			   temp_conv_weight_layer.push_back(temp_conv_weight);
+			   temp_conv_weight.clear();
 		   }
-			all_conv_weight.push_back(temp_conv_weight);
+			all_conv_weight.push_back(temp_conv_weight_layer);
+			temp_conv_weight_layer.clear();
 		   for( int m =0; m < all_leyer_size[i][3];m++)
 		   {
 			   fin_w >> temp_w;
@@ -285,12 +294,23 @@ bool NNModel::load()//M_fname Useless tytyty
     for( int p=0; p< all_conv_bias[1].size();p++)
 	{
 		cout<<all_conv_bias[1][p]<<"-----";
-	}
-	cout<<endl;
+	}*/
+	/*cout<<endl;
 	cout<<all_conv_weight.size()<<endl;
-	for( int p=0; p< 25;p++)
+	
+	cout<<all_conv_weight[0].size()<<endl;
+	cout<<all_conv_weight[1].size()<<endl;
+	cout<<all_conv_weight[0][0].size()<<endl;
+	cout<<all_conv_weight[1][0].size()<<endl;
+	cout<<all_conv_weight[0][0][0].size()<<endl;
+	cout<<all_conv_weight[1][0][0].size()<<endl;
+	for( int p=0; p< all_conv_weight[1][0].size();p++)
 	{
-		cout<<all_conv_weight[1][1][p]<<"---";
+		for(int q=0; q<all_conv_weight[1][0][p].size();q++)
+		{
+			cout<<all_conv_weight[1][0][p][q]<<"---";
+		}
+		
 	}
 	cout<<endl;*/
 	/*--------------------------------------------------*/
@@ -691,15 +711,15 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<"Convolution and Pooling layer's related activities are completed."<<endl;
 	/*--------------------Debugging-----------------------*/
 	//cout<<"Conv deque Size: "<<all_conv_coord.size()<<" Size zero: "<<all_conv_coord[0].size()<<"Size One: "<<all_conv_coord[1].size() <<endl;
-	/*for(int gg =0; gg< all_conv_coord[1][99].size(); gg++)
+	/*for(int gg =0; gg< all_conv_coord[1][0].size(); gg++)
 	{
-		cout<<all_conv_coord[1][99][gg]<<"--";
-	}*/
-	//cout<<all_conv_coord[1][0].size()<<endl;
+		cout<<all_conv_coord[1][0][gg]<<"--";
+	}
+	cout<<all_conv_coord[1][0].size()<<endl;*/
 	//cout<<"Pool deque Size: "<<all_pool_coord.size()<<" Size zero: "<<all_pool_coord[0].size()<<"Size One: "<<all_pool_coord[1].size() <<endl;
-	/*for(int gg=0; gg<all_pool_coord[1][24].size(); gg++)
+	/*for(int gg=0; gg<all_pool_coord[1][0].size(); gg++)
 	{
-		cout<<all_pool_coord[1][24][gg]<<"--";
+		cout<<all_pool_coord[1][0][gg]<<"--";
 	}*/
 	//cout<<"All pool Zero: "<< all_pool_coord[0][0][0]<<endl;
 	//cout<<"size: "<< all_pool_coord[0][0].size()<<endl;

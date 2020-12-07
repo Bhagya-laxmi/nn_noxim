@@ -71,7 +71,7 @@ class NNModel {
 	deque< deque< float > > all_data_in;
         deque < deque< NeuInformation > > Group_table;
 	deque < int > mapping_table;
-	deque<deque< deque< float > >> all_conv_weight;
+	deque <deque<deque< deque< float >>>> all_conv_weight;
 	deque<deque <float>> all_conv_bias;
 	deque <deque<deque<int>>> all_conv_coord;
 	deque <deque <deque<int>>> all_pool_coord;
