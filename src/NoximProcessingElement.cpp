@@ -1086,7 +1086,14 @@ if (reset.read() ) {
 					
 					flag_p = 0;
 					transmittedAtPreviousCycle = true;
-					curr_XYXrouting = 0; //Initialization so that first packet starts with XY routing
+					if((ID_group -(NN_Model->all_leyer_ID_Group[ID_layer-1][0] )) < (NN_Model->all_leyer_ID_Group[ID_layer-1].size()/2))
+					{
+						curr_XYXrouting = 0; //Initialization so that first packet starts with XY routing
+					}else
+					{
+						curr_XYXrouting = 1; //Initialization so that first packet starts with YX routing
+					}
+					
 				} 
 				else
 					transmittedAtPreviousCycle = false;
@@ -1155,9 +1162,9 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 		curr_XYXrouting = abs(curr_XYXrouting -1);
 		flit.XYX_routing   = curr_XYXrouting ; 
 		/*------------Debugging---------------*/
-		/*if(local_id == 48)
+		/*if(local_id >= 48 && local_id <= 59 )
 		{
-			cout<<"(Local ID: "<<local_id<<" Packet source id: "<<packet.src_id<<" Dst:"<<packet.dst_id<<" Routing:"<<flit.XYX_routing<<" Seq no: "<<flit.sequence_no<<")--";
+			cout<<"(Local ID: "<<local_id<<" Packet source id: "<<packet.src_id<<" Dst:"<<packet.dst_id<<" Routing:"<<flit.XYX_routing<<" Seq no: "<<flit.sequence_no<<endl;
 		}*/
 		/*------------------------------------*/
 	}		
