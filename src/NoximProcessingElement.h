@@ -86,10 +86,17 @@ SC_MODULE(NoximProcessingElement)
 	deque <deque<int>> receive_neu_ID_pool;
 	deque <int> trans_conv;
 	deque <int> trans_pool;
-	//deque <int> receive_conv;
-	//deque <int> receive_pool;
+	deque <int> receive_conv;
+	deque <int> receive_pool;
 	int start_index;
 	int curr_XYXrouting; //0: YX routing; 1: XY routing-----------Intermittent XY routing
+	bool flag_complete;
+	deque<int> Neu_complete;
+
+	deque<int> curr_trans_pe_id;
+	//deque <int> packet_size;
+	//deque <deque<int>> curr_src_neu_id;
+	//deque<deque<float>> curr_data;
 //*********************************************************************************************
 	
 	// Functions
