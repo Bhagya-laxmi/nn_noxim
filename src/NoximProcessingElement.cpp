@@ -1086,6 +1086,7 @@ if (reset.read() ) {
 					
 					flag_p = 0;
 					transmittedAtPreviousCycle = true;
+					curr_XYXrouting = 0; //Initialization so that first packet starts with XY routing
 				} 
 				else
 					transmittedAtPreviousCycle = false;
@@ -1148,11 +1149,30 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
     flit.sequence_no = packet.size - packet.flit_left;
     flit.hop_no = 0;
 	flit.routing_f   = packet.routing;
-//**********************tytyty***************************
-	if(ID_layer%2)
-		flit.XYX_routing   = 0;	//YX_routing
+//************Intermittent XY routing********************
+	if(flit.sequence_no == 0)
+	{
+		curr_XYXrouting = abs(curr_XYXrouting -1);
+		flit.XYX_routing   = curr_XYXrouting ; 
+		/*------------Debugging---------------*/
+		/*if(local_id == 48)
+		{
+			cout<<"(Local ID: "<<local_id<<" Packet source id: "<<packet.src_id<<" Dst:"<<packet.dst_id<<" Routing:"<<flit.XYX_routing<<" Seq no: "<<flit.sequence_no<<")--";
+		}*/
+		/*------------------------------------*/
+	}		
 	else
-		flit.XYX_routing   = 1; //XY_routing
+	{
+		flit.XYX_routing   = curr_XYXrouting;
+		/*------------Debugging---------------*/
+		/*if(local_id == 48)
+		{
+			cout<<"(Local ID: "<<local_id<<" Packet source id: "<<packet.src_id<<" Dst:"<<packet.dst_id<<" Routing:"<<flit.XYX_routing<<" Seq no: "<<flit.sequence_no<<")--";
+		}*/
+		/*------------------------------------*/
+		
+	}
+		 
 //*******************************************************
     //  flit.payload     = DEFAULT_PAYLOAD;
 

@@ -80,10 +80,10 @@
 89: ProcessingElement[8] SENDING [type: B, seq: 79, 8-->50], src_Neu_id = 886, data = 0
 90: ProcessingElement[8] SENDING [type: B, seq: 80, 8-->50], src_Neu_id = 887, data = 0
 91: ProcessingElement[8] SENDING [type: B, seq: 81, 8-->50], src_Neu_id = 888, data = 0
-92: ProcessingElement[8] SENDING [type: B, seq: 82, 8-->50], src_Neu_id = 889, data = 0
-93: ProcessingElement[8] SENDING [type: B, seq: 83, 8-->50], src_Neu_id = 890, data = 0
-94: ProcessingElement[8] SENDING [type: B, seq: 84, 8-->50], src_Neu_id = 891, data = 0
-95: ProcessingElement[8] SENDING [type: B, seq: 85, 8-->50], src_Neu_id = 892, data = 0
+92: ProcessingElement[8] SENDING [type: B, seq: 82, 8-->50], src_Neu_id = 889, data = 25.3622
+93: ProcessingElement[8] SENDING [type: B, seq: 83, 8-->50], src_Neu_id = 890, data = 11.3232
+94: ProcessingElement[8] SENDING [type: B, seq: 84, 8-->50], src_Neu_id = 891, data = 9.24082
+95: ProcessingElement[8] SENDING [type: B, seq: 85, 8-->50], src_Neu_id = 892, data = 1.2748
 96: ProcessingElement[8] SENDING [type: B, seq: 86, 8-->50], src_Neu_id = 893, data = 0
 97: ProcessingElement[8] SENDING [type: B, seq: 87, 8-->50], src_Neu_id = 894, data = 0
 98: ProcessingElement[8] SENDING [type: B, seq: 88, 8-->50], src_Neu_id = 895, data = 0

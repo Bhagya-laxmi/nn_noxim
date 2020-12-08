@@ -1,13 +1,13 @@
 10: ProcessingElement[37] SENDING [type: H, seq: 0, 37-->57], src_Neu_id = 0, data = 0
 11: ProcessingElement[37] SENDING [type: B, seq: 1, 37-->57], src_Neu_id = 3700, data = 0
-12: ProcessingElement[37] SENDING [type: B, seq: 2, 37-->57], src_Neu_id = 3701, data = 0
+12: ProcessingElement[37] SENDING [type: B, seq: 2, 37-->57], src_Neu_id = 3701, data = 17.4598
 13: ProcessingElement[37] SENDING [type: B, seq: 3, 37-->57], src_Neu_id = 3702, data = 0
 14: ProcessingElement[37] SENDING [type: B, seq: 4, 37-->57], src_Neu_id = 3703, data = 0
 15: ProcessingElement[37] SENDING [type: B, seq: 5, 37-->57], src_Neu_id = 3704, data = 0
 16: ProcessingElement[37] SENDING [type: B, seq: 6, 37-->57], src_Neu_id = 3705, data = 0
 17: ProcessingElement[37] SENDING [type: B, seq: 7, 37-->57], src_Neu_id = 3706, data = 0
-18: ProcessingElement[37] SENDING [type: B, seq: 8, 37-->57], src_Neu_id = 3707, data = 17.7769
-19: ProcessingElement[37] SENDING [type: B, seq: 9, 37-->57], src_Neu_id = 3708, data = 9.42486
+18: ProcessingElement[37] SENDING [type: B, seq: 8, 37-->57], src_Neu_id = 3707, data = 0
+19: ProcessingElement[37] SENDING [type: B, seq: 9, 37-->57], src_Neu_id = 3708, data = 0
 20: ProcessingElement[37] SENDING [type: B, seq: 10, 37-->57], src_Neu_id = 3709, data = 0
 21: ProcessingElement[37] SENDING [type: B, seq: 11, 37-->57], src_Neu_id = 3710, data = 0
 22: ProcessingElement[37] SENDING [type: B, seq: 12, 37-->57], src_Neu_id = 3711, data = 0
@@ -28,7 +28,7 @@
 37: ProcessingElement[37] SENDING [type: B, seq: 27, 37-->57], src_Neu_id = 3726, data = 0
 38: ProcessingElement[37] SENDING [type: B, seq: 28, 37-->57], src_Neu_id = 3727, data = 0
 39: ProcessingElement[37] SENDING [type: B, seq: 29, 37-->57], src_Neu_id = 3728, data = 0
-40: ProcessingElement[37] SENDING [type: B, seq: 30, 37-->57], src_Neu_id = 3729, data = 0
+40: ProcessingElement[37] SENDING [type: B, seq: 30, 37-->57], src_Neu_id = 3729, data = 1.96349
 41: ProcessingElement[37] SENDING [type: B, seq: 31, 37-->57], src_Neu_id = 3730, data = 0
 42: ProcessingElement[37] SENDING [type: B, seq: 32, 37-->57], src_Neu_id = 3731, data = 0
 43: ProcessingElement[37] SENDING [type: B, seq: 33, 37-->57], src_Neu_id = 3732, data = 0

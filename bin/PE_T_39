@@ -3,9 +3,9 @@
 12: ProcessingElement[39] SENDING [type: B, seq: 2, 39-->57], src_Neu_id = 3901, data = 0
 13: ProcessingElement[39] SENDING [type: B, seq: 3, 39-->57], src_Neu_id = 3902, data = 0
 14: ProcessingElement[39] SENDING [type: B, seq: 4, 39-->57], src_Neu_id = 3903, data = 0
-15: ProcessingElement[39] SENDING [type: B, seq: 5, 39-->57], src_Neu_id = 3904, data = 1.21309
-16: ProcessingElement[39] SENDING [type: B, seq: 6, 39-->57], src_Neu_id = 3905, data = 15.6176
-17: ProcessingElement[39] SENDING [type: B, seq: 7, 39-->57], src_Neu_id = 3906, data = 21.5398
+15: ProcessingElement[39] SENDING [type: B, seq: 5, 39-->57], src_Neu_id = 3904, data = 0
+16: ProcessingElement[39] SENDING [type: B, seq: 6, 39-->57], src_Neu_id = 3905, data = 0
+17: ProcessingElement[39] SENDING [type: B, seq: 7, 39-->57], src_Neu_id = 3906, data = 0
 18: ProcessingElement[39] SENDING [type: B, seq: 8, 39-->57], src_Neu_id = 3907, data = 0
 19: ProcessingElement[39] SENDING [type: B, seq: 9, 39-->57], src_Neu_id = 3908, data = 0
 20: ProcessingElement[39] SENDING [type: B, seq: 10, 39-->57], src_Neu_id = 3909, data = 0

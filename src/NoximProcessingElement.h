@@ -89,6 +89,7 @@ SC_MODULE(NoximProcessingElement)
 	//deque <int> receive_conv;
 	//deque <int> receive_pool;
 	int start_index;
+	int curr_XYXrouting; //0: YX routing; 1: XY routing-----------Intermittent XY routing
 //*********************************************************************************************
 	
 	// Functions
