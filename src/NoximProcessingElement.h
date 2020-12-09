@@ -94,9 +94,9 @@ SC_MODULE(NoximProcessingElement)
 	deque<int> Neu_complete;
 
 	deque<int> curr_trans_pe_id;
-	//deque <int> packet_size;
-	//deque <deque<int>> curr_src_neu_id;
-	//deque<deque<float>> curr_data;
+	deque <int> packet_size;
+	deque <deque<int>> curr_src_neu_id;
+	deque<deque<float>> curr_data;
 //*********************************************************************************************
 	
 	// Functions
