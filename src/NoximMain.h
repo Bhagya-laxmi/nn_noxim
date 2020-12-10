@@ -305,13 +305,17 @@ struct NoximPacket {
 	make(s, d, ts, sz);
     }
 
-    void make(const int s, const int d, const double ts, const int sz) {
+    void make(int s, const int d, const double ts, const int sz) {
 	src_id = s;
 	dst_id = d;
 	timestamp = ts;
 	size = sz;
 	flit_left = sz;
     }
+
+	/*void modify(const int s){
+	src_id =s;
+	}*/
 };
 
 // NoximRouteData -- data required to perform routing
