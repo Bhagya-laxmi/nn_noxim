@@ -542,10 +542,10 @@ bool NNModel::load()//M_fname Useless tytyty
 				max_neu = all_leyer_size[i][0];
 			}
 		}
-		cout<<max_neu<<endl;
-		cout<< NoximGlobalParams::group_neu_num<<endl;
-		cout<<max_neu/NoximGlobalParams::group_neu_num<<endl;
-		cout<<(NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y)<<endl;
+		//cout<<max_neu<<endl;
+		//cout<< NoximGlobalParams::group_neu_num<<endl;
+		//cout<<max_neu/NoximGlobalParams::group_neu_num<<endl;
+		//cout<<(NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y)<<endl;
 		assert( max_neu/NoximGlobalParams::group_neu_num <= (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y));
 		interm_data_in.clear();
 		active_layers.clear();
