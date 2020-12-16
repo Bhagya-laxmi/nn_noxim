@@ -129,7 +129,7 @@ void showHelp(char selfname[])
     cout <<
 	"\t-sim N\t\tRun for the specified simulation time [cycles] (default "
 	<< DEFAULT_SIMULATION_TIME << ")" << endl << endl;
-    cout <<
+    /*cout <<
 	"If you find this program useful please don't forget to mention in your paper Maurizio Palesi <mpalesi@diit.unict.it>"
 	<< endl;
     cout <<
@@ -137,7 +137,12 @@ void showHelp(char selfname[])
 	<< endl;
     cout <<
 	"And if you want to send money please feel free to PayPal to Fabrizio Fazzino <fabrizio@fazzino.it>"
-	<< endl;
+	<< endl;*/
+	cout <<
+	"\t-mapping_method TYPE\tSet the mapping method to TYPE where TYPE is one of the following (default "
+	<< DEFAULT_MAPPING_METHOD << "):" << endl;
+    cout << "\t\tstatic\t\tStatic Mapping method" << endl;
+    cout << "\t\tdynamic\t\tDynamic Mapping method" << endl;
 }
 
 void showConfig()
@@ -180,6 +185,8 @@ void showConfig()
 	rnd_generator_seed << endl;
 	/***THROTTLING***/
 	cout << "- throttling_type = " << NoximGlobalParams::throt_type << endl;
+	/*------------dynamic mapping--------------*/
+	cout<<"-mapping_method = "<<NoximGlobalParams::mapping_method<<endl;
 }
 
 void checkInputParameters()
@@ -303,10 +310,38 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 	    << endl;
     else {
 	for (int i = 1; i < arg_num; i++) {
+		/*------Debugging----------------------*/
+		/*cout<<arg_vet[i]<<endl;
+		if(!strcmp(arg_vet[i],"-mapping_method"))
+		{
+			cout<< arg_num<<endl;
+			cout<<arg_vet[i]<<endl;
+			cout<< i<<endl;
+			cout<<arg_vet[i+1]<<endl;
+			cout<< i<<endl;
+			//cout<< i++<<endl;
+			//cout<<++i<<endl;
+		}*/
+		/*-------------------------------------*/
 	    if (!strcmp(arg_vet[i], "-help")) {
 		showHelp(arg_vet[0]);
 		exit(0);
-	    } else if (!strcmp(arg_vet[i], "-verbose"))
+	    }else if (!strcmp(arg_vet[i],"-mapping_method"))
+		{
+			if(!strcmp(arg_vet[++i],"static"))
+			{
+				NoximGlobalParams::mapping_method = STATIC;
+				cout<< "Mapping method => STATIC"<<endl;
+				
+			}else if(!strcmp(arg_vet[i],"dynamic"))
+			{
+				NoximGlobalParams::mapping_method = DYNAMIC;
+				cout<< "Mapping method => DYNAMIC"<<endl;
+				
+			}
+		} 
+		
+		else if (!strcmp(arg_vet[i], "-verbose"))
 			NoximGlobalParams::verbose_mode = atoi(arg_vet[++i]);
 	    else if (!strcmp(arg_vet[i], "-trace")) {
 			NoximGlobalParams::trace_mode = true;

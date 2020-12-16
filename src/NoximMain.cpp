@@ -73,6 +73,9 @@ int NoximGlobalParams::PE_computation_time = DEFAULT_PE_COMPUTATION_TIME;
 int NoximGlobalParams::throttling[128][128][1]; //** 2018.09.14 edit by Yueh-Chi,Yang **//
 //***************************************//
 
+/*-------------Dynamic mapping---------------------*/
+int NoximGlobalParams::mapping_method = DEFAULT_MAPPING_METHOD;
+
 int sc_main(int arg_num, char *arg_vet[])
 {
     // TEMP

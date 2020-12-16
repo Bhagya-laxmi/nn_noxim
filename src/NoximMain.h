@@ -139,6 +139,9 @@ using namespace std;
 #define THROT_Z3			0
 /****************MODIFY BY HUI-SHUN********************/
 
+/*----------------Dynamic mapping----------------*/
+#define STATIC				0
+#define DYNAMIC				1
 // Default configuration can be overridden with command-line arguments
 #define DEFAULT_VERBOSE_MODE               VERBOSE_OFF
 #define DEFAULT_TRACE_MODE                       false
@@ -176,6 +179,8 @@ using namespace std;
 #define DEFAULT_DOWN_LEVEL				             3
 #define DEFAULT_THROTTLING_TYPE		      THROT_TEST
 #define DEFAULT_THROTTLING_RATIO			         0
+/*------------Dynamic mapping--------------------------*/
+#define DEFAULT_MAPPING_METHOD				    STATIC
 
 // Packet Type
 #define PKT_NORMAL             0
@@ -259,6 +264,9 @@ struct NoximGlobalParams {
 	//static deque < deque < deque <int> > > throttling;
 	static int throttling[128][128][1];
 	//***************************************//
+
+	/*-------Dynamic mapping--------------------*/
+	static int mapping_method;
 };
 
 // NoximCoord -- XY coordinates type of the Tile inside the Mesh

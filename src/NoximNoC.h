@@ -59,7 +59,7 @@ SC_MODULE(NoximNoC)
     sc_signal <int> free_slots_to_north[MAX_STATIC_DIM + 1][MAX_STATIC_DIM + 1][MAX_STATIC_DIM + 1];
 	sc_signal <int> free_slots_to_up[MAX_STATIC_DIM+1][MAX_STATIC_DIM+1][MAX_STATIC_DIM+1]; ////
 	sc_signal <int> free_slots_to_down[MAX_STATIC_DIM+1][MAX_STATIC_DIM+1][MAX_STATIC_DIM+1];////
-    // NoP (­n½T»{­n¤£­n¥[¤@)
+    // NoP (ï¿½nï¿½Tï¿½{ï¿½nï¿½ï¿½ï¿½nï¿½[ï¿½@)
     sc_signal <NoximNoP_data> NoP_data_to_east[MAX_STATIC_DIM][MAX_STATIC_DIM][MAX_STATIC_DIM];
     sc_signal <NoximNoP_data> NoP_data_to_west[MAX_STATIC_DIM][MAX_STATIC_DIM][MAX_STATIC_DIM];
     sc_signal <NoximNoP_data> NoP_data_to_south[MAX_STATIC_DIM][MAX_STATIC_DIM][MAX_STATIC_DIM];
@@ -152,6 +152,10 @@ SC_MODULE(NoximNoC)
 	
 	//---------- Hot spot interface BY CMH <end>
 	
+	/*--------Dynamic mapping-------------*/
+	SC_METHOD(Dynamic_check);
+	sensitive << clock.pos();
+
     }
     ~NoximNoC() 
 	{ 
@@ -165,6 +169,7 @@ SC_MODULE(NoximNoC)
 
 	    void buildMesh();
 		void entry();
+		void Dynamic_check();
 	    Thermal_IF* HS_interface;
 		 bool LastIsEmergency;
     

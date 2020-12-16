@@ -165,10 +165,11 @@ bool NNModel::load()//M_fname Useless tytyty
 	output_size=all_leyer_size.back()[0];
 
 	//******************mapping information prepare************************
+	cout<<"Mapping Algorithm: "<< NoximGlobalParams::mapping_algorithm<<endl;
+	cout<<"Mapping Method: STATIC"<<endl;
+
 	mapping_table.clear();
 	mapping_table.assign( NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y, -1 );
-    
-	cout<<"ALgorithm: "<< NoximGlobalParams::mapping_algorithm<<endl;
 	if(!strcmp(NoximGlobalParams::mapping_algorithm, "random") )
 	{
 		srand( time(NULL) );
@@ -200,11 +201,11 @@ bool NNModel::load()//M_fname Useless tytyty
 			char line[256];
 			fin_m.getline(line, sizeof(line) - 1);
 			if (line[0] != '\0') {
-			    	if (line[0] != '%') {
+					if (line[0] != '%') {
 					int ID_Group, ID_PE;
 					sscanf(line, "%d %d", &ID_Group, &ID_PE);
 					mapping_table[ID_Group] = ID_PE;
-			    	}
+					}
 			}
 		}
 	}
@@ -214,6 +215,7 @@ bool NNModel::load()//M_fname Useless tytyty
 		cout<<"Error mapping algorithm!!"<<endl;
 		exit(1);
 	}
+
 	/*------Debugging--------*/
 	//cout<<"Mapping Table"<<endl;
 	//for( int i =0; i< mapping_table.size();i++){
@@ -223,7 +225,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	/*-----------------------*/
 	cout<<"Model mapping table: "<<mapping_table.size()<<endl;
 	cout<<"maping complete"<<endl;
-
+	
 	// ******************temp_Group_table setting**********************
 	int temp_ID_Neu=0;
 	int temp_layer=1; //Layer id starts from layer 1 which is convolution layer
@@ -527,37 +529,29 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<endl; */
 	/*-----------------------------------*/
 //******************print floorplan****************
-
-	cout<<"Hardware floorplan:"<<endl;
-	cout<<"  ";	
-	for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
-	cout<<"-----";	
-	cout<<"-"<<endl;	
-	for(int j=0;j<NoximGlobalParams::mesh_dim_y;j++)
+	if(NoximGlobalParams::mapping_method == STATIC)
 	{
-		cout<<"  |";
-		for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
+		HardwarePlan();
+	}else if (NoximGlobalParams::mapping_method == DYNAMIC)
+	{
+		int max_neu =all_leyer_size[1][0];   
+		for(int i =2; i< all_leyer_size.size(); i++)
 		{
-
-			int loacl_id = j*NoximGlobalParams::mesh_dim_x + i;
-			int x;
-				for(x=0;x<mapping_table.size();x++)
-				{
-					if(mapping_table[x]==loacl_id) break;
-				}
-				if(x<Group_table.size())
-				{
-					int temp_lay=Group_table[x][0].ID_layer;
-					cout<<setw(3)<<temp_lay<<" |";
-				}
-				else
-					cout<<setw(3)<<" "<<" |";
-
+			if( max_neu < all_leyer_size[i][0])
+			{
+				max_neu = all_leyer_size[i][0];
+			}
 		}
-		cout<<endl<<"  ";
-		for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
-		cout<<"-----";	
-		cout<<"-"<<endl;
+		cout<<max_neu<<endl;
+		cout<< NoximGlobalParams::group_neu_num<<endl;
+		cout<<max_neu/NoximGlobalParams::group_neu_num<<endl;
+		cout<<(NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y)<<endl;
+		assert( max_neu/NoximGlobalParams::group_neu_num <= (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y));
+		interm_data_in.clear();
+		active_layers.clear();
+		interm_data_out.clear();
+		Dy_Group_table = Group_table;
+		Dymapping();
 	}
 	//***********input setting***************
 
@@ -728,5 +722,150 @@ bool NNModel::load()//M_fname Useless tytyty
     	return true;
 }
 
+void NNModel::Dymapping()
+{
+	bool map_Layer = false; 
+	int mapped_layer;   // the previously mapped last layer
+	Group_table.clear();
+
+	if(active_layers.size() != 0)
+	{
+		mapped_layer = active_layers.back();
+		active_layers.clear();
+	}else
+	{
+		mapped_layer = -1; //first time mapping
+	}
+
+	if(mapped_layer == all_leyer_ID_Group.size())
+	{
+		//END - clear everything
+	}else //First mapping
+	{
+		int lay ;
+		if(mapped_layer == -1)
+		{
+			lay =0;
+		}else
+		{
+			lay = mapped_layer;
+		}
+		
+		while(1)
+		{
+			map_Layer = Check_LayerMapping(lay);
+			if(map_Layer)
+			{
+				for(int a=0; a< all_leyer_ID_Group[lay].size(); a++)
+				{
+					Group_table.push_back(Dy_Group_table[all_leyer_ID_Group[lay][a]]);
+				}
+				
+				active_layers.push_back(lay+1);
+				lay = active_layers.back();
+			}else
+			{
+				break;
+			}
+				
+		}
+		HardwarePlan();
+		//Deque ready for storing data	
+		interm_data_in.clear();
+		interm_data_in = interm_data_out;
+		interm_data_out.clear();
+		if( active_layers.back() != all_leyer_ID_Group.size())
+		{
+			deque <float> temp_deq;
+			lay = active_layers.back() + 1;
+			temp_deq.assign(all_leyer_size[lay][1]*all_leyer_size[lay][2], 0.0);
+			for(int b=0; b< all_leyer_size[lay][3]; b++)
+			{
+				interm_data_out.push_back(temp_deq);
+			}
+		}
+		should_fill = all_leyer_size[lay][0];
+		cout<< "Should fill size: "<< should_fill<< endl;
+		cout<< "Mapped layer: "<< active_layers.back()<< endl;
+		cout<< all_leyer_ID_Group.size()<<endl;
+		
+	}
+}
+
+void NNModel :: HardwarePlan()
+{
+	cout<<"Hardware floorplan:"<<endl;
+	cout<<"  ";	
+	for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
+	cout<<"-----";	
+	cout<<"-"<<endl;
+		
+	for(int j=0;j<NoximGlobalParams::mesh_dim_y;j++)
+	{
+		cout<<"  |";
+		for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
+		{
+
+			int loacl_id = j*NoximGlobalParams::mesh_dim_x + i;
+			int x;
+				for(x=0;x<mapping_table.size();x++)
+				{
+					if(mapping_table[x]==loacl_id) break;
+				}
+				if(x<Group_table.size())
+				{
+					int temp_lay=Group_table[x][0].ID_layer;
+					cout<<setw(3)<<temp_lay<<" |";
+				}
+				else
+					cout<<setw(3)<<" "<<" |";
+
+		}
+		cout<<endl<<"  ";
+		for(int i=0;i<NoximGlobalParams::mesh_dim_x;i++)
+		cout<<"-----";	
+		cout<<"-"<<endl;
+	}
+}
 
 
+bool NNModel:: Check_LayerMapping(int already_mapped)
+{
+	bool ret_val;
+	if(Group_table.size() != 0) 
+	{
+		if( already_mapped == all_leyer_ID_Group.size() )
+		{
+			ret_val = false;
+		}else
+		{
+			int size_of_nextLayer = all_leyer_ID_Group[already_mapped].size();
+
+			int temp = (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y) - Group_table.size();
+			
+			if(temp >= size_of_nextLayer)
+			{
+				ret_val= true;
+			}else
+			{
+				ret_val=  false;
+			}
+		}
+		
+		
+		/*----------Debugging---------------*/
+		//cout<<"Next layer size: "<<  size_of_nextLayer<<endl;
+		cout<<"Return val: "<< ret_val<<endl;
+		cout<<"Mapped layer: "<<already_mapped<<endl;
+		//cout<<"Remaning PEs: "<< temp<<endl;
+		cout<<"------------------------------------------------"<<endl;
+
+		/*----------------------------------*/
+	}else
+	{
+		ret_val= true;
+	}
+	
+  return ret_val;
+
+}

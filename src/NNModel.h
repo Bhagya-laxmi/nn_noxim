@@ -61,8 +61,10 @@ class NNModel {
 
   	public:
     		NNModel();
-
+		void Dymapping();
     	bool load();
+		void HardwarePlan();
+		bool Check_LayerMapping(int already_mapped);
 
 	deque< char > all_leyer_type;
 	deque< deque< int > > all_leyer_size;
@@ -75,6 +77,12 @@ class NNModel {
 	deque<deque <float>> all_conv_bias;
 	deque <deque<deque<int>>> all_conv_coord;
 	deque <deque <deque<int>>> all_pool_coord;
+	/*--------------------Dynamic mapping-----------------------*/
+	deque <deque< float>> interm_data_in;
+	deque <deque< float>> interm_data_out;
+	deque <int> active_layers;
+	deque < deque< NeuInformation > > Dy_Group_table;
+	int should_fill;
         //deque < deque< NeuInformation > > PE_table;
         //deque < NeuInformation > Neu_table;
         //deque < NeuInformation > Neu_table_4G;

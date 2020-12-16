@@ -801,3 +801,11 @@ bool NoximNoC::EmergencyDecision()
 	}
 	return isEmergency;
 }
+
+void NoximNoC::Dynamic_check()  //Dynamic mapping
+{ 
+  if(nnmodel.should_fill == 1176) //0
+  {
+	  nnmodel.Dymapping();
+  }
+}
