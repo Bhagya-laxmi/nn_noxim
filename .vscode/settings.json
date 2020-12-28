@@ -18,6 +18,7 @@
         "cmath": "cpp",
         "functional": "cpp",
         "*.tcc": "cpp",
-        "unordered_map": "cpp"
+        "unordered_map": "cpp",
+        "algorithm": "cpp"
     }
 }

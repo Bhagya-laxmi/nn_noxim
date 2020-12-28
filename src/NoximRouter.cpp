@@ -35,7 +35,7 @@ void NoximRouter::rxProcess()
 	/*******DOWNWARD ROUTING******/
 	for( i=0; i<4; i++){
 		if( DW_tag_neighbor[i].read() < DW_tag_cur && DW_tag_neighbor[i].read() >= 0){
-					//DW level propagation: ¿ï¾Ü¾F©~©Î¦Û¤vªºDW_tag­È¸û¤pªº¨º­Ó																																								 //°µ¬°·sªºDW level (¿ï¤jªº¥i¯à·|NW saturation)
+					//DW level propagation: ï¿½ï¿½Ü¾Fï¿½~ï¿½Î¦Û¤vï¿½ï¿½DW_tagï¿½È¸ï¿½ï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½																																								 //ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½DW level (ï¿½ï¿½jï¿½ï¿½ï¿½iï¿½ï¿½|NW saturation)
 //					cout<<"["<<local_id<<"]DW_tag: "<<DW_tag_cur<<"->"<<DW_tag_neighbor[i].read()<<endl;
 					DW_tag_cur = DW_tag_neighbor[i].read();
 					for( j=0; j<4; j++)
@@ -1214,7 +1214,7 @@ vector<int> NoximRouter::routingOddEven_3D (const NoximCoord& current,
   return directions;
 }
 //=============================Odd Even + Downward==========================
-//ÂÂª©¡A¦Y¥þ°ìªºDownward tag
+//ï¿½Âªï¿½ï¿½Aï¿½Yï¿½ï¿½ï¿½ìªºDownward tag
 
 vector<int> NoximRouter::routingOddEven_Downward (const NoximCoord& current, 
 				    const NoximCoord& source, const NoximCoord& destination, const NoximRouteData& route_data)
@@ -1222,7 +1222,7 @@ vector<int> NoximRouter::routingOddEven_Downward (const NoximCoord& current,
  int down_level = DW_tag_cur;	
 	
 	vector<int> directions;
-	int layer;	//ªí¥Ü¦¹packetÀ³¸Ó¦b­þ­Ólayer°µXY¶Ç»¼
+	int layer;	//ï¿½ï¿½ï¿½Ü¦ï¿½packetï¿½ï¿½ï¿½Ó¦bï¿½ï¿½ï¿½ï¿½layerï¿½ï¿½XYï¿½Ç»ï¿½
 	if( (source.z + down_level)> NoximGlobalParams::mesh_dim_z-1)
 		layer = NoximGlobalParams::mesh_dim_z-1;
 	else 
@@ -1230,7 +1230,7 @@ vector<int> NoximRouter::routingOddEven_Downward (const NoximCoord& current,
 	if(current.z < layer && (current.x != destination.x || current.y != destination.y) )  
 	{
 
-		if(current.z == destination.z && ( (current.x-destination.x== 1 && current.y==destination.y)	//X or Y¤è¦V¤W¥u¬Û¶Z¤@®æ®É´Nª½±µ¹L¥h,¤£DW
+		if(current.z == destination.z && ( (current.x-destination.x== 1 && current.y==destination.y)	//X or Yï¿½ï¿½Vï¿½Wï¿½uï¿½Û¶Zï¿½@ï¿½ï¿½É´Nï¿½ï¿½ï¿½ï¿½ï¿½Lï¿½h,ï¿½ï¿½DW
 										||(current.x-destination.x==-1 && current.y==destination.y) 
 										||(current.y-destination.y== 1 && current.x==destination.x) 
 										||(current.y-destination.y==-1 && current.x==destination.x) ))
@@ -1242,16 +1242,16 @@ vector<int> NoximRouter::routingOddEven_Downward (const NoximCoord& current,
 					directions.push_back(DIRECTION_DOWN);
 		}
 	}
-	else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//¦b©³³¡¥Hxy routing¶Ç
+	else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//ï¿½bï¿½ï¿½ï¿½ï¿½ï¿½Hxy routingï¿½ï¿½
 	{
 		// route_data.flag_downward =1;
 			directions = routingOddEven(current, source, destination);
 	}
-	else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xy¬Û¦P, z¤è¦V©¹¤W¶Ç
+	else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Wï¿½ï¿½
 	{	
 		directions.push_back(DIRECTION_UP);
 	}	
-	else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xy¬Û¦P, z¤è¦V©¹¤U¶Ç
+	else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Uï¿½ï¿½
 	{	
 		directions.push_back(DIRECTION_DOWN);
 	}	
@@ -1388,7 +1388,7 @@ vector<int> NoximRouter::routingDownward_CrossLayer(const NoximCoord& current, c
 
 	
 	vector<int> directions;
-	int layer = 3;	//ªí¥Ü¦¹packetÀ³¸Ó¦b­þ­Ólayer°µXY¶Ç»¼
+	int layer = 3;	//ï¿½ï¿½ï¿½Ü¦ï¿½packetï¿½ï¿½ï¿½Ó¦bï¿½ï¿½ï¿½ï¿½layerï¿½ï¿½XYï¿½Ç»ï¿½
 
 
 
@@ -1396,15 +1396,15 @@ vector<int> NoximRouter::routingDownward_CrossLayer(const NoximCoord& current, c
 		{
             directions.push_back(DIRECTION_DOWN);
 		}
-		else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//¦b©³³¡¥Hxy routing¶Ç
+		else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//ï¿½bï¿½ï¿½ï¿½ï¿½ï¿½Hxy routingï¿½ï¿½
 		{
-			 directions = routingXYZ(current, destination);	 //Matthew:  directions = routingXYZ(current, destination)		                                                         //­ì¥»downward routing¥ÎXY ³o¸Ì¥Îwestfirst
+			 directions = routingXYZ(current, destination);	 //Matthew:  directions = routingXYZ(current, destination)		                                                         //ï¿½ì¥»downward routingï¿½ï¿½XY ï¿½oï¿½Ì¥ï¿½westfirst
 		}
-		else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xy¬Û¦P, z¤è¦V©¹¤W¶Ç
+		else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Wï¿½ï¿½
 		{	
 			directions.push_back(DIRECTION_UP);
 		}	
-		else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xy¬Û¦P, z¤è¦V©¹¤U¶Ç
+		else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Uï¿½ï¿½
 		{	
 			directions.push_back(DIRECTION_DOWN);
 		}	
@@ -1440,7 +1440,7 @@ vector<int> NoximRouter::routingDownward_CrossLayer_HS(const NoximCoord& current
 
 	
 	vector<int> directions;
-	int layer = 3;	//ªí¥Ü¦¹packetÀ³¸Ó¦b­þ­Ólayer°µXY¶Ç»¼
+	int layer = 3;	//ï¿½ï¿½ï¿½Ü¦ï¿½packetï¿½ï¿½ï¿½Ó¦bï¿½ï¿½ï¿½ï¿½layerï¿½ï¿½XYï¿½Ç»ï¿½
 
 
 
@@ -1448,15 +1448,15 @@ vector<int> NoximRouter::routingDownward_CrossLayer_HS(const NoximCoord& current
 		{
             directions.push_back(DIRECTION_DOWN);
 		}
-		else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//¦b©³³¡¥Hxy routing¶Ç
+		else if(current.z >=layer && (current.x != destination.x || current.y != destination.y) )	//ï¿½bï¿½ï¿½ï¿½ï¿½ï¿½Hxy routingï¿½ï¿½
 		{
-			 directions = routingXYZ(current, destination);	 //Matthew:  directions = routingXYZ(current, destination)		                                                         //­ì¥»downward routing¥ÎXY ³o¸Ì¥Îwestfirst
+			 directions = routingXYZ(current, destination);	 //Matthew:  directions = routingXYZ(current, destination)		                                                         //ï¿½ì¥»downward routingï¿½ï¿½XY ï¿½oï¿½Ì¥ï¿½westfirst
 		}
-		else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xy¬Û¦P, z¤è¦V©¹¤W¶Ç
+		else if((current.x == destination.x && current.y == destination.y) && current.z > destination.z)	//xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Wï¿½ï¿½
 		{	
 			directions.push_back(DIRECTION_UP);
 		}	
-		else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xy¬Û¦P, z¤è¦V©¹¤U¶Ç
+		else if((current.x == destination.x && current.y == destination.y) && current.z < destination.z)  //xyï¿½Û¦P, zï¿½ï¿½Vï¿½ï¿½ï¿½Uï¿½ï¿½
 		{	
 			directions.push_back(DIRECTION_DOWN);
 		}	
@@ -1618,7 +1618,7 @@ int NoximRouter::getNeighborId_downward(int _id, int direction, int dst_id) cons
   return neighbor_id;
 }
 
-void NoximRouter::TraffThrottlingProcess()	//­Y¦bemergency mode, ¥Btraffic¶W¹Ltraffic quota, «hthrottle
+void NoximRouter::TraffThrottlingProcess()	//ï¿½Yï¿½bemergency mode, ï¿½Btrafficï¿½Wï¿½Ltraffic quota, ï¿½hthrottle
 {
 	if( reset.read() ){
 		for(int i=0; i<4; i++){

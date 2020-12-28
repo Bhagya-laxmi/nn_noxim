@@ -529,6 +529,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	cout<<endl; */
 	/*-----------------------------------*/
 //******************print floorplan****************
+	Mapping_done = false;
 	if(NoximGlobalParams::mapping_method == STATIC)
 	{
 		HardwarePlan();
@@ -551,6 +552,8 @@ bool NNModel::load()//M_fname Useless tytyty
 		active_layers.clear();
 		interm_data_out.clear();
 		Dy_Group_table = Group_table;
+		PEMappingCount.clear();
+
 		Dymapping();
 	}
 	//***********input setting***************
@@ -762,34 +765,80 @@ void NNModel::Dymapping()
 				}
 				
 				active_layers.push_back(lay+1);
-				lay = active_layers.back();
+				lay = active_layers.back();	
 			}else
 			{
+				/*------------------Debugging-----------------*/
+				//cout<< "Group Table size: "<< Group_table.size()<<endl;
+				//cout<< "Group table: "<<Group_table[0][0].ID_Group -95<<endl;
+				//cout<< "Group table: "<<Group_table[24][0].ID_Group-95<<endl;
+				
+				/*--------------------------------------------*/
+				
 				break;
 			}
 				
 		}
+
+		//Correction of the group numbers for dynamic mapping
+		if(PEMappingCount.size() > 0) //Ignoring the first mapping
+		{
+			int mapped_count = 0;
+			for(int a=0; a< PEMappingCount.size(); a++)
+			{
+				mapped_count += PEMappingCount[a];
+			}
+			for(int b=0; b< Group_table.size(); b++)
+			{
+				for(int c =0; c< Group_table[b].size(); c++)
+				{
+					int temp = Group_table[b][c].ID_Group;
+					Group_table[b][c].ID_Group = temp - mapped_count;
+				}
+			}
+		}
+
+		/*----------------Debugging-------------------*/
+		//cout<< "Group table: "<<Group_table[0][0].ID_Group<<endl;
+		//cout<< "Group table: "<<Group_table[24][0].ID_Group<<endl;
+		//cout<<Group_table.size()<<endl;
+		/*--------------------------------------------*/
+		//Store the mapped group count for next mapping modification
+		PEMappingCount.push_back(Group_table.size());
+
 		HardwarePlan();
+
 		//Deque ready for storing data	
 		interm_data_in.clear();
 		interm_data_in = interm_data_out;
+		/*--------------Debugging----------------*/
+		//if(interm_data_in.size() >0)
+		//{
+		//	cout<<"interm data in: "<< interm_data_in[303]<<endl;
+		//}
+		/*-------------------------------*/
+
 		interm_data_out.clear();
 		if( active_layers.back() != all_leyer_ID_Group.size())
 		{
 			deque <float> temp_deq;
-			lay = active_layers.back() + 1;
-			temp_deq.assign(all_leyer_size[lay][1]*all_leyer_size[lay][2], 0.0);
-			for(int b=0; b< all_leyer_size[lay][3]; b++)
-			{
-				interm_data_out.push_back(temp_deq);
-			}
+			lay = active_layers.back();
+			//temp_deq.assign(all_leyer_size[lay][1]*all_leyer_size[lay][2], 0.0);
+			//for(int b=0; b< all_leyer_size[lay][3]; b++)
+			//{
+			interm_data_out.assign(all_leyer_size[lay][0], 0.0);
+			//}
 		}
 		should_fill = all_leyer_size[lay][0];
+		interm_completed.assign(should_fill, false);
 		cout<< "Should fill size: "<< should_fill<< endl;
 		cout<< "Mapped layer: "<< active_layers.back()<< endl;
-		cout<< all_leyer_ID_Group.size()<<endl;
+		cout<< active_layers.front()<<endl;
+		cout<< active_layers.back()<< endl;
+		//cout<< all_leyer_ID_Group.size()<<endl;
 		
 	}
+	Mapping_done = true;
 }
 
 void NNModel :: HardwarePlan()
@@ -855,10 +904,10 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 		
 		/*----------Debugging---------------*/
 		//cout<<"Next layer size: "<<  size_of_nextLayer<<endl;
-		cout<<"Return val: "<< ret_val<<endl;
-		cout<<"Mapped layer: "<<already_mapped<<endl;
+		//cout<<"Return val: "<< ret_val<<endl;
+		//cout<<"Mapped layer: "<<already_mapped<<endl;
 		//cout<<"Remaning PEs: "<< temp<<endl;
-		cout<<"------------------------------------------------"<<endl;
+		//cout<<"------------------------------------------------"<<endl;
 
 		/*----------------------------------*/
 	}else

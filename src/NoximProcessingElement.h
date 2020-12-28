@@ -102,6 +102,7 @@ SC_MODULE(NoximProcessingElement)
 	// Functions
     void rxProcess();		// The receiving process
     void txProcess();		// The transmitting process  
+	void DynamicMappingDone(); // Dynamic Mapping
 //**********tytyty********************************************
 	bool frequcnce(); 
 float fixed_sim(double long d);
@@ -148,16 +149,30 @@ float fixed_sim(double long d);
 
 	void								 TraffThrottlingProcess();
 	
+	void PreprocessingProcess();
+	void FCtrans();
+	void FCreceive();
+	void Convtrans();
+	void Convreceive(bool SingleOrFirstLayer);
+	void Pooltrans();
+	void Poolreceive(bool SingleOrFirstLayer);
+	void LayerConvComp(deque<float> &data_deq);
+	void LayerPoolComp(deque<float> &data_deq);
+	
+	bool flag_transmit;
     // Constructor
     SC_CTOR(NoximProcessingElement) {
 		//cout<< "PE executing"<<endl;
-	/*SC_METHOD(rxProcess);
+	SC_METHOD(rxProcess);
 	sensitive << reset;
 	sensitive << clock.pos();
 	
 	SC_METHOD(txProcess);
 	sensitive << reset;
-	sensitive << clock.pos();*/
+	sensitive << clock.pos();
+
+	SC_METHOD(DynamicMappingDone);
+	sensitive<< clock.pos();
 
 	SC_METHOD(TraffThrottlingProcess);
     sensitive << reset;

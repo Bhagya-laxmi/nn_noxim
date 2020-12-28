@@ -804,8 +804,17 @@ bool NoximNoC::EmergencyDecision()
 
 void NoximNoC::Dynamic_check()  //Dynamic mapping
 { 
-  if(nnmodel.should_fill == 1176) //0
-  {
-	  nnmodel.Dymapping();
-  }
+	int count =0;
+	for(int a =0; a< nnmodel.interm_completed.size();a++)
+	{
+		if(nnmodel.interm_completed[a] == true)
+		{
+			count ++;
+		}
+	}
+
+	if(nnmodel.should_fill == count) //nnmodel.should_fill == count 
+	{
+		nnmodel.Dymapping();
+	}
 }
