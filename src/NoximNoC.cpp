@@ -812,8 +812,8 @@ void NoximNoC::Dynamic_check()  //Dynamic mapping
 			count ++;
 		}
 	}
-
-	if(nnmodel.should_fill == count) //nnmodel.should_fill == count 
+	
+	if(nnmodel.should_fill == count ) //nnmodel.should_fill == count 
 	{
 		/*-----------Debugging--------------*/
 		/*for(int a=0; a< nnmodel.interm_data_out.size();a++)

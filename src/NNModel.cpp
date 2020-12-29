@@ -743,6 +743,12 @@ void NNModel::Dymapping()
 	if(mapped_layer == all_leyer_ID_Group.size())
 	{
 		//END - clear everything
+		cout<<"------------------------------------------------------"<<endl;
+		cout<<"No more mapping is required....."<<endl;
+		cout<<"------------------------------------------------------"<<endl;
+		interm_completed.clear();
+		should_fill = -1;
+		Mapping_done = false;
 	}else //First mapping
 	{
 		int lay ;
@@ -859,9 +865,14 @@ void NNModel::Dymapping()
 		//cout<< active_layers.front()<<endl;
 		//cout<< active_layers.back()<< endl;
 		//cout<< all_leyer_ID_Group.size()<<endl;
-		
+		if(PEMappingCount.size() >1)
+		{
+			Mapping_done = true;
+			cout<<"Mapping done"<<endl;
+		}	
 	}
-	Mapping_done = true;
+	
+	
 }
 
 void NNModel :: HardwarePlan()

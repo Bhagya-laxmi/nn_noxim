@@ -95,102 +95,10 @@ void NoximProcessingElement::rxProcess()
 					//int y_size_last_layer = NN_Model->all_leyer_size[ID_layer-1][2];
 					//int x_size_layer = NN_Model->all_leyer_size[ID_layer][1];
 					//int n_size_layer = NN_Model->all_leyer_size[ID_layer][3];					
-					float denominator_value =0.0;
 					if(Type_layer == 'f')
 					{
-						for (int j = 0 ; j<receive ; j++)  //receive
-						{					
-							for (int i = 0 ; i<Use_Neu ; i++)  //Use_Neu
-							{
-								//********************fully connected********************** //
-								if(Type_layer =='f')
-								{
-									float weight_tmp = PE_table[i].weight[j]; 
-									
-									res[i] += receive_data[j] * weight_tmp;  
-									/*---------------------------Debugging----------------------------*/
-									/*if(ID_group == 83 && i ==2)
-									{
-										cout<<"("<<res[i]<<")";
-									}*/
-									/*----------------------------------------------------------------*/
-			
-									if (j==receive-1) //(j==receive-1)
-									{
-										float bias_tmp = PE_table[i].weight.back();  
-
-										res[i] += bias_tmp;				// act fun & compute complete 
-										/*---------------------------Debugging----------------------------*/
-										/*if(ID_group == 83)
-										{
-											cout<<"Neuron "<<i<<": "<<res[i]<<endl;
-										}*/
-										/*----------------------------------------------------------------*/
-										if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
-										{
-											if (res[i] <= 0) 
-												res[i]=0;				
-										}
-										else if ( NN_Model->all_leyer_size[ID_layer].back() == TANH )//tanh
-										{
-											res[i]= 2/(1+exp(-2*res[i]))-1;		
-										}
-										else if ( NN_Model->all_leyer_size[ID_layer].back() == SIGMOID )//sigmoid
-										{
-											//cout<<"Sigmoid"<<endl;
-											res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
-										}
-										else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
-										{											
-											res[i] = exp(res[i]);
-											
-											if(ID_layer == NN_Model->all_leyer_size.size()-1 && i == 9)
-											{
-												for(int fd =0; fd< NN_Model->all_leyer_size[ID_layer].front(); fd++)
-												{
-													denominator_value += res[fd];
-													/*----------------Debugging------------*/
-													
-													/*if( fd== 9)
-													{
-														cout<< "Denominator: "<< denominator_value<<endl;
-													}
-													cout<<res[fd]<<"-"<<exp(res[fd])<<endl;*/
-													/*-------------------------------------*/
-												}
-											}
-										}
-
-										if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() != SOFTMAX)
-										{
-											//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
-											char output_file[11];
-											sprintf(output_file,"output.txt");
-											fstream file_o;
-											file_o.open( output_file ,ios::out|ios::app);
-											file_o << "No." << i << " output neuron result: ";
-											file_o << res[i] << endl; //file_o << res[i] << endl;
-										}
-									}
-								}
-							}
-						}
-						if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX)
-						{
-							//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
-							for(int ff=0; ff< NN_Model->all_leyer_size[ID_layer].front(); ff++)
-							{
-								res[ff] = res[ff]/denominator_value;
-								
-								char output_file[11];
-								sprintf(output_file,"output.txt");
-								fstream file_o;
-								file_o.open( output_file ,ios::out|ios::app);
-								file_o << "No." << ff << " output neuron result: ";
-								file_o << res[ff] << endl; //file_o << res[i] << endl;
-							}
-							
-						}
+						LayerFCComp(receive_data);
+						
 					}else if(Type_layer == 'c')
 					{
 						
@@ -216,39 +124,13 @@ void NoximProcessingElement::rxProcess()
 									}
 								}
 							}
-							/*--------------Debugging----------------*/
-							/*if(ID_group == 60 && bg ==0)
-							{
-								cout<<"Conv data is: ";
-								for(int gg =0; gg< deq_data.size(); gg++)
-								{
-									cout<<deq_data[gg]<<")--(";
-								}
-								cout<<endl;
-							}
+							
 							/*---------------------------------------*/
 							value =0.0;
 							int size_conv = NN_Model->all_leyer_size[ID_layer][4]* NN_Model->all_leyer_size[ID_layer][5];
 							int conv_z= NN_Model->all_leyer_size[ID_layer][6];
 							int denominator = NN_Model->all_leyer_size[ID_layer][1]* NN_Model->all_leyer_size[ID_layer][2];
-							/*---------------------Debugging-----------------*/
-							/*if(ID_group == 60 && bg==0)
-							{
-								//cout<<"One weight: "<<NN_Model->all_conv_weight[PE_table[0].ID_conv][PE_table[0].ID_In_layer/denominator][0]<<"--";
-								//cout<<"size conv: "<<size_conv<<"--";
-								//cout<<"Denominator: "<<denominator<<endl;
-								for(int fg=0;fg< 6;fg++)
-								{
-									for(int ff=0;ff< 25;ff++)
-									{
-										cout<<"("<<deq_data[fg*size_conv +ff]<<"--";
-										cout<<NN_Model->all_conv_weight[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator][fg][ff]<<")--";
-									}
-									
-								}
-								cout<<endl;
-							}
-							/*-----------------------------------------------*/
+							
 							for(int bl =0; bl< conv_z; bl++)
 							{
 								for(int fg=0;fg< size_conv;fg++)
@@ -256,23 +138,12 @@ void NoximProcessingElement::rxProcess()
 									value = value + deq_data[bl*size_conv +fg]* NN_Model->all_conv_weight[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator][bl][fg];
 								}
 								
-								/*--------------Debugging---------------*/
-								/*if(ID_group == 75 && bg== 0)
-								{
-									cout<<"("<<deq_kernel[bl]<<":"<<deq_data[bl]<<":"<<value<<")";
-								}*/
-								/*--------------------------------------*/
+								
 							}
 							
 							//Add bias
 							value = value + NN_Model->all_conv_bias[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator];
-							/*--------Debugging--------------*/
-							/*if(ID_group == 60 && bg ==0)
-							{
-								cout<<endl<<"Bias: "<< NN_Model->all_conv_bias[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator]<<endl;
-								cout<< "Final Value: "<<value<<endl;
-							}
-							/*-------------------------------*/
+							
 							//Activation function
 							if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
 							{
@@ -281,17 +152,7 @@ void NoximProcessingElement::rxProcess()
 								else
 								res[bg] =value; 				
 							}
-							/*--------------Debugging----------------*/
-							/*if(ID_group == 60 && bg ==0)
-							{
-								cout<<"Conv data is: ";
-								for(int gg =0; gg< 25; gg++)
-								{
-									cout<<deq_data[gg]<<")--(";
-								}
-								cout<<endl;
-							}*/
-							/*---------------------------------------*/
+							
 						}
 						
 					}else if(Type_layer =='p')
@@ -347,8 +208,21 @@ void NoximProcessingElement::rxProcess()
 						/*----------------------------------------*/
 					}
 					
-					flag_p = 1; 
-					flag_f = 1; 
+					if(flag_transmit == true)
+					{
+						flag_p = 1; 
+						flag_f = 1; 
+					}else
+					{
+						flag_p = 0; 
+						flag_f = 0;
+						for(int gf=0; gf< Use_Neu; gf++)
+						{
+							NN_Model->interm_data_out[PE_table[gf].ID_In_layer] = res[gf];
+							NN_Model->interm_completed[PE_table[gf].ID_In_layer] = true;
+						}
+					}
+					 
 					temp_computation_time = sc_simulation_time();
 				}
 			}
@@ -1336,17 +1210,64 @@ void NoximProcessingElement::PreprocessingProcess()
 					{
 						FCtrans();
 						//receive ids
-						FCreceive();
+						FCreceive(false);
 						flag_p =0;
 						flag_f =0;
 					}else if (NoximGlobalParams::mapping_method == DYNAMIC)
 					{
 						if(NN_Model ->active_layers.size() == 1) // Only 1 layer is mapped
 						{
+							FCreceive(true);
+							//Perform computation and store it
+							LayerFCComp(NN_Model->interm_data_in);
+							for(int gf=0; gf< Use_Neu; gf++)
+							{
+								NN_Model->interm_data_out[PE_table[gf].ID_In_layer] = res[gf];
+								NN_Model->interm_completed[PE_table[gf].ID_In_layer] = true;
+
+								/*--------------Debugging------------------*/
+								//if(PE_table[gf].ID_In_layer >= 0 && PE_table[gf].ID_In_layer < 784)
+								//{
+								//	cout<< "(Interm: "<<PE_table[gf].ID_In_layer<<"--"<<NN_Model->interm_data_out[PE_table[gf].ID_In_layer/ denominator][PE_table[gf].ID_In_layer% denominator]<<")-";
+								//}	
+								/*-----------------------------------------*/
+							}
+							flag_p =0;
+							flag_f=0;
+							flag_transmit = false;
 
 						}else
 						{
+							if(ID_layer == NN_Model->active_layers.front()) //
+							{
+								/*---------------Debugging--------------*/
+								//cout<<local_id<<endl;
+								/*--------------------------------------*/
+								FCreceive(true);
+								FCtrans();
+								//Perform computation and send it
+								LayerFCComp(NN_Model->interm_data_in);
+								
+								flag_p = 1; 
+								flag_f = 1; 
+								temp_computation_time = sc_simulation_time();
+								flag_transmit = true;
 
+							}else if(ID_layer == NN_Model->active_layers.back())
+							{
+								FCreceive(false);
+								flag_transmit = false;
+								flag_p =0;
+								flag_f=0;
+							}else
+							{
+								FCreceive(false);
+								FCtrans();
+								flag_transmit = true;
+								flag_p =0;
+								flag_f=0;
+							}
+							
 						}
 					}
 					
@@ -1383,6 +1304,7 @@ void NoximProcessingElement::PreprocessingProcess()
 							flag_p=0;
 							flag_f=0;
 						}
+						flag_transmit = true;
 					}else if(NoximGlobalParams::mapping_method == DYNAMIC)
 					{
 						if(NN_Model ->active_layers.size() == 1) // Only 1 layer is mapped
@@ -1406,6 +1328,7 @@ void NoximProcessingElement::PreprocessingProcess()
 								}
 								
 							}
+							flag_transmit = false;
 							flag_p =0;
 							flag_f =0;
 						}else
@@ -1435,7 +1358,7 @@ void NoximProcessingElement::PreprocessingProcess()
 								//cout<<"Conv End Layer "<<endl;
 								/*--------------------------------------*/
 								Convreceive(false);
-								//flag_transmit = false;
+								flag_transmit = false;
 								flag_f=0;
 								flag_p=0;
 
@@ -1444,11 +1367,13 @@ void NoximProcessingElement::PreprocessingProcess()
 								/*---------------Debugging--------------*/
 								//cout<<"Conv Middle Layer "<<local_id<<endl;
 								/*--------------------------------------*/
-								//Convreceive(false);
-								//Convtrans();
-								//flag_transmit = true;
+								Convreceive(false);
+								
+								Convtrans();
+								flag_transmit = true;
 								flag_f=0;
 								flag_p=0;
+								
 							}
 						}
 					}	
@@ -1462,6 +1387,7 @@ void NoximProcessingElement::PreprocessingProcess()
 						
 						//Step2: Receive ids
 						Poolreceive(false);
+						flag_transmit = true;
 					}
 					else if (NoximGlobalParams::mapping_method == DYNAMIC)
 					{
@@ -1484,6 +1410,7 @@ void NoximProcessingElement::PreprocessingProcess()
 							}
 							flag_p =0;
 							flag_f=0;
+							flag_transmit = false;
 
 						}else
 						{
@@ -1500,16 +1427,19 @@ void NoximProcessingElement::PreprocessingProcess()
 								flag_p = 1; 
 								flag_f = 1; 
 								temp_computation_time = sc_simulation_time();
+								flag_transmit = true;
 
 							}else if(ID_layer == NN_Model->active_layers.back())
 							{
-								//Poolreceive(false);
+								Poolreceive(false);
+								flag_transmit = false;
 								flag_p =0;
 								flag_f=0;
 							}else
 							{
-								//Poolreceive(false);
-								//Pooltrans();
+								Poolreceive(false);
+								Pooltrans();
+								flag_transmit = true;
 								flag_p =0;
 								flag_f=0;
 							}
@@ -1545,19 +1475,30 @@ void NoximProcessingElement::FCtrans()
 	}
 }
 
-void NoximProcessingElement::FCreceive()
+void NoximProcessingElement::FCreceive(bool SingleOrFirstLayer)
 {
 	receive = NN_Model-> all_leyer_size[ID_layer-1][0];
 	should_receive = receive;
 	receive_Neu_ID.clear();
 	receive_data.assign(receive , 0 );
 	
-	int temp_receive_start_ID = Use_Neu_ID[0] - PE_table[0].ID_In_layer - receive;
-	
-	for(int i = 0 ; i<receive ; i++)
+	if(!SingleOrFirstLayer)
 	{
-		receive_Neu_ID.push_back(temp_receive_start_ID+i);
+		int temp_receive_start_ID = Use_Neu_ID[0] - PE_table[0].ID_In_layer - receive;
+	
+		for(int i = 0 ; i<receive ; i++)
+		{
+			receive_Neu_ID.push_back(temp_receive_start_ID+i);
+		}
+	}else
+	{
+		for(int i = 0 ; i<receive ; i++)
+		{
+			receive_Neu_ID.push_back(i);
+		}
 	}
+	
+	
 }
 
 void NoximProcessingElement::Convtrans()
@@ -1685,12 +1626,19 @@ void NoximProcessingElement::Convtrans()
 
 void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 {
-	//cout<<"ConvReceive ";
+	/*--------------Debugging-------------*/
+	/*if(ID_group == 30 && NN_Model->PEMappingCount.size() >1)
+	{
+		cout<<"ConvReceive "<<ID_group<<"-"<<ID_layer<<endl;
+		
+	}
+
+
+	/*------------------------------------*/
 	receive_neu_ID_conv.clear();
-	deque <int> temp_receive_neu_id_conv;
-	deque <NeuInformation> PE_table_Prevlayer;
-	int done =0;
-	
+	deque<int> temp_receive_neu_id_conv;
+	deque< NeuInformation > PE_table_Prevlayer;
+	int done =0;	
 	for(int aa=0; aa<Use_Neu;aa++)
 	{
 		for(int ab =0; ab< NN_Model->all_conv_coord[PE_table[aa].ID_conv][PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])].size(); ab++)
@@ -1700,8 +1648,7 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 			done =0;
 			if(ID_layer != 1 && !SingleOrFirstLayer)
 			{
-				cout<<"Src Neu ID........";
-				for(int ac=0; ac< NN_Model->all_leyer_ID_Group[ID_group-2].size();ac++)
+				for(int ac=0; ac< NN_Model->all_leyer_ID_Group[ID_layer-2].size();ac++)
 				{
 					int temp_Prevgrp = NN_Model->all_leyer_ID_Group[ID_layer-2][ac];
 					PE_table_Prevlayer=NN_Model->Group_table[temp_Prevgrp];
@@ -1755,6 +1702,14 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 	receive = receive_Neu_ID.size();
 	should_receive = receive;
 	receive_data.assign(receive , 0 );
+	
+
+	/*----------------Debugging-----------------*/
+	/*if(ID_group == 24)
+	{
+		cout<<receive_Neu_ID.size()<<endl;
+	}
+	/*------------------------------------------*/
 	
 }
 
@@ -1983,7 +1938,7 @@ void NoximProcessingElement::DynamicMappingDone()
 		//cout<<"Mapping status: "<<NN_Model->Mapping_done<<endl;
 		NN_Model->Mapping_done = false;
 		//cout<<"Mapping status: "<<NN_Model->Mapping_done<<endl;
-		//PreprocessingProcess();
+		PreprocessingProcess();	
 	}
 }
 
@@ -2063,4 +2018,101 @@ void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 		//cout<<receive_neu_ID_pool[0].size();
 	}
 	/*---------------------------------------*/
+}
+
+void NoximProcessingElement::LayerFCComp(deque<float> &data_deq)
+{
+	float denominator_value =0.0;
+	for (int j = 0 ; j<receive ; j++)  //receive
+	{					
+		for (int i = 0 ; i<Use_Neu ; i++)  //Use_Neu
+		{
+			//********************fully connected********************** //
+			
+			float weight_tmp = PE_table[i].weight[j]; 
+			
+			res[i] += data_deq[j] * weight_tmp;  
+			/*---------------------------Debugging----------------------------*/
+			/*if(ID_group == 83 && i ==2)
+			{
+				cout<<"("<<res[i]<<")";
+			}*/
+			/*----------------------------------------------------------------*/
+
+			if (j==receive-1) //(j==receive-1)
+			{
+				float bias_tmp = PE_table[i].weight.back();  
+
+				res[i] += bias_tmp;				// act fun & compute complete 
+				/*---------------------------Debugging----------------------------*/
+				/*if(ID_group == 83)
+				{
+					cout<<"Neuron "<<i<<": "<<res[i]<<endl;
+				}*/
+				/*----------------------------------------------------------------*/
+				if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
+				{
+					if (res[i] <= 0) 
+						res[i]=0;				
+				}
+				else if ( NN_Model->all_leyer_size[ID_layer].back() == TANH )//tanh
+				{
+					res[i]= 2/(1+exp(-2*res[i]))-1;		
+				}
+				else if ( NN_Model->all_leyer_size[ID_layer].back() == SIGMOID )//sigmoid
+				{
+					//cout<<"Sigmoid"<<endl;
+					res[i]= 1/(1+exp(-1*res[i]));	//res[i]= 1/(1+exp(-1*res[i]));
+				}
+				else if ( NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX )//softmax
+				{											
+					res[i] = exp(res[i]);
+					
+					if(ID_layer == NN_Model->all_leyer_size.size()-1 && i == 9)
+					{
+						for(int fd =0; fd< NN_Model->all_leyer_size[ID_layer].front(); fd++)
+						{
+							denominator_value += res[fd];
+							/*----------------Debugging------------*/
+							
+							/*if( fd== 9)
+							{
+								cout<< "Denominator: "<< denominator_value<<endl;
+							}
+							cout<<res[fd]<<"-"<<exp(res[fd])<<endl;*/
+							/*-------------------------------------*/
+						}
+					}
+				}
+
+				if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() != SOFTMAX)
+				{
+					//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
+					char output_file[11];
+					sprintf(output_file,"output.txt");
+					fstream file_o;
+					file_o.open( output_file ,ios::out|ios::app);
+					file_o << "No." << i << " output neuron result: ";
+					file_o << res[i] << endl; //file_o << res[i] << endl;
+				}
+			}
+			
+		}
+	}
+	if (ID_layer == NN_Model->all_leyer_size.size()-1 && NN_Model->all_leyer_size[ID_layer].back() == SOFTMAX)
+	{
+		//cout << sc_simulation_time() + computation_time <<": The prediction result of item "<< PE_table[i].ID_In_layer << " : " << res[i] << endl;
+		for(int ff=0; ff< NN_Model->all_leyer_size[ID_layer].front(); ff++)
+		{
+			res[ff] = res[ff]/denominator_value;
+			
+			char output_file[11];
+			sprintf(output_file,"output.txt");
+			fstream file_o;
+			file_o.open( output_file ,ios::out|ios::app);
+			file_o << "No." << ff << " output neuron result: ";
+			file_o << res[ff] << endl; //file_o << res[i] << endl;
+		}
+		
+	}
 }
