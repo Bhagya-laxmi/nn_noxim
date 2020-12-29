@@ -452,11 +452,11 @@ if (reset.read() ) {
 								packet_queue.push(packet);
 
 								/*--------------Debugging-----------*/
-								//if(ID_group >= 0 && ID_group <= 47)
-								//{
-								//	cout<<"Packet Checking....";
-								//	cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
-								//}
+								/*if(ID_group == 0 )
+								{
+									cout<<"Packet Checking....";
+									cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
+								}
 								/*if(ID_group == 60)
 								{
 									cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
@@ -474,15 +474,17 @@ if (reset.read() ) {
 							{
 								packet.make(local_id, trans_PE_ID[ar], getCurrentCycleNum(), trans_pool[ar]+2);
 								packet_queue.push(packet);
+								/*--------------Debugging-----------*/
+								/*cout<<"Pooling layer, Local id:  "<<local_id<<endl;
+								if(ID_group == 0)
+								{
+									//cout<<"Packet Checking....";
+									cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
+									//cout<<"Packet queue size: "<<packet_queue.size()<<endl;
+								}
+								/*----------------------------------*/
 							}
-							/*--------------Debugging-----------*/
-							//cout<<"Pooling layer, Local id:  "<<local_id<<endl;
-							//if(ID_group == 48)
-							//{
-							//	cout<<"Packet Checking....";
-							//	cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
-							//}
-							/*----------------------------------*/
+							
 						}	
 					}
 					
@@ -502,13 +504,23 @@ if (reset.read() ) {
 					transmittedAtPreviousCycle = false;
 			}
 		}
-
+		/*---------------Debugging---------------*/
+		/*if(ID_group ==0)
+		{
+			cout<<"("<<sc_simulation_time()<<"--";
+			cout<< temp_computation_time<<"--"<<computation_time<<")";
+		}
+		/*---------------------------------------*/
 		if(ack_tx.read() == 1  && flag_f && PE_enable && ID_layer != NN_Model->all_leyer_size.size()-1 && (sc_simulation_time() >= temp_computation_time + computation_time||ID_layer==0) ){
 			if (!packet_queue.empty()) {
 				//NoximFlit flit = nextFlit();	// Generate a new flit
 				
 				/*------------Debugging----------------*/
-				//cout<<"Packet Size: "<<packet_queue.size()<<endl;
+				/*if(ID_group ==0)
+				{
+					cout<<"Packet: "<<packet.src_id<<"-"<<packet.size<<endl;
+					cout<<in_data<<endl;
+				}
 				/*-------------------------------------*/
 				NoximFlit flit = nextFlit(ID_layer, in_data);	// tytyty Generate a new flit
         			//NoximFlit flit = nextFlit(ID_layer);	// tytyty Generate a new flit
@@ -552,13 +564,20 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 {
     NoximFlit flit;
     NoximPacket packet = packet_queue.front();
-
+	
     flit.src_id = packet.src_id;
     flit.dst_id = packet.dst_id;
     flit.timestamp = packet.timestamp;
     flit.sequence_no = packet.size - packet.flit_left;
     flit.hop_no = 0;
 	flit.routing_f   = packet.routing;
+	/*----------debugging-------------*/
+	/*if(ID_group ==0)
+	{
+		cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<" Seq no: "<<flit.sequence_no<<" Start Index: "<<start_index <<endl;
+		//cout<<Type_layer<<endl;
+	}
+	/*--------------------------------*/
 //************Intermittent XY routing********************
 	if(flit.sequence_no == 0)
 	{
@@ -648,6 +667,13 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 			}
 			flit.src_Neu_id = Use_Neu_ID[start_index-1];
 			flit.data = res[start_index-1];
+			/*--------------Debugging-----------------*/
+			/*if(ID_group == 0)
+			{
+				cout<<"("<<flit.src_Neu_id<<")--("<<start_index<<")--";
+			}
+			/*----------------------------------------*/
+			
 		}
 		
     }
@@ -1386,8 +1412,8 @@ void NoximProcessingElement::PreprocessingProcess()
 						{
 							if(ID_layer == NN_Model->active_layers.front()) //
 							{
-								//Convreceive(true);
-								//LayerConvComp(NN_Model->interm_data_in);
+								Convreceive(true);
+								LayerConvComp(NN_Model->interm_data_in);
 								/*----------Debugging---------------*/
 								/*for(int ff=0; ff< Use_Neu; ff++)
 								{
@@ -1398,16 +1424,17 @@ void NoximProcessingElement::PreprocessingProcess()
 								}*/
 								//cout<<"Conv First Layer "<<endl;
 								/*----------------------------------*/
-								//Convtrans();
+								Convtrans();
 								flag_transmit = true;
+								temp_computation_time = sc_simulation_time();
 								flag_p = 1;
 								flag_f = 1;
 							}else if(ID_layer == NN_Model->active_layers.back())
 							{
 								/*---------------Debugging--------------*/
-								cout<<"Conv End Layer "<<endl;
+								//cout<<"Conv End Layer "<<endl;
 								/*--------------------------------------*/
-								//Convreceive(false);
+								Convreceive(false);
 								//flag_transmit = false;
 								flag_f=0;
 								flag_p=0;
@@ -1420,8 +1447,8 @@ void NoximProcessingElement::PreprocessingProcess()
 								//Convreceive(false);
 								//Convtrans();
 								//flag_transmit = true;
-								//flag_f=0;
-								//flag_p=0;
+								flag_f=0;
+								flag_p=0;
 							}
 						}
 					}	
@@ -1468,10 +1495,11 @@ void NoximProcessingElement::PreprocessingProcess()
 								Poolreceive(true);
 								Pooltrans();
 								//Perform computation and send it
-								//LayerPoolComp(NN_Model->interm_data_in);
+								LayerPoolComp(NN_Model->interm_data_in);
 								
-								flag_p = 1; //1
-								flag_f = 1; //1
+								flag_p = 1; 
+								flag_f = 1; 
+								temp_computation_time = sc_simulation_time();
 
 							}else if(ID_layer == NN_Model->active_layers.back())
 							{
@@ -1734,13 +1762,10 @@ void NoximProcessingElement::Pooltrans()
 {
 	if(NN_Model->all_leyer_type[ID_layer +1] == 'c')
 	{
-		cout<<"Conv"<<endl;
-		cout<<local_id<<endl;
 		deque< NeuInformation > PE_table_nxtlayer;
 		deque< NeuInformation > PE_table_nxtlayer_neuron;
 		trans_PE_ID_pool.clear();
 		int temp_nxtgrp_neuron = NN_Model->all_leyer_ID_Group[ID_layer][0];
-		cout<<temp_nxtgrp_neuron<<endl;
 		PE_table_nxtlayer_neuron=NN_Model->Group_table[temp_nxtgrp_neuron];
 		deque< int> temp_trans_pool;
 		int needed =0;
@@ -1785,7 +1810,7 @@ void NoximProcessingElement::Pooltrans()
 			temp_trans_pool.clear();
 		}
 		/*-------------Debugging--------------------*/
-		/*if(ID_group == 49)
+		/*if(ID_group == 0)
 		{
 			//cout<<"("<<temp_nxtgrp_neuron<<"--"<< PE_table_nxtlayer_neuron[0].ID_conv<<")"<<endl;
 			for(int ff=0; ff< trans_PE_ID_pool[0].size(); ff++)
@@ -1794,7 +1819,7 @@ void NoximProcessingElement::Pooltrans()
 			}
 			cout<<endl;
 			cout<<endl<<"Size: "<< trans_PE_ID_pool[0].size()<<endl;;
-		}*/
+		}
 		/*------------------------------------------*/
 
 		trans_PE_ID.clear();
@@ -1817,6 +1842,7 @@ void NoximProcessingElement::Pooltrans()
 				}if(needed == 1){trans_PE_ID.push_back(trans_PE_ID_pool[an][ao]);}
 			}
 		}
+		
 		trans_pool.clear();
 		int count;
 		for(int au=0;au< trans_PE_ID.size();au++)
@@ -1834,6 +1860,17 @@ void NoximProcessingElement::Pooltrans()
 				
 			}trans_pool.push_back(count);
 		}
+		/*----------------Debugging----------------*/
+		/*if(ID_group == 0)
+		{
+			cout<<"Size of trans pe id: ("<<trans_PE_ID.size()<<"-";
+			for(int a=0; a< trans_PE_ID.size(); a++)
+			{
+				cout<<trans_PE_ID[a]<<"-"<<trans_pool[a]<<"-";
+			}
+			cout<<")"<<endl;
+		}
+		/*-----------------------------------------*/
 
 	}else if(NN_Model->all_leyer_type[ID_layer +1] == 'f')
 	{
@@ -1996,12 +2033,34 @@ void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 
 			}else if(NN_Model->all_leyer_size[ID_layer].back() == MAXIMUM)
 			{}
-
-			if(NN_Model->all_leyer_size[ID_layer].back() == AVERAGE)
+	
+		}
+		if(NN_Model->all_leyer_size[ID_layer].back() == AVERAGE)
 			{
+				/*-------------debugging---------------*/
+				/*if(ID_group == 0)
+				{
+					cout<<"("<< value<<"--";
+					cout<< value/4<<")";
+				}
+				/*-------------------------------------*/
 				value = value / (NN_Model->all_leyer_size[ID_layer][4]*NN_Model->all_leyer_size[ID_layer][5]);
 			}
 			res[r] = value;
-		}
 	}
+
+	/*---------------Debugging---------------*/
+	/*if(ID_group ==0)
+	{
+		int val = 23;
+		cout<<endl<<"Pool layer "<<ID_layer<<":(";
+		for(int af=0; af< receive_neu_ID_pool[val].size();af++)
+		{
+			cout<<receive_neu_ID_pool[val][af]<<"-"<<data_deq[receive_neu_ID_pool[val][af]]<<"--";
+			//cout<<res[af]<<"-";
+		}
+		cout<<res[val]<<")"<<endl;
+		//cout<<receive_neu_ID_pool[0].size();
+	}
+	/*---------------------------------------*/
 }

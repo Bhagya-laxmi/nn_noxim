@@ -780,15 +780,16 @@ void NNModel::Dymapping()
 				
 		}
 
+		//int debug;
 		//Correction of the group numbers for dynamic mapping
 		if(PEMappingCount.size() > 0) //Ignoring the first mapping
 		{
 			int mapped_count = 0;
-			for(int a=0; a< PEMappingCount.size(); a++)
+			for(int a=0; a< PEMappingCount.size(); a++)//the mapped PE count of previous mappings
 			{
 				mapped_count += PEMappingCount[a];
 			}
-			for(int b=0; b< Group_table.size(); b++)
+			for(int b=0; b< Group_table.size(); b++)//adjusting the group ids in the group table
 			{
 				for(int c =0; c< Group_table[b].size(); c++)
 				{
@@ -796,12 +797,34 @@ void NNModel::Dymapping()
 					Group_table[b][c].ID_Group = temp - mapped_count;
 				}
 			}
+
+			for(int d=0; d< active_layers.size(); d++)
+			{
+				for(int e=0; e< all_leyer_ID_Group[active_layers[d]-1].size();e++)
+				{
+					all_leyer_ID_Group[active_layers[d]-1][e] = all_leyer_ID_Group[active_layers[d]-1][e]- mapped_count; 
+				}
+			}
+			//debug= mapped_count;
 		}
 
 		/*----------------Debugging-------------------*/
 		//cout<< "Group table: "<<Group_table[0][0].ID_Group<<endl;
 		//cout<< "Group table: "<<Group_table[24][0].ID_Group<<endl;
 		//cout<<Group_table.size()<<endl;
+		//if(active_layers.size() >0)
+		//{
+		//	cout<<endl<<debug<<endl;
+		//	cout<<all_leyer_ID_Group[0][0]<<endl;
+		//	cout<<all_leyer_ID_Group[1][0]<<endl;
+		//	cout<<all_leyer_ID_Group[2][0]<<endl;
+		//	cout<<all_leyer_ID_Group[3][0]<<endl;
+		//	cout<<all_leyer_ID_Group[4][0]<<endl;
+		//	cout<<all_leyer_ID_Group[5][0]<<endl;
+		//	cout<<all_leyer_ID_Group[6][0]<<endl;
+		//	cout<<all_leyer_ID_Group.size()<<endl;
+		//}
+		
 		/*--------------------------------------------*/
 		//Store the mapped group count for next mapping modification
 		PEMappingCount.push_back(Group_table.size());
@@ -831,10 +854,10 @@ void NNModel::Dymapping()
 		}
 		should_fill = all_leyer_size[lay][0];
 		interm_completed.assign(should_fill, false);
-		cout<< "Should fill size: "<< should_fill<< endl;
-		cout<< "Mapped layer: "<< active_layers.back()<< endl;
-		cout<< active_layers.front()<<endl;
-		cout<< active_layers.back()<< endl;
+		//cout<< "Should fill size: "<< should_fill<< endl;
+		//cout<< "Mapped layer: "<< active_layers.back()<< endl;
+		//cout<< active_layers.front()<<endl;
+		//cout<< active_layers.back()<< endl;
 		//cout<< all_leyer_ID_Group.size()<<endl;
 		
 	}

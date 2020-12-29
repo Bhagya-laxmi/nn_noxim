@@ -19,6 +19,7 @@
         "functional": "cpp",
         "*.tcc": "cpp",
         "unordered_map": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "fstream": "cpp"
     }
 }
