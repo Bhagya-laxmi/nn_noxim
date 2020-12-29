@@ -458,10 +458,10 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 		curr_XYXrouting = abs(curr_XYXrouting -1);
 		flit.XYX_routing   = curr_XYXrouting ; 
 		/*------------Debugging---------------*/
-		/*if(local_id >= 48 && local_id <= 59 )
+		/*if(local_id == 0  )
 		{
 			cout<<"(Local ID: "<<local_id<<" Packet source id: "<<packet.src_id<<" Dst:"<<packet.dst_id<<" Routing:"<<flit.XYX_routing<<" Seq no: "<<flit.sequence_no<<endl;
-		}*/
+		}
 		/*------------------------------------*/
 	}		
 	else
@@ -1213,6 +1213,7 @@ void NoximProcessingElement::PreprocessingProcess()
 						FCreceive(false);
 						flag_p =0;
 						flag_f =0;
+						flag_transmit = true;
 					}else if (NoximGlobalParams::mapping_method == DYNAMIC)
 					{
 						if(NN_Model ->active_layers.size() == 1) // Only 1 layer is mapped

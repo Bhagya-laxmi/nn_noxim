@@ -804,23 +804,27 @@ bool NoximNoC::EmergencyDecision()
 
 void NoximNoC::Dynamic_check()  //Dynamic mapping
 { 
-	int count =0;
-	for(int a =0; a< nnmodel.interm_completed.size();a++)
+	if(NoximGlobalParams::mapping_method == DYNAMIC)
 	{
-		if(nnmodel.interm_completed[a] == true)
+		int count =0;
+		for(int a =0; a< nnmodel.interm_completed.size();a++)
 		{
-			count ++;
+			if(nnmodel.interm_completed[a] == true)
+			{
+				count ++;
+			}
+		}
+		
+		if(nnmodel.should_fill == count ) //nnmodel.should_fill == count 
+		{
+			/*-----------Debugging--------------*/
+			/*for(int a=0; a< nnmodel.interm_data_out.size();a++)
+			{
+				cout<<"("<<nnmodel.interm_data_out[a]<<")";
+			}
+			/*----------------------------------*/
+			nnmodel.Dymapping();
 		}
 	}
 	
-	if(nnmodel.should_fill == count ) //nnmodel.should_fill == count 
-	{
-		/*-----------Debugging--------------*/
-		/*for(int a=0; a< nnmodel.interm_data_out.size();a++)
-		{
-			cout<<"("<<nnmodel.interm_data_out[a]<<")";
-		}
-		/*----------------------------------*/
-		nnmodel.Dymapping();
-	}
 }
