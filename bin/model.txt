@@ -4,7 +4,7 @@
 % Dense ( size  activation:"relu"/"tanh"/"sigmoid"/"softmax" )
 
 Input 32 32 1
-Convolution 28 28 6 5 5 1 1 0 relu
+Convolution 28 28 6 5 5 1 1 0 relu 
 Pooling 14 14 6 2 2 2 average
 Convolution 10 10 16 5 5 6 1 0 relu
 Pooling 5 5 16 2 2 2 average

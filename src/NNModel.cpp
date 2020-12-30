@@ -610,30 +610,253 @@ bool NNModel::load()//M_fname Useless tytyty
 			int kernel_y = all_leyer_size[ab][5];
 			int kernel_z = all_leyer_size[ab][6];
 			int padding = all_leyer_size[ab][8];
+			int stride_c = all_leyer_size[ab][7];
 
 			if(padding == 0){
-				for(int aa =0; aa< coord_x; aa++)
+				if(stride_c == 1)
 				{
-					for(int bb =0; bb < coord_y; bb++)
+					for(int aa =0; aa< coord_x; aa++)
 					{
-						for(int cc =0; cc< kernel_z; cc++)
+						for(int bb =0; bb < coord_y; bb++)
 						{
-							for(int dd =0; dd< kernel_x; dd++)
+							for(int cc =0; cc< kernel_z; cc++)
 							{
-								for(int ee =0; ee<kernel_y; ee++)
+								for(int dd =0; dd< kernel_x; dd++)
 								{
-									temp_cell.push_back((aa+dd)*coordPrev_y + (ee+ bb) + cc*coordPrev_x*coordPrev_y);
+									for(int ee =0; ee<kernel_y; ee++)
+									{
+										temp_cell.push_back((aa+dd)*coordPrev_y + (ee+ bb) + cc*coordPrev_x*coordPrev_y);
+									}
 								}
 							}
+							temp_matrix.push_back(temp_cell);
+							temp_cell.clear();
 						}
-						temp_matrix.push_back(temp_cell);
-						temp_cell.clear();
 					}
-				}
-			all_conv_coord.push_back(temp_matrix);
-			temp_matrix.clear();
+					all_conv_coord.push_back(temp_matrix);
+					temp_matrix.clear();
+				}else
+				{
+					int horizontal =0;
+					int vertical =0;
+					for(int aa =0; aa< coord_x; aa++)
+					{
+						for(int bb =0; bb < coord_y; bb++)
+						{
+							if(aa >0){vertical =1;}
+							if(bb >0){horizontal =1;}
+							if(horizontal ==0 && vertical ==0) //0,0
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											temp_cell.push_back((aa+dd)*coordPrev_y + (ee+ bb) + cc*coordPrev_x*coordPrev_y);
+										}
+									}
+								}
+							
+							}else if(horizontal ==0 && vertical ==1)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											temp_cell.push_back((aa*stride_c+dd)*coordPrev_y + (ee+ bb) + cc*coordPrev_x*coordPrev_y);
+										}
+									}
+								}
+							}else if(horizontal ==1 && vertical == 0)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											temp_cell.push_back((aa+dd)*coordPrev_y + (ee+ bb*stride_c) + cc*coordPrev_x*coordPrev_y);
+										}
+									}
+								}
+							}else if(horizontal ==1 && vertical == 1)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											temp_cell.push_back((aa*stride_c+dd)*coordPrev_y + (ee+ bb*stride_c) + cc*coordPrev_x*coordPrev_y);
+										}
+									}
+								}
+							}
+							horizontal =0;
+							vertical =0;
+							temp_matrix.push_back(temp_cell);
+							temp_cell.clear();
+						}
+					}
+					all_conv_coord.push_back(temp_matrix);
+					temp_matrix.clear();
+
+					/*------------------------Debugging---------------------*/
+					/*int sf =11;
+					for(int ff=0; ff<all_conv_coord[1][sf].size(); ff++)
+					{
+						cout<<all_conv_coord[1][sf][ff] <<"--";
+					}
+					cout<<endl<<"Size: "<<all_conv_coord[1][sf].size()<<endl;
+					
+					/*------------------------------------------------------*/
+				}	
 			}else if(padding == 1)
-			{}
+			{
+				//Changes for Stride and padding in convolution
+				if(stride_c == 1)
+				{
+					for(int aa =0; aa< coord_x; aa++)
+					{
+						for(int bb =0; bb < coord_y; bb++)
+						{
+							for(int cc =0; cc< kernel_z; cc++)
+							{
+								for(int dd =0; dd< kernel_x; dd++)
+								{
+									for(int ee =0; ee<kernel_y; ee++)
+									{
+										bool cond = (aa + dd == 0) || (aa+dd == (coordPrev_x+1)) || (ee+ bb == 0) || (ee+ bb == coordPrev_y+1);
+										if(!cond)
+										{
+											temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
+										}
+										
+										
+									}
+								}
+							}
+							temp_matrix.push_back(temp_cell);
+							temp_cell.clear();
+						}
+					}
+					all_conv_coord.push_back(temp_matrix);
+					temp_matrix.clear();
+
+					/*-----------------Debugging---------------*/
+					/*int sf =0;
+					for(int ff=0; ff<all_conv_coord[1][sf].size(); ff++)
+					{
+						cout<<all_conv_coord[1][sf][ff] <<"--";
+					}
+					cout<<endl<<"Size: "<<all_conv_coord[1][sf].size()<<endl;
+					cout<<coordPrev_y+1<<endl;
+					
+					/*-----------------------------------------*/
+				}else
+				{
+					int horizontal =0;
+					int vertical =0;
+					for(int aa =0; aa< coord_x; aa++)
+					{
+						for(int bb =0; bb < coord_y; bb++)
+						{
+							if(aa >0){vertical =1;}
+							if(bb >0){horizontal =1;}
+							if(horizontal ==0 && vertical ==0) //0,0
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											bool cond = (aa + dd == 0) || (aa+dd == (coordPrev_x+1)) || (ee+ bb == 0) || (ee+ bb == coordPrev_y+1);
+											if(!cond)
+											{
+												temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
+											}
+										}
+									}
+								}
+							
+							}else if(horizontal ==0 && vertical ==1)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											bool cond = (aa*stride_c + dd == 0) || (aa*stride_c+dd == (coordPrev_x+1)) || (ee+ bb == 0) || (ee+ bb == coordPrev_y+1);
+											if(!cond)
+											{
+												temp_cell.push_back((aa*stride_c+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
+											}
+											
+										}
+									}
+								}
+							}else if(horizontal ==1 && vertical == 0)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											bool cond = (aa + dd == 0) || (aa+dd == (coordPrev_x+1)) || (ee+ bb*stride_c == 0) || (ee+ bb*stride_c == coordPrev_y+1);
+											if(!cond)
+											{
+												temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb*stride_c-1) + cc*coordPrev_x*coordPrev_y);
+											}
+											
+										}
+									}
+								}
+							}else if(horizontal ==1 && vertical == 1)
+							{
+								for(int cc =0; cc< kernel_z; cc++)
+								{
+									for(int dd =0; dd< kernel_x; dd++)
+									{
+										for(int ee =0; ee<kernel_y; ee++)
+										{
+											bool cond = (aa*stride_c + dd == 0) || (aa*stride_c+dd == (coordPrev_x+1)) || (ee+ bb*stride_c == 0) || (ee+ bb*stride_c == coordPrev_y+1);
+											if(!cond)
+											{
+												temp_cell.push_back((aa*stride_c+dd-1)*coordPrev_y + (ee+ bb*stride_c-1) + cc*coordPrev_x*coordPrev_y);
+											}
+											
+										}
+									}
+								}
+							}
+							horizontal =0;
+							vertical =0;
+							temp_matrix.push_back(temp_cell);
+							temp_cell.clear();
+						}
+					}
+					all_conv_coord.push_back(temp_matrix);
+					temp_matrix.clear();
+					/*-----------------Debugging---------------*/
+					/*int sf =12;
+					for(int ff=0; ff<all_conv_coord[1][sf].size(); ff++)
+					{
+						cout<<all_conv_coord[1][sf][ff] <<"--";
+					}
+					cout<<endl<<"Size: "<<all_conv_coord[1][sf].size()<<endl;
+					cout<<coordPrev_y+1<<endl;
+					
+					/*-----------------------------------------*/
+				}
+				
+				
+			}
 			
 		}
 		else if(all_leyer_type[ab] == 'p')
@@ -953,4 +1176,3 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 
 }
 
-//Changes for Stride and padding in convolution

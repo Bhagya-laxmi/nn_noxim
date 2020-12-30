@@ -20,6 +20,7 @@
         "*.tcc": "cpp",
         "unordered_map": "cpp",
         "algorithm": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "limits": "cpp"
     }
 }

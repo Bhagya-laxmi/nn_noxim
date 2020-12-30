@@ -186,7 +186,12 @@ void NoximProcessingElement::rxProcess()
 									}*/
 									/*----------------------------------*/	 					
 								}else if(NN_Model->all_leyer_size[ID_layer].back() == MAXIMUM)
-								{}
+								{
+									if(value < receive_data[index])
+									{
+										value = receive_data[index];
+									}
+								}
 								
 							} 
 							if(NN_Model->all_leyer_size[ID_layer].back() == AVERAGE)
@@ -1988,7 +1993,13 @@ void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 				value = value + data_deq[receive_neu_ID_pool[r][s]];
 
 			}else if(NN_Model->all_leyer_size[ID_layer].back() == MAXIMUM)
-			{}
+			{
+				if(value < data_deq[receive_neu_ID_pool[r][s]])
+				{
+					value = data_deq[receive_neu_ID_pool[r][s]];
+				}
+
+			}
 	
 		}
 		if(NN_Model->all_leyer_size[ID_layer].back() == AVERAGE)
@@ -2008,7 +2019,7 @@ void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 	/*---------------Debugging---------------*/
 	/*if(ID_group ==0)
 	{
-		int val = 23;
+		int val = 25;
 		cout<<endl<<"Pool layer "<<ID_layer<<":(";
 		for(int af=0; af< receive_neu_ID_pool[val].size();af++)
 		{
