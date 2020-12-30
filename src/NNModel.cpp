@@ -952,3 +952,5 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
   return ret_val;
 
 }
+
+//Changes for Stride and padding in convolution
