@@ -75,7 +75,9 @@ int NoximGlobalParams::throttling[128][128][1]; //** 2018.09.14 edit by Yueh-Chi
 
 /*-------------Dynamic mapping---------------------*/
 int NoximGlobalParams::mapping_method = DEFAULT_MAPPING_METHOD;
+/*-----------------------Faulty Nodes------------------*/
 int NoximGlobalParams::faulty_mode = DEFAULT_FAULTY_MODE;
+char NoximGlobalParams::FaultyNodes_filename[128] = DEFAULT_FaultNodes_FILENAME;
 
 int sc_main(int arg_num, char *arg_vet[])
 {

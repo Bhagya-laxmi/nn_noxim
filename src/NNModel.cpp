@@ -167,55 +167,62 @@ bool NNModel::load()//M_fname Useless tytyty
 	//******************mapping information prepare************************
 	cout<<"Mapping Algorithm: "<< NoximGlobalParams::mapping_algorithm<<endl;
 	cout<<"Mapping Method: STATIC"<<endl;
-
+	
+	
 	mapping_table.clear();
 	mapping_table.assign( NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y, -1 );
-	if(!strcmp(NoximGlobalParams::mapping_algorithm, "random") )
+	/*------------------Faulty Nodes ---------------------*/
+	if(NoximGlobalParams::faulty_mode != INACTIVE)
 	{
-		srand( time(NULL) );
-		for( int i = 0; i < mapping_table.size() ; i++ )
+		FaultyMode();
+	}else
+	{
+		if(!strcmp(NoximGlobalParams::mapping_algorithm, "random") )
 		{
-			while(1)
+			srand( time(NULL) );
+			for( int i = 0; i < mapping_table.size() ; i++ )
 			{
-				int map_point = rand() % mapping_table.size();
-				if( mapping_table[map_point]==-1 )
+				while(1)
 				{
-					mapping_table[map_point] = i;
-					break;
-				}
-
-			}
-		}
-	}
-	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_x") )
-		for( int i = 0; i < mapping_table.size() ; i++ )	//dir_x mapping
-			mapping_table[i]=i;
-	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_y") )	
-		for( int i = 0; i < mapping_table.size() ; i++ )	//dir_y mapping
-			mapping_table[i]= (i%NoximGlobalParams::mesh_dim_x)*NoximGlobalParams::mesh_dim_x + (i/NoximGlobalParams::mesh_dim_x);	
-	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "table") )	
-	{
-		ifstream fin_m(NoximGlobalParams::mapping_table_filename, ios::in);						//** 2018.09.02 edit by Yueh-Chi,Yang **
-		cout<<"mapping file loading (filename: " << NoximGlobalParams::mapping_table_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **
-		while(!fin_m.eof()){
-			char line[256];
-			fin_m.getline(line, sizeof(line) - 1);
-			if (line[0] != '\0') {
-					if (line[0] != '%') {
-					int ID_Group, ID_PE;
-					sscanf(line, "%d %d", &ID_Group, &ID_PE);
-					mapping_table[ID_Group] = ID_PE;
+					int map_point = rand() % mapping_table.size();
+					if( mapping_table[map_point]==-1 )
+					{
+						mapping_table[map_point] = i;
+						break;
 					}
+
+				}
 			}
 		}
-	}
+		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_x") )
+			for( int i = 0; i < mapping_table.size() ; i++ )	//dir_x mapping
+				mapping_table[i]=i;
+		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_y") )	
+			for( int i = 0; i < mapping_table.size() ; i++ )	//dir_y mapping
+				mapping_table[i]= (i%NoximGlobalParams::mesh_dim_x)*NoximGlobalParams::mesh_dim_x + (i/NoximGlobalParams::mesh_dim_x);	
+		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "table") )	
+		{
+			ifstream fin_m(NoximGlobalParams::mapping_table_filename, ios::in);						//** 2018.09.02 edit by Yueh-Chi,Yang **
+			cout<<"mapping file loading (filename: " << NoximGlobalParams::mapping_table_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **
+			while(!fin_m.eof()){
+				char line[256];
+				fin_m.getline(line, sizeof(line) - 1);
+				if (line[0] != '\0') {
+						if (line[0] != '%') {
+						int ID_Group, ID_PE;
+						sscanf(line, "%d %d", &ID_Group, &ID_PE);
+						mapping_table[ID_Group] = ID_PE;
+						}
+				}
+			}
+		}
 
-	else
-	{
-		cout<<"Error mapping algorithm!!"<<endl;
-		exit(1);
+		else
+		{
+			cout<<"Error mapping algorithm!!"<<endl;
+			exit(1);
+		}
 	}
-
 	/*------Debugging--------*/
 	//cout<<"Mapping Table"<<endl;
 	//for( int i =0; i< mapping_table.size();i++){
@@ -1176,3 +1183,19 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 
 }
 
+void NNModel::FaultyMode()
+{
+	deque<int> faultyNodes;
+	cout<<"Faulty Nodes file loading (filename: " << NoximGlobalParams::FaultyNodes_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **//
+	ifstream fin(NoximGlobalParams::FaultyNodes_filename, ios::in);
+	int temp_node;
+
+	while(fin >> temp_node)
+	{
+		
+		cout<< temp_node<<endl;
+		
+		
+	}
+
+}

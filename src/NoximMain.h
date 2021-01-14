@@ -220,6 +220,8 @@ using namespace std;
 #define DEFAULT_MAPPING_TABLE_FILENAME	""
 #define DEFAULT_NNINPUT_FILENAME	"input.txt"
 #define DEFAULT_PE_COMPUTATION_TIME	10
+/*-------------Faulty Nodes ------------------*/
+#define DEFAULT_FaultNodes_FILENAME	"faultynodes.txt"
 //**************************************//
 
 // NoximGlobalParams -- used to forward configuration to every sub-block
@@ -276,6 +278,7 @@ struct NoximGlobalParams {
 	static int mapping_method;
 	/*----------------Faulty Nodes---------------*/
 	static int faulty_mode;
+	static char FaultyNodes_filename[128];
 };
 
 // NoximCoord -- XY coordinates type of the Tile inside the Mesh

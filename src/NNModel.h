@@ -65,6 +65,7 @@ class NNModel {
     	bool load();
 		void HardwarePlan();
 		bool Check_LayerMapping(int already_mapped);
+		void FaultyMode();
 
 	deque< char > all_leyer_type;
 	deque< deque< int > > all_leyer_size;
