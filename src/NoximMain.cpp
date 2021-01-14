@@ -75,6 +75,7 @@ int NoximGlobalParams::throttling[128][128][1]; //** 2018.09.14 edit by Yueh-Chi
 
 /*-------------Dynamic mapping---------------------*/
 int NoximGlobalParams::mapping_method = DEFAULT_MAPPING_METHOD;
+int NoximGlobalParams::faulty_mode = DEFAULT_FAULTY_MODE;
 
 int sc_main(int arg_num, char *arg_vet[])
 {

@@ -143,6 +143,12 @@ void showHelp(char selfname[])
 	<< DEFAULT_MAPPING_METHOD << "):" << endl;
     cout << "\t\tstatic\t\tStatic Mapping method" << endl;
     cout << "\t\tdynamic\t\tDynamic Mapping method" << endl;
+	cout <<
+	"\t-faulty_mode TYPE\tSet the faulty mode to TYPE where TYPE is one of the following (default "
+	<< DEFAULT_FAULTY_MODE << "):" << endl;
+    cout << "\t\t inactive\t\tNo Faulty Nodes" << endl;
+    cout << "\t\t active\t\t\tFaulty Nodes are present" << endl;
+	cout << "\t\t active_with_opt\tFaulty Nodes are present and perform optimization for suitable mapping" << endl;
 }
 
 void showConfig()
@@ -187,6 +193,8 @@ void showConfig()
 	cout << "- throttling_type = " << NoximGlobalParams::throt_type << endl;
 	/*------------dynamic mapping--------------*/
 	cout<<"-mapping_method = "<<NoximGlobalParams::mapping_method<<endl;
+	/*------------------Faulty Nodes----------------------*/
+	cout<<"-faulty_mode = "<<NoximGlobalParams::faulty_mode<<endl;
 }
 
 void checkInputParameters()
@@ -340,7 +348,25 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 				
 			}
 		} //Faulty Node situation to be appended
-		
+		else if (!strcmp(arg_vet[i],"-faulty_mode"))
+		{
+			if(!strcmp(arg_vet[++i],"inactive"))
+			{
+				NoximGlobalParams::faulty_mode = INACTIVE;
+				cout<< "Faulty Mode => INACTIVE"<<endl;
+				
+			}else if(!strcmp(arg_vet[i],"active"))
+			{
+				NoximGlobalParams::faulty_mode = ACTIVE;
+				cout<< "Faulty Mode => ACTIVE"<<endl;
+				
+			}else if(!strcmp(arg_vet[i],"active_with_opt"))
+			{
+				NoximGlobalParams::faulty_mode = ACTIVE_with_Opt;
+				cout<< "Faulty Mode => ACTIVE_with_Opt"<<endl;
+				
+			}
+		} 
 		else if (!strcmp(arg_vet[i], "-verbose"))
 			NoximGlobalParams::verbose_mode = atoi(arg_vet[++i]);
 	    else if (!strcmp(arg_vet[i], "-trace")) {

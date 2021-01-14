@@ -142,6 +142,11 @@ using namespace std;
 /*----------------Dynamic mapping----------------*/
 #define STATIC				0
 #define DYNAMIC				1
+
+/*----------------Faulty Nodes--------------------*/
+#define INACTIVE			0
+#define ACTIVE				1
+#define ACTIVE_with_Opt		2
 // Default configuration can be overridden with command-line arguments
 #define DEFAULT_VERBOSE_MODE               VERBOSE_OFF
 #define DEFAULT_TRACE_MODE                       false
@@ -181,6 +186,8 @@ using namespace std;
 #define DEFAULT_THROTTLING_RATIO			         0
 /*------------Dynamic mapping--------------------------*/
 #define DEFAULT_MAPPING_METHOD				    STATIC
+/*--------------Faulty Nodes---------------------------*/
+#define DEFAULT_FAULTY_MODE						INACTIVE
 
 // Packet Type
 #define PKT_NORMAL             0
@@ -267,6 +274,8 @@ struct NoximGlobalParams {
 
 	/*-------Dynamic mapping--------------------*/
 	static int mapping_method;
+	/*----------------Faulty Nodes---------------*/
+	static int faulty_mode;
 };
 
 // NoximCoord -- XY coordinates type of the Tile inside the Mesh
