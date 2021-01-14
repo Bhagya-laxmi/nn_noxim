@@ -339,7 +339,7 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 				cout<< "Mapping method => DYNAMIC"<<endl;
 				
 			}
-		} 
+		} //Faulty Node situation to be appended
 		
 		else if (!strcmp(arg_vet[i], "-verbose"))
 			NoximGlobalParams::verbose_mode = atoi(arg_vet[++i]);
