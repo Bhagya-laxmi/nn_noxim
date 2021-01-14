@@ -1192,8 +1192,17 @@ void NNModel::FaultyMode()
 
 	while(fin >> temp_node)
 	{
+		char line[128];
+		fin.getline(line, sizeof(line) - 1);
 		
-		cout<< temp_node<<endl;
+		if(line[0] != '%')
+		{
+
+		}
+
+		
+		//cout<< line[0]<<endl;
+		//cout<< line[1]<<endl;
 		
 		
 	}
