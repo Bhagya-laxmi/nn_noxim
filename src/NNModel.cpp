@@ -1185,26 +1185,25 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 
 void NNModel::FaultyMode()
 {
+	//Step 1: save the faulty nodes
 	deque<int> faultyNodes;
 	cout<<"Faulty Nodes file loading (filename: " << NoximGlobalParams::FaultyNodes_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **//
 	ifstream fin(NoximGlobalParams::FaultyNodes_filename, ios::in);
+	char line[128];
 	int temp_node;
 
-	while(fin >> temp_node)
+	while(!fin.eof())
 	{
-		char line[128];
-		fin.getline(line, sizeof(line) - 1);
-		
+		fin.getline(line, sizeof(line) - 1);		
 		if(line[0] != '%')
 		{
-
-		}
-
-		
-		//cout<< line[0]<<endl;
-		//cout<< line[1]<<endl;
-		
-		
+			if (sscanf
+		    (line + 1, "%d", &temp_node) == 1) 
+			{
+				faultyNodes.push_back(temp_node);
+				//cout<< "Faulty Nodes: "<<temp_node<<endl;
+			}
+		}	
 	}
-
+	
 }
