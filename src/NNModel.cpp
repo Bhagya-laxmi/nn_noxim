@@ -171,58 +171,54 @@ bool NNModel::load()//M_fname Useless tytyty
 	
 	mapping_table.clear();
 	mapping_table.assign( NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y, -1 );
-	/*------------------Faulty Nodes ---------------------*/
-	if(NoximGlobalParams::faulty_mode != INACTIVE)
+	
+	
+	if(!strcmp(NoximGlobalParams::mapping_algorithm, "random") )
 	{
-		FaultyMode();
-	}else
-	{
-		if(!strcmp(NoximGlobalParams::mapping_algorithm, "random") )
+		srand( time(NULL) );
+		for( int i = 0; i < mapping_table.size() ; i++ )
 		{
-			srand( time(NULL) );
-			for( int i = 0; i < mapping_table.size() ; i++ )
+			while(1)
 			{
-				while(1)
+				int map_point = rand() % mapping_table.size();
+				if( mapping_table[map_point]==-1 )
 				{
-					int map_point = rand() % mapping_table.size();
-					if( mapping_table[map_point]==-1 )
-					{
-						mapping_table[map_point] = i;
-						break;
-					}
-
+					mapping_table[map_point] = i;
+					break;
 				}
-			}
-		}
-		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_x") )
-			for( int i = 0; i < mapping_table.size() ; i++ )	//dir_x mapping
-				mapping_table[i]=i;
-		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_y") )	
-			for( int i = 0; i < mapping_table.size() ; i++ )	//dir_y mapping
-				mapping_table[i]= (i%NoximGlobalParams::mesh_dim_x)*NoximGlobalParams::mesh_dim_x + (i/NoximGlobalParams::mesh_dim_x);	
-		else if(!strcmp(NoximGlobalParams::mapping_algorithm, "table") )	
-		{
-			ifstream fin_m(NoximGlobalParams::mapping_table_filename, ios::in);						//** 2018.09.02 edit by Yueh-Chi,Yang **
-			cout<<"mapping file loading (filename: " << NoximGlobalParams::mapping_table_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **
-			while(!fin_m.eof()){
-				char line[256];
-				fin_m.getline(line, sizeof(line) - 1);
-				if (line[0] != '\0') {
-						if (line[0] != '%') {
-						int ID_Group, ID_PE;
-						sscanf(line, "%d %d", &ID_Group, &ID_PE);
-						mapping_table[ID_Group] = ID_PE;
-						}
-				}
-			}
-		}
 
-		else
-		{
-			cout<<"Error mapping algorithm!!"<<endl;
-			exit(1);
+			}
 		}
 	}
+	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_x") )
+		for( int i = 0; i < mapping_table.size() ; i++ )	//dir_x mapping
+			mapping_table[i]=i;
+	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "dir_y") )	
+		for( int i = 0; i < mapping_table.size() ; i++ )	//dir_y mapping
+			mapping_table[i]= (i%NoximGlobalParams::mesh_dim_x)*NoximGlobalParams::mesh_dim_x + (i/NoximGlobalParams::mesh_dim_x);	
+	else if(!strcmp(NoximGlobalParams::mapping_algorithm, "table") )	
+	{
+		ifstream fin_m(NoximGlobalParams::mapping_table_filename, ios::in);						//** 2018.09.02 edit by Yueh-Chi,Yang **
+		cout<<"mapping file loading (filename: " << NoximGlobalParams::mapping_table_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **
+		while(!fin_m.eof()){
+			char line[256];
+			fin_m.getline(line, sizeof(line) - 1);
+			if (line[0] != '\0') {
+					if (line[0] != '%') {
+					int ID_Group, ID_PE;
+					sscanf(line, "%d %d", &ID_Group, &ID_PE);
+					mapping_table[ID_Group] = ID_PE;
+					}
+			}
+		}
+	}
+
+	else
+	{
+		cout<<"Error mapping algorithm!!"<<endl;
+		exit(1);
+	}
+	
 	/*------Debugging--------*/
 	//cout<<"Mapping Table"<<endl;
 	//for( int i =0; i< mapping_table.size();i++){
@@ -462,6 +458,13 @@ bool NNModel::load()//M_fname Useless tytyty
 	deque<int>().swap(temp_leyer_ID_Group);
 	cout<<"model & group complete"<<endl;
     
+	/*------------------Faulty Nodes ---------------------*/
+	if(NoximGlobalParams::faulty_mode != INACTIVE)
+	{
+		faulty_mapping_table.clear();
+		faulty_mapping_table = mapping_table;
+		FaultyMode();
+	}
 	
 	 /*-------------------Debugging---------------------*/
 	/*
@@ -1186,7 +1189,7 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 void NNModel::FaultyMode()
 {
 	//Step 1: save the faulty nodes
-	deque<int> faultyNodes;
+	faultyNodes.clear();
 	cout<<"Faulty Nodes file loading (filename: " << NoximGlobalParams::FaultyNodes_filename << ")..."<< endl;		//** 2018.09.02 edit by Yueh-Chi,Yang **//
 	ifstream fin(NoximGlobalParams::FaultyNodes_filename, ios::in);
 	char line[128];
@@ -1205,5 +1208,352 @@ void NNModel::FaultyMode()
 			}
 		}	
 	}
-	
+
+	//Step 2: check if mapping is possible with the given number of faulty nodes
+	int FaultyNodes_count = faultyNodes.size();
+	int effective_nodes = mapping_table.size() - FaultyNodes_count;
+	int group_count;
+
+	if(NoximGlobalParams::mapping_method == STATIC)
+	{
+		group_count = Group_table.size();
+	}else if (NoximGlobalParams::mapping_method == DYNAMIC)
+	{
+		int neuron_count = all_leyer_size[1][0];   
+		for(int i =2; i< all_leyer_size.size(); i++)
+		{
+			if( neuron_count < all_leyer_size[i][0])
+			{
+				neuron_count = all_leyer_size[i][0];
+			}
+		}
+		float group_no =NoximGlobalParams::group_neu_num;
+		float temp = neuron_count / group_no;
+		group_count = ceil(temp) ;
+
+	}
+	/*----------------Debugging------------------*/
+	/*cout<<endl;
+	cout<<"Group count: "<< group_count<<endl;
+	cout<<"Effective Nodes: "<<effective_nodes<<endl;
+	cout<<"Faulty nodes: "<< FaultyNodes_count<<endl;
+	cout<<endl;*/
+	/*--------------------------------------------*/
+	assert(effective_nodes >= group_count);
+
+	//Step 3: Table based routing file creation
+	mapping_table.assign(faulty_mapping_table.size(),0);
+	bool node_faulty;
+	bool pe_free;
+		//Step 3.0 : Modify faulty_mapping_table considering the faulty nodes
+		cout<<faulty_mapping_table.size()<<endl;
+	deque<bool> pe_status;  //false: Can be mapped; true: can't be mapped
+	pe_status.assign(mapping_table.size(), false);
+
+	for(int a=0; a< Group_table.size(); a++)
+	{
+		int c = a;
+		do
+		{
+			node_faulty = false;
+			pe_free = false;
+			for(int b=0; b< faultyNodes.size(); b++) //find the first non_faulty_node
+			{
+				if(faulty_mapping_table[c] != faultyNodes[b])
+				{
+					node_faulty = false;
+				}else
+				{
+					c++;
+					node_faulty = true;
+					break;
+				}
+				
+			}
+			if(node_faulty == false)//check if the non_faulty_node can be mapped
+			{
+				if(pe_status[c] == false)
+				{
+					pe_free = true;	
+				}else
+				{
+					c++;
+					pe_free = false;
+				}
+			}
+		} while (node_faulty == true || pe_free == false);
+		mapping_table[a] = faulty_mapping_table[c];
+		pe_status[c] = true;
+	}
+	/*-----------------------Debugging--------------------*/
+	cout<<"PE status: ";
+	for(int f=0; f <pe_status.size(); f++)
+	{
+		cout<< mapping_table[f]<<"--";
+	}
+	/*----------------------------------------------------*/
+		//Step 3.1 : Get to know the destination PEs for each PE
+	deque <deque<int>> faulty_pe_id;
+	deque<int> temp_faulty;
+	for(int s=0; s< all_leyer_ID_Group.size() ; s++) //Do not consider the first and the last layer
+	{	
+		temp_faulty.clear();
+		for(int t=0; t< all_leyer_ID_Group[s].size();t++)
+		{
+			temp_faulty.push_back(mapping_table[all_leyer_ID_Group[s][t]]);
+		}
+		faulty_pe_id.push_back(temp_faulty);
+	}
+	/*-------------Debugging-------------------*/
+	cout<<endl;
+	int d=0;
+	cout<<faulty_pe_id.size()<<endl;
+	for(int f=0; f< faulty_pe_id[d].size();f++)
+	{
+		cout<<faulty_pe_id[d][f]<<"--";
+	}
+	cout<<endl;
+	/*-----------------------------------------*/
+	ShortestPath();
+		//Step 3.2 : Shortest path
+		
+		//Step 3.3 : Creation of table-based routing file in the format needed
+
+}
+
+void NNModel:: ShortestPath()
+{
+	// no. of vertices
+	int v = mapping_table.size();
+
+	// array of vectors is used to store the graph
+	// in the form of an adjacency list
+	vector<int> adj[v];
+
+	// Creating graph given
+	// add_edge function takes adjacency list, source
+	// and destination vertex as argument and forms
+	// an edge between them.	
+	for( int s=0; s< mapping_table.size(); s++)
+	{
+		if(mapping_table[s] !=0)
+		{
+			vector<int> pos;
+			bool fault_status= false;
+			if(mapping_table[s]+1 >= 0 && mapping_table[s]+1 <= v)
+			{
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == mapping_table[s]+1)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false)
+				{
+					pos.push_back(mapping_table[s]+1);
+				}
+			}
+			
+			
+			
+			if(mapping_table[s]-1 >=0 && mapping_table[s]-1 <=v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == mapping_table[s]-1)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false )
+				{
+					pos.push_back(mapping_table[s]-1);
+				}
+			}
+			
+
+			if(mapping_table[s]+NoximGlobalParams::mesh_dim_x >=0 && mapping_table[s]+NoximGlobalParams::mesh_dim_x <= v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == mapping_table[s]+NoximGlobalParams::mesh_dim_x)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false )
+				{
+					pos.push_back(mapping_table[s]+NoximGlobalParams::mesh_dim_x);
+				}
+			}
+			
+
+			if(mapping_table[s]-NoximGlobalParams::mesh_dim_x >=0 && mapping_table[s]-NoximGlobalParams::mesh_dim_x <= v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == mapping_table[s]-NoximGlobalParams::mesh_dim_x)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false)
+				{
+					pos.push_back(mapping_table[s]-NoximGlobalParams::mesh_dim_x);
+				}
+			}
+			
+
+
+			/*for(int l=0; l< 4; l++)
+			{
+				if(pos[l] >= 0 && pos[l] < v)
+				{
+					add_edge(adj, s, pos[l]);
+				}
+			}*/
+			/*--------------------Debugging-----------------------*/
+			cout<< "("<<mapping_table[s]<<")--";
+			for(int g=0;g< pos.size(); g++)
+			{
+				cout<<pos[g]<<"--";
+			}
+			cout<<endl;
+			/*----------------------------------------------------*/
+		}
+	    
+	   
+	}
+	int source = 1, dest = 3;
+	//printShortestDistance(adj, source, dest, v);
+	//cout<<endl;
+	//for (auto i = adj[4].begin(); i != adj[4].end(); ++i) 
+    //    cout << *i << " ";
+
+}
+
+void NNModel:: add_edge(vector<int> adj[], int src, int dest)
+{
+    bool req= true;
+    for (auto i = adj[src].begin(); i != adj[src].end(); ++i) 
+    {
+        if(*i == dest)
+        {
+            req = false;
+            break;
+        }
+    }
+    if(req == true)
+    {
+	    adj[src].push_back(dest);
+    }
+    
+    req = true;
+    
+    for (auto i = adj[dest].begin(); i != adj[dest].end(); ++i) 
+    {
+        if(*i == src)
+        {
+            req = false;
+            break;
+        }
+    }
+    if( req == true)
+    {
+	    adj[dest].push_back(src);
+    }
+}
+
+// a modified version of BFS that stores predecessor
+// of each vertex in array p
+// and its distance from source in array d
+bool NNModel:: BFS(vector<int> adj[], int src, int dest, int v,
+		int pred[], int dist[])
+{
+	// a queue to maintain queue of vertices whose
+	// adjacency list is to be scanned as per normal
+	// DFS algorithm
+	deque<int> queue;
+
+	// boolean array visited[] which stores the
+	// information whether ith vertex is reached
+	// at least once in the Breadth first search
+	bool visited[v];
+
+	// initially all vertices are unvisited
+	// so v[i] for all i is false
+	// and as no path is yet constructed
+	// dist[i] for all i set to infinity
+	for (int i = 0; i < v; i++) {
+		visited[i] = false;
+		dist[i] = INT_MAX;
+		pred[i] = -1;
+	}
+
+	// now source is first to be visited and
+	// distance from source to itself should be 0
+	visited[src] = true;
+	dist[src] = 0;
+	queue.push_back(src);
+
+	// standard BFS algorithm
+	while (!queue.empty()) {
+		int u = queue.front();
+		queue.pop_front();
+		for (int i = 0; i < adj[u].size(); i++) {
+			if (visited[adj[u][i]] == false) {
+				visited[adj[u][i]] = true;
+				dist[adj[u][i]] = dist[u] + 1;
+				pred[adj[u][i]] = u;
+				queue.push_back(adj[u][i]);
+
+				// We stop BFS when we find
+				// destination.
+				if (adj[u][i] == dest)
+					return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// utility function to print the shortest distance
+// between source vertex and destination vertex
+void NNModel:: printShortestDistance(vector<int> adj[], int s,
+						int dest, int v)
+{
+	// predecessor[i] array stores predecessor of
+	// i and distance array stores distance of i
+	// from s
+	int pred[v], dist[v];
+
+	if (BFS(adj, s, dest, v, pred, dist) == false) {
+		cout << "Given source and destination"
+			<< " are not connected";
+		return;
+	}
+
+	// vector path stores the shortest path
+	vector<int> path;
+	int crawl = dest;
+	path.push_back(crawl);
+	while (pred[crawl] != -1) {
+		path.push_back(pred[crawl]);
+		crawl = pred[crawl];
+	}
+
+	// distance from source is in distance array
+	cout << "Shortest path length is : "
+		<< dist[dest];
+    
+    
 }

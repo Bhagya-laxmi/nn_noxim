@@ -66,6 +66,10 @@ class NNModel {
 		void HardwarePlan();
 		bool Check_LayerMapping(int already_mapped);
 		void FaultyMode();
+		void ShortestPath();
+		void printShortestDistance(vector<int> adj[], int s,int dest, int v);
+		bool BFS(vector<int> adj[], int src, int dest, int v,int pred[], int dist[]);
+		void add_edge(vector<int> adj[], int src, int dest);
 
 	deque< char > all_leyer_type;
 	deque< deque< int > > all_leyer_size;
@@ -90,6 +94,9 @@ class NNModel {
         //deque < deque< NeuInformation > > PE_table;
         //deque < NeuInformation > Neu_table;
         //deque < NeuInformation > Neu_table_4G;
+	/*------------------Faulty Nodes ---------------------*/
+	deque < int > faulty_mapping_table;
+	deque<int> faultyNodes;
 };
 
 #endif
