@@ -304,7 +304,7 @@ void NoximProcessingElement::rxProcess()
 					
 					if(ID_group == 60)
 					{
-						cout<< receive_conv[0]<<endl;
+						//cout<< receive_conv[0]<<endl;
 					}
 					if(flag_complete == true)
 					{
@@ -333,7 +333,7 @@ void NoximProcessingElement::rxProcess()
 									}
 								}
 								/*--------------Debugging----------------*/
-								if(ID_group == 60 && Neu_complete[bg]==0)
+								/*if(ID_group == 60 && Neu_complete[bg]==0)
 								{
 									for(int ak=0; ak<receive_neu_ID_conv[Neu_complete[bg]].size();ak++)
 									{
@@ -856,7 +856,7 @@ if (reset.read() ) {
 							temp_receive_neu_id_conv.clear();
 						}
 						/*--------------------Debugging---------------*/
-						if(ID_group == 60  )
+						/*if(ID_group == 60  )
 						{
 							//for(int zr =0; zr< Use_Neu; zr++)
 							//{
@@ -1184,7 +1184,7 @@ if (reset.read() ) {
 
 				if(PE_enable && ID_layer != NN_Model->all_leyer_size.size()-1 && flag_p ){
 					//**** 2018.09.17 edit by Yueh-Chi,Yang ****/
-					//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start sending..."<<endl;
+					cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start sending..."<<endl;
 					
 					if( Type_layer == 'f' || NN_Model -> all_leyer_type[ID_layer+1]=='f')
 					{
