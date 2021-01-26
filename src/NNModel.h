@@ -66,7 +66,7 @@ class NNModel {
 		void HardwarePlan();
 		bool Check_LayerMapping(int already_mapped);
 		void FaultyMode();
-		void ShortestPath();
+		void ShortestPath(deque<deque<int>> &f_pe_id);
 		void printShortestDistance(vector<int> adj[], int s,int dest, int v);
 		bool BFS(vector<int> adj[], int src, int dest, int v,int pred[], int dist[]);
 		void add_edge(vector<int> adj[], int src, int dest);

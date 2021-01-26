@@ -1314,14 +1314,14 @@ void NNModel::FaultyMode()
 	}
 	cout<<endl;
 	/*-----------------------------------------*/
-	ShortestPath();
+	ShortestPath(faulty_pe_id);
 		//Step 3.2 : Shortest path
 		
 		//Step 3.3 : Creation of table-based routing file in the format needed
 
 }
 
-void NNModel:: ShortestPath()
+void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 {
 	// no. of vertices
 	int v = mapping_table.size();
@@ -1333,111 +1333,129 @@ void NNModel:: ShortestPath()
 	// Creating graph given
 	// add_edge function takes adjacency list, source
 	// and destination vertex as argument and forms
-	// an edge between them.	
-	for( int s=0; s< mapping_table.size(); s++)
+	// an edge between them.
+	vector<int> pos;	
+	for( int s=0; s< NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y; s++)
 	{
-		if(mapping_table[s] !=0)
+
+		bool faulty = false;
+		for(int w=0; w<faultyNodes.size(); w++)
 		{
-			vector<int> pos;
-			bool fault_status= false;
-			if(mapping_table[s]+1 >= 0 && mapping_table[s]+1 <= v)
+			if(s == faultyNodes[w])
 			{
-				for(int m=0; m< faultyNodes.size(); m++)
-				{
-					if(faultyNodes[m] == mapping_table[s]+1)
-					{
-						fault_status = true;
-						break;
-					}
-				}
-				if(fault_status == false)
-				{
-					pos.push_back(mapping_table[s]+1);
-				}
+				faulty = true;
+				break;
 			}
-			
-			
-			
-			if(mapping_table[s]-1 >=0 && mapping_table[s]-1 <=v)
-			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
-				{
-					if(faultyNodes[m] == mapping_table[s]-1)
-					{
-						fault_status = true;
-						break;
-					}
-				}
-				if(fault_status == false )
-				{
-					pos.push_back(mapping_table[s]-1);
-				}
-			}
-			
-
-			if(mapping_table[s]+NoximGlobalParams::mesh_dim_x >=0 && mapping_table[s]+NoximGlobalParams::mesh_dim_x <= v)
-			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
-				{
-					if(faultyNodes[m] == mapping_table[s]+NoximGlobalParams::mesh_dim_x)
-					{
-						fault_status = true;
-						break;
-					}
-				}
-				if(fault_status == false )
-				{
-					pos.push_back(mapping_table[s]+NoximGlobalParams::mesh_dim_x);
-				}
-			}
-			
-
-			if(mapping_table[s]-NoximGlobalParams::mesh_dim_x >=0 && mapping_table[s]-NoximGlobalParams::mesh_dim_x <= v)
-			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
-				{
-					if(faultyNodes[m] == mapping_table[s]-NoximGlobalParams::mesh_dim_x)
-					{
-						fault_status = true;
-						break;
-					}
-				}
-				if(fault_status == false)
-				{
-					pos.push_back(mapping_table[s]-NoximGlobalParams::mesh_dim_x);
-				}
-			}
-			
-
-
-			/*for(int l=0; l< 4; l++)
-			{
-				if(pos[l] >= 0 && pos[l] < v)
-				{
-					add_edge(adj, s, pos[l]);
-				}
-			}*/
-			/*--------------------Debugging-----------------------*/
-			cout<< "("<<mapping_table[s]<<")--";
-			for(int g=0;g< pos.size(); g++)
-			{
-				cout<<pos[g]<<"--";
-			}
-			cout<<endl;
-			/*----------------------------------------------------*/
 		}
-	    
-	   
-	}
-	int source = 1, dest = 3;
-	//printShortestDistance(adj, source, dest, v);
-	//cout<<endl;
-	//for (auto i = adj[4].begin(); i != adj[4].end(); ++i) 
-    //    cout << *i << " ";
+		if(faulty == false)
+		{
+			pos.clear();
+			bool fault_status= false;
+			if(s+1 >= 0 && s+1 <= v)
+			{
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == s+1)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false)
+				{
+					pos.push_back(s+1);
+				}
+			}
+			
+			if(s-1 >=0 && s-1 <=v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == s-1)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false )
+				{
+					pos.push_back(s-1);
+				}
+			}
+			
 
+			if(s+NoximGlobalParams::mesh_dim_x >=0 && s+NoximGlobalParams::mesh_dim_x <= v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == s+NoximGlobalParams::mesh_dim_x)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false )
+				{
+					pos.push_back(s+NoximGlobalParams::mesh_dim_x);
+				}
+			}
+			
+
+			if(s-NoximGlobalParams::mesh_dim_x >=0 && s-NoximGlobalParams::mesh_dim_x <= v)
+			{
+				fault_status= false;
+				for(int m=0; m< faultyNodes.size(); m++)
+				{
+					if(faultyNodes[m] == s-NoximGlobalParams::mesh_dim_x)
+					{
+						fault_status = true;
+						break;
+					}
+				}
+				if(fault_status == false)
+				{
+					pos.push_back(s-NoximGlobalParams::mesh_dim_x);
+				}
+			}
+			
+		}else
+		{
+			pos.clear();
+			pos.push_back(-1);
+		}
+
+		for(int l=0; l< pos.size(); l++)
+		{
+			add_edge(adj, s, pos[l]);
+		}
+	}
+	//automatic generation of source and destination
+	for(int r=0; r<f_pe_id.size() -1; r++)
+	{
+		for(int p=0; p< f_pe_id[r].size(); p++)
+		{
+			for(int q=0; q<f_pe_id[r+1].size(); q++)
+			{
+				int source = f_pe_id[r][p], dest = f_pe_id[r+1][q];
+				printShortestDistance(adj, source, dest, v);
+			}
+		}
+	}
+	
+	//cout<<endl;
+	/*--------------Debugging-------------------------*/
+	/*for(int k=0; k< 100; k++)
+	{
+		cout<<endl;
+		for (auto i = adj[k].begin(); i != adj[k].end(); ++i)
+		{
+			cout << *i << "--";
+		}
+	}
+	
+	/*-------------------------------------------*/
 }
 
 void NNModel:: add_edge(vector<int> adj[], int src, int dest)
@@ -1456,7 +1474,7 @@ void NNModel:: add_edge(vector<int> adj[], int src, int dest)
 	    adj[src].push_back(dest);
     }
     
-    req = true;
+    /*req = true;
     
     for (auto i = adj[dest].begin(); i != adj[dest].end(); ++i) 
     {
@@ -1469,7 +1487,7 @@ void NNModel:: add_edge(vector<int> adj[], int src, int dest)
     if( req == true)
     {
 	    adj[dest].push_back(src);
-    }
+    }*/
 }
 
 // a modified version of BFS that stores predecessor
@@ -1555,5 +1573,23 @@ void NNModel:: printShortestDistance(vector<int> adj[], int s,
 	cout << "Shortest path length is : "
 		<< dist[dest];
     
-    
+    // printing path from source to destination
+	cout << "\nPath is::\n";
+	for (int i = path.size() - 1; i >= 0; i--)
+		cout << path[i] << " ";
+
+	char fileID_t[5] = "BFS";
+	fstream file_t;
+	file_t.open( fileID_t ,ios::out|ios::app);
+	file_t<<" "<< s<< "--" << dest <<"         ";
+	for (int i = path.size() - 1; i >= 0; i--)
+	{
+		file_t << path[i];
+		if(i-1 != -1 )
+		{
+			file_t <<"->";
+		}
+	}
+	file_t<< endl;
+	 
 }

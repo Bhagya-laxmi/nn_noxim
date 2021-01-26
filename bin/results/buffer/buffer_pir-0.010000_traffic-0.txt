@@ -44,13 +44,13 @@ on_off
 0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	
 0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1	1	1	1	1	1	1	1	1	1	
 1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	1	0	0	0	0	0	0	0	0	0	
-transmit:	-1.00286e+09
+transmit:	-8.16875e+08
 not_transmit:	32767
-Need retransmit rate:	-3.26735e-05
-adaptive_transmit:	-1.00286e+09
+Need retransmit rate:	-4.01126e-05
+adaptive_transmit:	-8.16874e+08
 adaptive transmit rate:	0.999999
 DOR_transmit:	33777
-DOR transmit rate:	-3.36806e-05
-DW_transmit:	-1.00286e+09
-DW transmit rate:	0.999999
+DOR transmit rate:	-4.13491e-05
+DW_transmit:	-8.16873e+08
+DW transmit rate:	0.999998
 packet_in_buffer	0
