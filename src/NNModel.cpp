@@ -1286,7 +1286,7 @@ void NNModel::FaultyMode()
 		pe_status[c] = true;
 	}
 	/*-----------------------Debugging--------------------*/
-	cout<<"PE status: ";
+	/*cout<<"PE status: ";
 	for(int f=0; f <pe_status.size(); f++)
 	{
 		cout<< mapping_table[f]<<"--";
@@ -1305,7 +1305,7 @@ void NNModel::FaultyMode()
 		faulty_pe_id.push_back(temp_faulty);
 	}
 	/*-------------Debugging-------------------*/
-	cout<<endl;
+	/*cout<<endl;
 	int d=0;
 	cout<<faulty_pe_id.size()<<endl;
 	for(int f=0; f< faulty_pe_id[d].size();f++)
@@ -1334,7 +1334,14 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 	// add_edge function takes adjacency list, source
 	// and destination vertex as argument and forms
 	// an edge between them.
-	vector<int> pos;	
+	vector<int> pos;
+
+	char fileID_t[10] = "BFS.txt";
+	remove(fileID_t);
+
+	char fileID_r[25] = "Table_based_routing.txt";
+	remove(fileID_r);
+
 	for( int s=0; s< NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y; s++)
 	{
 
@@ -1431,6 +1438,8 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 			add_edge(adj, s, pos[l]);
 		}
 	}
+	
+
 	//automatic generation of source and destination
 	for(int r=0; r<f_pe_id.size() -1; r++)
 	{
@@ -1456,6 +1465,74 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 	}
 	
 	/*-------------------------------------------*/
+
+	
+
+	//Creation of Table-based routing file
+	//Read from BFS
+	ifstream fin("BFS.txt", ios::in);
+	char line[128];
+	string str;
+	int src, dst;
+	vector<int> path;
+
+	while(!fin.eof())
+	{
+		fin.getline(line, sizeof(line) - 1);		
+		if (sscanf
+		(line + 1, "%d--%d", &src, &dst) == 2) 
+		{
+			path.clear();
+			str = line;
+			int hop = count(str.begin(), str.end(),'>') + 1;
+			//cout<<"stri: "<<str<<endl;
+			//cout<<count(str.begin(), str.end(),'>')<<endl;
+			//cout<<"line: "<<line<<endl;
+			//cout<<src<<"--"<<dst<<endl;
+			char *ptr = line+15;
+			//cout<<"CHecking:"<<ptr<<endl;
+
+			for(int u=0; u<hop; u++)
+			{
+				int temp;
+				sscanf(ptr, "%d",&temp);
+				path.push_back(temp);
+				ptr= strstr(ptr, ">");
+				ptr++;
+				
+			}
+			/*----------------Debugging-----------------*/
+			/*for(int f=0;f<path.size() ;f++)
+			{
+				cout<<path[f]<<"--";
+			}
+			/*------------------------------------------*/
+			//Store in the required format
+			char fileID_t[25] = "Table_based_routing.txt";
+			fstream file_t;
+			file_t.open( fileID_t ,ios::out|ios::app);
+			for(int s=0; s< path.size()-1; s++)
+			{
+				file_t<<" "<<path[s]<<" ";
+				if(s==0)
+				{
+					file_t<<path[s]<<"->"<<path[s];
+				}else
+				{
+					file_t<<path[s-1]<<"->"<<path[s];
+				}
+				file_t<<" "<<dst;
+				file_t<<"             ";
+				file_t<<path[s]<<"->"<<path[s+1]<<endl;
+			}
+			//cout<< "Faulty Nodes: "<<temp_node<<endl;
+		}
+			
+	}
+	/*NoximGlobalParams::routing_algorithm =ROUTING_TABLE_BASED;
+	char fileID_t[25] = "Table_based_routing.txt";
+	strcpy(NoximGlobalParams::routing_table_filename, fileID_t);*/
+	
 }
 
 void NNModel:: add_edge(vector<int> adj[], int src, int dest)
@@ -1570,16 +1647,17 @@ void NNModel:: printShortestDistance(vector<int> adj[], int s,
 	}
 
 	// distance from source is in distance array
-	cout << "Shortest path length is : "
+	/*cout << "Shortest path length is : "
 		<< dist[dest];
     
     // printing path from source to destination
 	cout << "\nPath is::\n";
 	for (int i = path.size() - 1; i >= 0; i--)
-		cout << path[i] << " ";
+		cout << path[i] << " ";*/
 
-	char fileID_t[5] = "BFS";
+	char fileID_t[10] = "BFS.txt";
 	fstream file_t;
+	
 	file_t.open( fileID_t ,ios::out|ios::app);
 	file_t<<" "<< s<< "--" << dest <<"         ";
 	for (int i = path.size() - 1; i >= 0; i--)

@@ -72,12 +72,12 @@ vector <
     int >admissibleOutputsSet2Vector(const NoximAdmissibleOutputs & ao)
 {
     vector < int >dirs;
-/*
+
     for (NoximAdmissibleOutputs::iterator i = ao.begin(); i != ao.end();
 	 i++)
 	dirs.push_back(oLinkId2Direction(*i));
-	*/
-
+	
+	//cout<<"Dirs: "<<dirs[0]<<" "<<dirs[1]<<endl;
     return dirs;
 }
 
@@ -106,21 +106,27 @@ bool NoximGlobalRoutingTable::load(const char *fname)
 	    if (line[0] != '%') {
 		int node_id, in_src, in_dst, dst_id, out_src, out_dst;
 
-		if (sscanf
-		    (line + 1, "%d %d->%d %d", &node_id, &in_src, &in_dst,
-		     &dst_id) == 4) {
-		    NoximLinkId lin(in_src, in_dst);
+		if (sscanf(line + 1, "%d %d->%d %d", &node_id, &in_src, &in_dst,
+		     &dst_id) == 4) 
+			{
+				NoximLinkId lin(in_src, in_dst);
+				//cout<<"Node: "<<node_id<<endl;
+				//cout<<"Dst: "<<dst_id<<endl;
+				//cout<<"Src chn: "<<in_src<<endl;
+				//cout<<"Dst chn: "<<in_dst<<endl;
+				char *pstr = line + COLUMN_AOC;
+				/*while*/ if(sscanf(pstr, "%d->%d", &out_src, &out_dst) == 2) {
+				NoximLinkId lout(out_src, out_dst);
+				//cout<<"Hop In ch: "<<out_src<<endl;
+				//cout<<"Hop Out ch: "<<out_dst<<endl;
+				rt_noc[node_id][lin][dst_id].insert(lout);
 
-		    char *pstr = line + COLUMN_AOC;
-		    while (sscanf(pstr, "%d->%d", &out_src, &out_dst) == 2) {
-			NoximLinkId lout(out_src, out_dst);
-
-			rt_noc[node_id][lin][dst_id].insert(lout);
-
-			pstr = strstr(pstr, ",");
-			pstr++;
-		    }
-		}
+				//pstr = strstr(pstr, ",");
+				//pstr++;
+				//cout<<"AB"<<endl;
+				}
+				//cout<<"BC"<<endl;
+			}
 	    }
 	}
     }

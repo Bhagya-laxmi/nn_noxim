@@ -13,14 +13,16 @@
 
 void NoximNoC::buildMesh()
 {
-    // Check for routing table availability
-    if (NoximGlobalParams::routing_algorithm == ROUTING_TABLE_BASED)
-	assert(grtable.load(NoximGlobalParams::routing_table_filename));
+    
 
     // Check for traffic table availability
     if (NoximGlobalParams::traffic_distribution == TRAFFIC_TABLE_BASED)
 	assert(gttable.load(NoximGlobalParams::traffic_table_filename));
     nnmodel.load();	//tytyty
+
+	// Check for routing table availability
+    if (NoximGlobalParams::routing_algorithm == ROUTING_TABLE_BASED)
+	assert(grtable.load(NoximGlobalParams::routing_table_filename));
 
     // Create the mesh as a matrix of tiles
     /****************MODIFY BY HUI-SHUN********************/

@@ -478,7 +478,7 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 		    NoximGlobalParams::routing_algorithm =
 			ROUTING_TABLE_BASED;
 		    strcpy(NoximGlobalParams::routing_table_filename, arg_vet[++i]);
-		    NoximGlobalParams::packet_injection_rate = 0;	// ??? why ???
+		    NoximGlobalParams::packet_injection_rate = DEFAULT_PACKET_INJECTION_RATE;//0;	// ??? why ???
 		} else
 		    NoximGlobalParams::routing_algorithm = INVALID_ROUTING;
 	    } else if (!strcmp(arg_vet[i], "-sel")) {

@@ -266,6 +266,7 @@ vector <
     int dir_in = route_data.dir_in;
 	int routing   = route_data.routing;  //Matthew
 
+	//cout<< "Routing alg: "<<NoximGlobalParams::routing_algorithm<<endl;
     switch (NoximGlobalParams::routing_algorithm) {
     /*case ROUTING_XY:
 	return routingXY(position, dst_coord);*/
@@ -344,6 +345,7 @@ int NoximRouter::route(const NoximRouteData & route_data)
 	return DIRECTION_LOCAL;
 
     vector < int >candidate_channels = routingFunction(route_data);
+	//cout<<"candidate: "<<candidate_channels[0]<<endl;
 
     return selectionFunction(candidate_channels, route_data);
 }
@@ -1350,7 +1352,7 @@ vector < int >NoximRouter::routingTableBased(const int dir_in,
 	    y << ")" << endl << coord2Id(current) << "->" <<
 	    coord2Id(destination) << endl;
     }
-
+	//cout<<"ao size: "<<ao.size()<<endl;
     assert(ao.size() > 0);
 
     //-----
