@@ -1567,7 +1567,7 @@ void NoximProcessingElement::Convtrans()
 		}
 
 		/*-------------------Debugging------------------*/
-		/*if(ID_group == 47)
+		/*if(ID_group == 2)
 		{	
 			//cout<<Use_Neu<<endl;
 			for(int za=0; za<trans_PE_ID_conv.size();za++)
@@ -1577,7 +1577,7 @@ void NoximProcessingElement::Convtrans()
 			cout<<endl<<"Size: "<<trans_PE_ID_conv.size()<<endl;
 			//cout<<NN_Model->all_pool_coord[PE_table_nxtlayer_neuron[0].ID_pool].size()<<endl;
 			//cout<<(NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])<<endl;
-		}*/
+		}
 		
 		/*----------------------------------------------*/
 
@@ -1903,6 +1903,7 @@ void NoximProcessingElement::Poolreceive(bool SingleOrFirstLayer)
 		receive_neu_ID_pool.push_back(temp_receive_neu_id_pool);
 		temp_receive_neu_id_pool.clear();
 	}
+	
 
 	if(!SingleOrFirstLayer)
 	{
@@ -1933,7 +1934,16 @@ void NoximProcessingElement::Poolreceive(bool SingleOrFirstLayer)
 		should_receive = receive;
 		receive_data.assign(receive , 0 );
 	}
-	
+	/*--------------------Debugging--------------------*/
+	/*if(ID_group == 48)
+	{
+		for(int u=0; u<receive_Neu_ID.size(); u++)
+		{
+			cout<<receive_Neu_ID[u]<<"--";
+		}
+		cout<<endl;
+	}
+	/*------------------------------------------------*/
 }
 
 void NoximProcessingElement::DynamicMappingDone()

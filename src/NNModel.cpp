@@ -1342,101 +1342,102 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 	char fileID_r[25] = "Table_based_routing.txt";
 	remove(fileID_r);
 
-	for( int s=0; s< NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y; s++)
+	for( int s=0; s< NoximGlobalParams::mesh_dim_x; s++)
 	{
-
-		bool faulty = false;
-		for(int w=0; w<faultyNodes.size(); w++)
-		{
-			if(s == faultyNodes[w])
-			{
-				faulty = true;
-				break;
-			}
-		}
-		if(faulty == false)
+		for(int p=0;p <NoximGlobalParams::mesh_dim_y; p++)
 		{
 			pos.clear();
-			bool fault_status= false;
-			if(s+1 >= 0 && s+1 <= v)
+			bool faulty = false;
+			for(int w=0; w<faultyNodes.size(); w++)
 			{
-				for(int m=0; m< faultyNodes.size(); m++)
+				if(s*NoximGlobalParams::mesh_dim_y+ p == faultyNodes[w])
 				{
-					if(faultyNodes[m] == s+1)
-					{
-						fault_status = true;
-						break;
-					}
-				}
-				if(fault_status == false)
-				{
-					pos.push_back(s+1);
+					faulty = true;
+					break;
 				}
 			}
-			
-			if(s-1 >=0 && s-1 <=v)
+			if(faulty == false)
 			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
+				bool fault_status= false;
+				if(s+1 < NoximGlobalParams::mesh_dim_x )
 				{
-					if(faultyNodes[m] == s-1)
+					for(int m=0; m< faultyNodes.size(); m++)
 					{
-						fault_status = true;
-						break;
+						if(faultyNodes[m] == (s+1)*NoximGlobalParams::mesh_dim_x +p)
+						{
+							fault_status = true;
+							break;
+						}
+					}
+					if(fault_status == false)
+					{
+						pos.push_back((s+1)*NoximGlobalParams::mesh_dim_x +p);
 					}
 				}
-				if(fault_status == false )
+				
+				if(s-1 >=0 )
 				{
-					pos.push_back(s-1);
+					fault_status= false;
+					for(int m=0; m< faultyNodes.size(); m++)
+					{
+						if(faultyNodes[m] == (s-1)*NoximGlobalParams::mesh_dim_x +p)
+						{
+							fault_status = true;
+							break;
+						}
+					}
+					if(fault_status == false )
+					{
+						pos.push_back((s-1)*NoximGlobalParams::mesh_dim_x +p);
+					}
 				}
-			}
-			
+				
 
-			if(s+NoximGlobalParams::mesh_dim_x >=0 && s+NoximGlobalParams::mesh_dim_x <= v)
-			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
+				if(p+1 <NoximGlobalParams::mesh_dim_y)
 				{
-					if(faultyNodes[m] == s+NoximGlobalParams::mesh_dim_x)
+					fault_status= false;
+					for(int m=0; m< faultyNodes.size(); m++)
 					{
-						fault_status = true;
-						break;
+						if(faultyNodes[m] == s*NoximGlobalParams::mesh_dim_y+(p+1))
+						{
+							fault_status = true;
+							break;
+						}
+					}
+					if(fault_status == false )
+					{
+						pos.push_back(s*NoximGlobalParams::mesh_dim_y+(p+1));
 					}
 				}
-				if(fault_status == false )
-				{
-					pos.push_back(s+NoximGlobalParams::mesh_dim_x);
-				}
-			}
-			
+				
 
-			if(s-NoximGlobalParams::mesh_dim_x >=0 && s-NoximGlobalParams::mesh_dim_x <= v)
-			{
-				fault_status= false;
-				for(int m=0; m< faultyNodes.size(); m++)
+				if(p-1 >=0)
 				{
-					if(faultyNodes[m] == s-NoximGlobalParams::mesh_dim_x)
+					fault_status= false;
+					for(int m=0; m< faultyNodes.size(); m++)
 					{
-						fault_status = true;
-						break;
+						if(faultyNodes[m] == s*NoximGlobalParams::mesh_dim_y+(p-1))
+						{
+							fault_status = true;
+							break;
+						}
+					}
+					if(fault_status == false)
+					{
+						pos.push_back(s*NoximGlobalParams::mesh_dim_y+(p-1));
 					}
 				}
-				if(fault_status == false)
-				{
-					pos.push_back(s-NoximGlobalParams::mesh_dim_x);
-				}
+				
+			}else
+			{
+				pos.clear();
+				pos.push_back(-1);
 			}
-			
-		}else
-		{
-			pos.clear();
-			pos.push_back(-1);
-		}
-
-		for(int l=0; l< pos.size(); l++)
-		{
-			add_edge(adj, s, pos[l]);
-		}
+			for(int l=0; l< pos.size(); l++)
+			{
+				add_edge(adj, s*NoximGlobalParams::mesh_dim_y +p, pos[l]);
+			}
+		}	
 	}
 	
 
