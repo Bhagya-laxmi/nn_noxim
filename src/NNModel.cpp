@@ -375,7 +375,7 @@ bool NNModel::load()//M_fname Useless tytyty
 
 			if(temp_ID_Neu >= all_Nue) break;
 
-			if(temp_ID_Group >= NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y)
+			if(temp_ID_Group >= NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y && NoximGlobalParams::mapping_method == STATIC)
 				cout<<"error group_size or NoC_size" <<endl;						//output error!! 
 			
 			temp_ID_In_layer = 0;
@@ -458,13 +458,7 @@ bool NNModel::load()//M_fname Useless tytyty
 	deque<int>().swap(temp_leyer_ID_Group);
 	cout<<"model & group complete"<<endl;
     
-	/*------------------Faulty Nodes ---------------------*/
-	if(NoximGlobalParams::faulty_mode != INACTIVE)
-	{
-		faulty_mapping_table.clear();
-		faulty_mapping_table = mapping_table;
-		FaultyMode();
-	}
+	
 	
 	 /*-------------------Debugging---------------------*/
 	/*
@@ -538,11 +532,28 @@ bool NNModel::load()//M_fname Useless tytyty
 		}
 	cout<<endl; */
 	/*-----------------------------------*/
+
+	active_layers.clear();
+	for(int re=0; re<all_leyer_ID_Group.size()+1; re++)
+	{
+		cout<<"active_layers: "<<re+1<<" ";
+	}
+
+	/*------------------Faulty Nodes ---------------------*/
+	if(NoximGlobalParams::faulty_mode != INACTIVE)
+	{
+		faulty_mapping_table.clear();
+		faulty_mapping_table = mapping_table;
+		FaultyMode();
+		ShortestPath();
+	}
 //******************print floorplan****************
 	Mapping_done = false;
 	if(NoximGlobalParams::mapping_method == STATIC)
 	{
 		HardwarePlan();
+		
+		
 	}else if (NoximGlobalParams::mapping_method == DYNAMIC)
 	{
 		int max_neu =all_leyer_size[1][0];   
@@ -566,6 +577,8 @@ bool NNModel::load()//M_fname Useless tytyty
 
 		Dymapping();
 	}
+
+	
 	//***********input setting***************
 
 	fstream fin_in(NoximGlobalParams::NNinput_filename, ios::in); 
@@ -1047,6 +1060,10 @@ void NNModel::Dymapping()
 			//debug= mapped_count;
 		}
 
+		if(NoximGlobalParams::faulty_mode != INACTIVE)
+		{
+			FaultyMode_prep();
+		}
 		/*----------------Debugging-------------------*/
 		//cout<< "Group table: "<<Group_table[0][0].ID_Group<<endl;
 		//cout<< "Group table: "<<Group_table[24][0].ID_Group<<endl;
@@ -1157,7 +1174,18 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
 		{
 			int size_of_nextLayer = all_leyer_ID_Group[already_mapped].size();
 
-			int temp = (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y) - Group_table.size();
+			int temp;
+			if(NoximGlobalParams::faulty_mode != INACTIVE)
+			{
+				int f_nodes = faultyNodes.size();
+				temp = (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y) - Group_table.size()-f_nodes;
+				//cout<<"Dy faulty: "<<temp<<endl;
+			}else
+			{
+				temp = (NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y) - Group_table.size();
+			}
+			
+			
 			
 			if(temp >= size_of_nextLayer)
 			{
@@ -1241,12 +1269,22 @@ void NNModel::FaultyMode()
 	/*--------------------------------------------*/
 	assert(effective_nodes >= group_count);
 
+	if(NoximGlobalParams::mapping_method == STATIC)
+	{
+		FaultyMode_prep();	
+	}
+	
+
+}
+
+void NNModel:: FaultyMode_prep()
+{
 	//Step 3: Table based routing file creation
 	mapping_table.assign(faulty_mapping_table.size(),0);
 	bool node_faulty;
 	bool pe_free;
 		//Step 3.0 : Modify faulty_mapping_table considering the faulty nodes
-		cout<<faulty_mapping_table.size()<<endl;
+		//cout<<faulty_mapping_table.size()<<endl;
 	deque<bool> pe_status;  //false: Can be mapped; true: can't be mapped
 	pe_status.assign(mapping_table.size(), false);
 
@@ -1293,36 +1331,44 @@ void NNModel::FaultyMode()
 	}
 	/*----------------------------------------------------*/
 		//Step 3.1 : Get to know the destination PEs for each PE
-	deque <deque<int>> faulty_pe_id;
-	deque<int> temp_faulty;
-	for(int s=0; s< all_leyer_ID_Group.size() ; s++) //Do not consider the first and the last layer
-	{	
-		temp_faulty.clear();
-		for(int t=0; t< all_leyer_ID_Group[s].size();t++)
-		{
-			temp_faulty.push_back(mapping_table[all_leyer_ID_Group[s][t]]);
-		}
-		faulty_pe_id.push_back(temp_faulty);
-	}
-	/*-------------Debugging-------------------*/
-	/*cout<<endl;
-	int d=0;
-	cout<<faulty_pe_id.size()<<endl;
-	for(int f=0; f< faulty_pe_id[d].size();f++)
+	/*cout<< active_layers.size()<<endl;
+	if(active_layers.size() > 1 )
 	{
-		cout<<faulty_pe_id[d][f]<<"--";
-	}
-	cout<<endl;
-	/*-----------------------------------------*/
-	ShortestPath(faulty_pe_id);
-		//Step 3.2 : Shortest path
+		deque <deque<int>> faulty_pe_id;
+		deque<int> temp_faulty;
+		for(int s= active_layers.front()-1; s< active_layers.back()-1 ; s++) //Do not consider the first and the last layer
+		{	
+			temp_faulty.clear();
+			for(int t=0; t< all_leyer_ID_Group[s].size();t++)
+			{
+				temp_faulty.push_back(mapping_table[all_leyer_ID_Group[s][t]]);
+			}
+			faulty_pe_id.push_back(temp_faulty);
+		}
+		/*-------------Debugging-------------------*/
+		/*cout<<endl;
+		int d=1;
+		cout<<faulty_pe_id.size()<<endl;
+		for(int f=0; f< faulty_pe_id[d].size();f++)
+		{
+			cout<<faulty_pe_id[d][f]<<"--";
+		}
+		cout<<endl;
+		/*-----------------------------------------*/
 		
-		//Step 3.3 : Creation of table-based routing file in the format needed
-
+		
+		
+			//Step 3.2 : Shortest path
+			
+			//Step 3.3 : Creation of table-based routing file in the format needed
+	//}
+	
 }
 
-void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
+
+void NNModel:: ShortestPath()
 {
+	
 	// no. of vertices
 	int v = mapping_table.size();
 
@@ -1442,7 +1488,7 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 	
 
 	//automatic generation of source and destination
-	for(int r=0; r<f_pe_id.size() -1; r++)
+	/*for(int r=0; r<f_pe_id.size() -1; r++)
 	{
 		for(int p=0; p< f_pe_id[r].size(); p++)
 		{
@@ -1452,8 +1498,43 @@ void NNModel:: ShortestPath(deque<deque<int>> &f_pe_id)
 				printShortestDistance(adj, source, dest, v);
 			}
 		}
+	}*/
+	for(int r=0; r<NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y; r++)
+	{
+		bool faulty_src=false;
+		for(int p=0; p< NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y; p++)
+		{
+			bool faulty_dst = false;
+			for(int po=0; po< faultyNodes.size(); po++)
+			{
+				if( faultyNodes[po] == r)
+				{
+					faulty_src = true;
+					break;
+				}
+			}
+			if(faulty_src)
+			{
+				break;
+			}
+
+			for(int pi=0; pi< faultyNodes.size(); pi++)
+			{
+				if(faultyNodes[pi]== p)
+				{
+					faulty_dst = true;
+					break;
+				}
+			}
+			if(faulty_dst || r==p)
+			{
+				continue;
+			}	
+
+			int source = r, dest = p;
+			printShortestDistance(adj, source, dest, v);	
+		}
 	}
-	
 	//cout<<endl;
 	/*--------------Debugging-------------------------*/
 	/*for(int k=0; k< 100; k++)
@@ -1635,6 +1716,7 @@ void NNModel:: printShortestDistance(vector<int> adj[], int s,
 	if (BFS(adj, s, dest, v, pred, dist) == false) {
 		cout << "Given source and destination"
 			<< " are not connected";
+		cout<< s<<" "<<dest<<endl;
 		return;
 	}
 

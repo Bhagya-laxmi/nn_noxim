@@ -21,7 +21,7 @@ void NoximNoC::buildMesh()
     nnmodel.load();	//tytyty
 
 	// Check for routing table availability
-    if (NoximGlobalParams::routing_algorithm == ROUTING_TABLE_BASED)
+    if (NoximGlobalParams::routing_algorithm == ROUTING_TABLE_BASED) 
 	assert(grtable.load(NoximGlobalParams::routing_table_filename));
 
     // Create the mesh as a matrix of tiles

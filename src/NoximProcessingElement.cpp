@@ -1581,39 +1581,7 @@ void NoximProcessingElement::Convtrans()
 		
 		/*----------------------------------------------*/
 
-		trans_PE_ID.clear();
-		trans_PE_ID.push_back(trans_PE_ID_conv[0]);
-		int needed=0;
-		for(int ag =0; ag<trans_PE_ID_conv.size(); ag++)
-		{
-			needed =0;
-			for(int ah=0;ah<trans_PE_ID.size(); ah++)
-			{
-				if(trans_PE_ID_conv[ag] == trans_PE_ID[ah])
-				{
-					needed =0;
-					break;
-				}else{
-					needed =1;
-				}
-			}
-			if(needed == 1){trans_PE_ID.push_back(trans_PE_ID_conv[ag]);}
-		}
-
 		
-		//counts per PE for packet size
-		int count;
-		for(int au=0;au< trans_PE_ID.size();au++)
-		{
-			count =0;
-			for(int av=0; av<trans_PE_ID_conv.size(); av++ )
-			{
-				if(trans_PE_ID[au] == trans_PE_ID_conv[av])
-				{
-					count = count+1;
-				}
-			}trans_conv.push_back(count);
-		}
 
 		/*--------------Debugging-----------------*/
 		/*if(ID_group == 60)
@@ -1627,7 +1595,91 @@ void NoximProcessingElement::Convtrans()
 		}
 		/*----------------------------------------*/
 	}else if(NN_Model->all_leyer_type[ID_layer+1]== 'c')
-	{}
+	{
+		int temp_nxtgrp_neuron = NN_Model->all_leyer_ID_Group[ID_layer][0];
+		PE_table_nxtlayer_neuron=NN_Model->Group_table[temp_nxtgrp_neuron];
+		for(int aa =0; aa<Use_Neu; aa++)
+		{
+			done = 0;
+			for(int ab =0; ab< NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv].size();ab++ )
+			{
+				for(int ac=0; ac<NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab].size(); ac++ )
+				{
+					/*----------Debugging----------*/
+					/*if(ID_group == 7 && aa == 85)
+					{
+						cout<<(PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))<<endl;
+					}*/
+						/*-----------------------------*/
+					if( (PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))== NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac])
+					{
+						
+						for(int ad =0; ad< NN_Model->all_leyer_ID_Group[ID_layer].size(); ad++)
+						{
+							int temp_Group = NN_Model->all_leyer_ID_Group[ID_layer][ad];
+							PE_table_nxtlayer = NN_Model->Group_table[temp_Group];
+							for(int ae=0; ae<PE_table_nxtlayer.size();ae++)
+							{
+								/*------------------Debugging-----------------*/
+									/*if(ID_group == 7 && aa == 85)
+									{
+										cout<<ab<<"--"<<(NN_Model->all_leyer_size[ID_layer+1][1]*NN_Model->all_leyer_size[ID_layer+1][2])<<"--"<<(PE_table[aa].ID_In_layer / (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))<<"--";
+										cout<<(PE_table_nxtlayer[ae].ID_In_layer )<<"--";
+										cout<<(NN_Model->all_leyer_size[ID_layer+1][1]*NN_Model->all_leyer_size[ID_layer+1][2])*(PE_table[aa].ID_In_layer / (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))<<endl;	
+									}*/
+									/*--------------------------------------------*/
+								if((ab+ (NN_Model->all_leyer_size[ID_layer+1][1]*NN_Model->all_leyer_size[ID_layer+1][2])*(PE_table[aa].ID_In_layer / (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))) == (PE_table_nxtlayer[ae].ID_In_layer))
+								{
+									
+									trans_PE_ID_conv.push_back(NN_Model-> mapping_table[temp_Group]);
+									done =1;
+									
+									break;
+								}
+							}if(done ==1 ){break;}
+							
+						}if(done ==1 ){break;}
+					}
+					
+				}if(done ==1 ){break;}
+				
+			}
+		}
+	}
+
+	trans_PE_ID.clear();
+	trans_PE_ID.push_back(trans_PE_ID_conv[0]);
+	int needed=0;
+	for(int ag =0; ag<trans_PE_ID_conv.size(); ag++)
+	{
+		needed =0;
+		for(int ah=0;ah<trans_PE_ID.size(); ah++)
+		{
+			if(trans_PE_ID_conv[ag] == trans_PE_ID[ah])
+			{
+				needed =0;
+				break;
+			}else{
+				needed =1;
+			}
+		}
+		if(needed == 1){trans_PE_ID.push_back(trans_PE_ID_conv[ag]);}
+	}
+
+	
+	//counts per PE for packet size
+	int count;
+	for(int au=0;au< trans_PE_ID.size();au++)
+	{
+		count =0;
+		for(int av=0; av<trans_PE_ID_conv.size(); av++ )
+		{
+			if(trans_PE_ID[au] == trans_PE_ID_conv[av])
+			{
+				count = count+1;
+			}
+		}trans_conv.push_back(count);
+	}
 }
 
 void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
