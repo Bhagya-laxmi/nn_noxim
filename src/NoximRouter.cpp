@@ -126,6 +126,22 @@ void NoximRouter::txProcess()
 
 		    int o = route(route_data);
 
+			/*--------------Debugging----------------*/
+			char fileID_r[15] = "Trial_";
+			char fileID_t[5];
+			//cout<<"Local Id: "<<local_id<<endl;
+			sprintf(fileID_t,"%d",local_id);
+			//cout<<"File Id: "<<fileID_t<<endl;
+			strcat(fileID_r, fileID_t);
+			fstream file_t;
+			file_t.open( fileID_r ,ios::out|ios::app);
+			file_t << getCurrentCycleNum()
+				<< ": Router[" << local_id
+				<< "], Input[" << i << "] (" << buffer[i].
+				Size() << " flits)" << ", reserved Output["
+				<< o << "], flit: " << flit << endl;
+			/*----------------------------------------*/
+
 		    if (reservation_table.isAvailable(o)) {
 			reservation_table.reserve(i, o);
 			if (NoximGlobalParams::verbose_mode > VERBOSE_OFF) {

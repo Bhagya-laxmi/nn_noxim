@@ -1,0 +1,2 @@
+12: Router[80], Input[6] (1 flits), reserved Output[1], flit: [type: H, seq: 0, 80-->5], src_Neu_id = 0, data = 0
+734: Router[80], Input[6] (10 flits), reserved Output[1], flit: [type: H, seq: 0, 80-->94], src_Neu_id = 0, data = 0

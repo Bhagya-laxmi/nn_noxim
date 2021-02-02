@@ -1,0 +1,6 @@
+33892: Router[78], Input[3] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 77-->8], src_Neu_id = 0, data = 0
+33994: Router[78], Input[3] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 77-->18], src_Neu_id = 0, data = 0
+34315: Router[78], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 87-->8], src_Neu_id = 0, data = 0
+34417: Router[78], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 87-->18], src_Neu_id = 0, data = 0
+34727: Router[78], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 97-->8], src_Neu_id = 0, data = 0
+34829: Router[78], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 97-->18], src_Neu_id = 0, data = 0
