@@ -1566,14 +1566,14 @@ void NNModel:: ShortestPath()
 		{
 			path.clear();
 			str = line;
-			int hop = count(str.begin(), str.end(),'>') + 1;
-			//cout<<"stri: "<<str<<endl;
-			//cout<<count(str.begin(), str.end(),'>')<<endl;
-			//cout<<"line: "<<line<<endl;
-			//cout<<src<<"--"<<dst<<endl;
-			char *ptr = line+15;
-			//cout<<"CHecking:"<<ptr<<endl;
-
+  			string sp = " ";
+			int found = str.find(sp);
+			char *ptr = line+found;
+			//cout<<found<<endl;
+			//cout<<ptr<<endl;
+			str= ptr;
+			int hop =count(str.begin(), str.end(),'>')+1;
+			//cout<<"hop: "<<hop<<endl;
 			for(int u=0; u<hop; u++)
 			{
 				int temp;
@@ -1581,7 +1581,7 @@ void NNModel:: ShortestPath()
 				path.push_back(temp);
 				ptr= strstr(ptr, ">");
 				ptr++;
-				
+				//cout<<"Temp: "<<temp<<endl;
 			}
 			/*----------------Debugging-----------------*/
 			/*for(int f=0;f<path.size() ;f++)
