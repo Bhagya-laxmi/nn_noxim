@@ -13,7 +13,7 @@ layer_0_uP_mac[3][0][0]	318.16
 layer_0_router[4][0][0]	318.16
 layer_0_uP_mem[4][0][0]	318.16
 layer_0_uP_mac[4][0][0]	318.16
-layer_0_router[5][0][0]	318.16
+layer_0_router[5][0][0]	318.17
 layer_0_uP_mem[5][0][0]	318.16
 layer_0_uP_mac[5][0][0]	318.16
 layer_0_router[6][0][0]	318.17
@@ -160,7 +160,7 @@ layer_0_uP_mac[2][5][0]	318.16
 layer_0_router[3][5][0]	318.16
 layer_0_uP_mem[3][5][0]	318.16
 layer_0_uP_mac[3][5][0]	318.16
-layer_0_router[4][5][0]	318.16
+layer_0_router[4][5][0]	318.17
 layer_0_uP_mem[4][5][0]	318.16
 layer_0_uP_mac[4][5][0]	318.16
 layer_0_router[5][5][0]	318.17
@@ -190,7 +190,7 @@ layer_0_uP_mac[2][6][0]	318.16
 layer_0_router[3][6][0]	318.16
 layer_0_uP_mem[3][6][0]	318.16
 layer_0_uP_mac[3][6][0]	318.16
-layer_0_router[4][6][0]	318.16
+layer_0_router[4][6][0]	318.17
 layer_0_uP_mem[4][6][0]	318.16
 layer_0_uP_mac[4][6][0]	318.16
 layer_0_router[5][6][0]	318.17
@@ -220,7 +220,7 @@ layer_0_uP_mac[2][7][0]	318.16
 layer_0_router[3][7][0]	318.16
 layer_0_uP_mem[3][7][0]	318.16
 layer_0_uP_mac[3][7][0]	318.16
-layer_0_router[4][7][0]	318.16
+layer_0_router[4][7][0]	318.17
 layer_0_uP_mem[4][7][0]	318.16
 layer_0_uP_mac[4][7][0]	318.16
 layer_0_router[5][7][0]	318.17
@@ -229,7 +229,7 @@ layer_0_uP_mac[5][7][0]	318.16
 layer_0_router[6][7][0]	318.17
 layer_0_uP_mem[6][7][0]	318.16
 layer_0_uP_mac[6][7][0]	318.16
-layer_0_router[7][7][0]	318.17
+layer_0_router[7][7][0]	318.16
 layer_0_uP_mem[7][7][0]	318.16
 layer_0_uP_mac[7][7][0]	318.16
 layer_0_router[8][7][0]	318.16
@@ -256,7 +256,7 @@ layer_0_uP_mac[4][8][0]	318.16
 layer_0_router[5][8][0]	318.17
 layer_0_uP_mem[5][8][0]	318.16
 layer_0_uP_mac[5][8][0]	318.16
-layer_0_router[6][8][0]	318.17
+layer_0_router[6][8][0]	318.16
 layer_0_uP_mem[6][8][0]	318.16
 layer_0_uP_mac[6][8][0]	318.16
 layer_0_router[7][8][0]	318.16
@@ -346,7 +346,7 @@ layer_1_uP_mac[4][1][0]	318.16
 layer_1_router[5][1][0]	318.17
 layer_1_uP_mem[5][1][0]	318.16
 layer_1_uP_mac[5][1][0]	318.16
-layer_1_router[6][1][0]	318.17
+layer_1_router[6][1][0]	318.16
 layer_1_uP_mem[6][1][0]	318.16
 layer_1_uP_mac[6][1][0]	318.16
 layer_1_router[7][1][0]	318.16
@@ -379,7 +379,7 @@ layer_1_uP_mac[5][2][0]	318.16
 layer_1_router[6][2][0]	318.17
 layer_1_uP_mem[6][2][0]	318.16
 layer_1_uP_mac[6][2][0]	318.16
-layer_1_router[7][2][0]	318.17
+layer_1_router[7][2][0]	318.16
 layer_1_uP_mem[7][2][0]	318.16
 layer_1_uP_mac[7][2][0]	318.16
 layer_1_router[8][2][0]	318.16
@@ -496,10 +496,10 @@ layer_1_uP_mac[4][6][0]	318.16
 layer_1_router[5][6][0]	318.17
 layer_1_uP_mem[5][6][0]	318.16
 layer_1_uP_mac[5][6][0]	318.16
-layer_1_router[6][6][0]	318.17
+layer_1_router[6][6][0]	318.16
 layer_1_uP_mem[6][6][0]	318.16
 layer_1_uP_mac[6][6][0]	318.16
-layer_1_router[7][6][0]	318.17
+layer_1_router[7][6][0]	318.16
 layer_1_uP_mem[7][6][0]	318.16
 layer_1_uP_mac[7][6][0]	318.16
 layer_1_router[8][6][0]	318.16
@@ -526,7 +526,7 @@ layer_1_uP_mac[4][7][0]	318.16
 layer_1_router[5][7][0]	318.17
 layer_1_uP_mem[5][7][0]	318.16
 layer_1_uP_mac[5][7][0]	318.16
-layer_1_router[6][7][0]	318.17
+layer_1_router[6][7][0]	318.16
 layer_1_uP_mem[6][7][0]	318.16
 layer_1_uP_mac[6][7][0]	318.16
 layer_1_router[7][7][0]	318.16
@@ -553,10 +553,10 @@ layer_1_uP_mac[3][8][0]	318.16
 layer_1_router[4][8][0]	318.16
 layer_1_uP_mem[4][8][0]	318.16
 layer_1_uP_mac[4][8][0]	318.16
-layer_1_router[5][8][0]	318.16
+layer_1_router[5][8][0]	318.17
 layer_1_uP_mem[5][8][0]	318.16
 layer_1_uP_mac[5][8][0]	318.16
-layer_1_router[6][8][0]	318.17
+layer_1_router[6][8][0]	318.16
 layer_1_uP_mem[6][8][0]	318.16
 layer_1_uP_mac[6][8][0]	318.16
 layer_1_router[7][8][0]	318.16

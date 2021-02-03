@@ -375,7 +375,7 @@ if (reset.read() ) {
 						curr_XYXrouting = 0; //Initialization so that first packet starts with XY routing
 					}else
 					{
-						curr_XYXrouting = 1; //Initialization so that first packet starts with YX routing
+						curr_XYXrouting = 0; //Initialization so that first packet starts with YX routing  1
 					}
 					
 				} 
@@ -460,7 +460,7 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 //************Intermittent XY routing********************
 	if(flit.sequence_no == 0)
 	{
-		curr_XYXrouting = abs(curr_XYXrouting -1);
+		//curr_XYXrouting = abs(curr_XYXrouting -1);  
 		flit.XYX_routing   = curr_XYXrouting ; 
 		/*------------Debugging---------------*/
 		/*if(local_id == 0  )
