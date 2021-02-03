@@ -136,6 +136,14 @@ void NoximRouter::txProcess()
 		    int o = route(route_data);
 
 			/*--------------Debugging----------------*/
+			/*if(local_id == 20 )
+			{
+				cout<<"------------------------"<<endl;
+				cout<<"XYX: "<<flit.XYX_routing<<endl;
+				cout<<"Direc: "<<o<<" "<<flit.dst_id<<endl;
+				cout<<"Default: "<<NoximGlobalParams::routing_algorithm<<endl;
+			}*/
+
 			char fileID_r[15] = "Trial_";
 			char fileID_t[5];
 			//cout<<"Local Id: "<<local_id<<endl;
@@ -148,7 +156,7 @@ void NoximRouter::txProcess()
 				<< ": Router[" << local_id
 				<< "], Input[" << i << "] (" << buffer[i].
 				Size() << " flits)" << ", reserved Output["
-				<< o << "], flit: " << flit <<" XYX: "<<flit.XYX_routing<< endl;
+				<< o << "], flit: " << flit <<" XYX: "<<route_data.XYX_routing<< endl;
 			/*----------------------------------------*/
 
 		    if (reservation_table.isAvailable(o)) {
@@ -790,6 +798,7 @@ int NoximRouter::selectionFunction(const vector < int >&directions,
 vector < int >NoximRouter::routingXYX(const NoximCoord & current,
 				     const NoximCoord & destination,const bool XYX_routing)
 {
+	
     vector < int >directions;
 	if(XYX_routing)
 	{
@@ -813,7 +822,6 @@ vector < int >NoximRouter::routingXYX(const NoximCoord & current,
     		else if (destination.x < current.x)
 			directions.push_back(DIRECTION_WEST);
 	}
-
 
     return directions;
 }
