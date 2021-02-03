@@ -47,6 +47,9 @@ SC_MODULE(NoximProcessingElement)
 	/***MODIFY BY HUI-SHUN***/
     sc_in < int >free_slots_neighbor;
 
+	/*----Dynamic mapping-----------*/
+	sc_in<bool> trig_mapping;
+
     // Registers
     int local_id;		// Unique identification number
     bool current_level_rx;	// Current level for Alternating Bit Protocol (ABP)
@@ -173,7 +176,7 @@ float fixed_sim(double long d);
 	sensitive << clock.pos();
 
 	SC_METHOD(DynamicMappingDone);
-	sensitive<< clock.pos();
+	sensitive<< trig_mapping;
 
 	SC_METHOD(TraffThrottlingProcess);
     sensitive << reset;

@@ -51,7 +51,7 @@ void NoximProcessingElement::rxProcess()
 //**********************^^^^^^^^^^^^^^**************************
     	} 
 	else {
-		//cout<<"PE Rx process"<<endl;
+		//cout<<"PE Rx process"<<local_id<<endl;
 		//if (req_rx.read() == 1 - current_level_rx) {
 		if(req_rx.read()==1){
 
@@ -83,7 +83,9 @@ void NoximProcessingElement::rxProcess()
 						break;
 					}
 				}
+				
 				receive_data[point_receive_Neu_ID]=flit_tmp.data;
+				
 
 				if (should_receive == 0)
 				{
@@ -331,7 +333,7 @@ if (reset.read() ) {
 								packet_queue.push(packet);
 
 								/*--------------Debugging-----------*/
-								/*if(ID_group == 0 )
+								/*if(ID_group == 26 )
 								{
 									cout<<"Packet Checking....";
 									cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
@@ -355,7 +357,7 @@ if (reset.read() ) {
 								packet_queue.push(packet);
 								/*--------------Debugging-----------*/
 								/*cout<<"Pooling layer, Local id:  "<<local_id<<endl;
-								if(ID_group == 0)
+								if(ID_group == 26)
 								{
 									//cout<<"Packet Checking....";
 									cout<<"Src id: "<<packet.src_id<<" Dst Id: "<<packet.dst_id<<" Size: "<<packet.size<<endl;
@@ -401,6 +403,7 @@ if (reset.read() ) {
 					cout<<in_data<<endl;
 				}
 				/*-------------------------------------*/
+				
 				NoximFlit flit = nextFlit(ID_layer, in_data);	// tytyty Generate a new flit
         			//NoximFlit flit = nextFlit(ID_layer);	// tytyty Generate a new flit
 				//if (NoximGlobalParams::verbose_mode > VERBOSE_OFF) {
@@ -425,6 +428,7 @@ if (reset.read() ) {
 				req_tx.write(0);
 				flag_f = 0;
 			}
+			
 		}
 		/*-------Debugging--------*/
 		//if(ID_group ==0)
@@ -441,6 +445,7 @@ if (reset.read() ) {
 NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data)  //************tyty*****
 //NoximFlit NoximProcessingElement::nextFlit(const int ID_layer)  //************tyty*****
 {
+	
     NoximFlit flit;
     NoximPacket packet = packet_queue.front();
 	
@@ -521,10 +526,10 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 			flit.src_Neu_id = Use_Neu_ID[start_index-1];
 			flit.data = res[start_index-1];
 			/*--------------Debugging-----------------*/
-			//if(ID_group == 3 && pe_id == 49)
-			//{
-			//	cout<<"("<<flit.src_Neu_id<<")--("<<start_index<<")--";
-			//}
+			/*if(ID_group == 26)
+			{
+				cout<<"("<<flit.src_Neu_id<<"--"<<start_index<<")";
+			}
 			/*----------------------------------------*/
 		}else
 		{
@@ -563,15 +568,15 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 	packet_queue.pop();
 
 	/*------------Debugging--------------*/
-	//if(ID_group == 0)
-	//{
-		//cout<<"(flit Type: "<<flit.flit_type<<"--";
-		//cout<<"Source Neu ID: "<<flit.src_Neu_id<<"--";
-		//cout<<"Sequence No: "<<flit.sequence_no<<"--";
-		//cout<<"Packet size: "<<packet.size<<"--";
-		//cout<<"Packet flit left: "<<packet.flit_left<<"--";
-		//cout<<"Start Index: "<<start_index<<")--";
-	//}
+	/*if(ID_group == 0)
+	{
+		cout<<"(flit Type: "<<flit.flit_type<<"--";
+		cout<<"Source Neu ID: "<<flit.src_Neu_id<<"--";
+		cout<<"Sequence No: "<<flit.sequence_no<<"--";
+		cout<<"Packet size: "<<packet.size<<"--";
+		cout<<"Packet flit left: "<<packet.flit_left<<"--";
+		cout<<"Start Index: "<<start_index<<")--";
+	}
 	/*-----------------------------------*/
 
     return flit;
@@ -1186,6 +1191,9 @@ void NoximProcessingElement::TraffThrottlingProcess()
 
 void NoximProcessingElement::PreprocessingProcess()
 {
+	Use_Neu_ID.clear();
+	res.clear();
+	//cout<<"Prep: "<<local_id<<endl;
 	for( int k = 0 ; k<NN_Model->mapping_table.size() ; k++ )
 	{
 		//cout<<"Loop 1"<<endl;
@@ -1207,7 +1215,7 @@ void NoximProcessingElement::PreprocessingProcess()
 				{
 					Use_Neu_ID.push_back(PE_table[i].ID_Neu);
 				}
-
+				
 
 				if( Type_layer == 'f')
 				{	
@@ -1253,7 +1261,7 @@ void NoximProcessingElement::PreprocessingProcess()
 								FCtrans();
 								//Perform computation and send it
 								LayerFCComp(NN_Model->interm_data_in);
-								
+								//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start computing..."<<endl;
 								flag_p = 1; 
 								flag_f = 1; 
 								temp_computation_time = sc_simulation_time();
@@ -1303,6 +1311,7 @@ void NoximProcessingElement::PreprocessingProcess()
 								cout<<endl<<res.size()<<endl;;
 							}*/
 							/*------------------------------------------*/
+							//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start computing..."<<endl;
 							flag_p=1;
 							flag_f=1;
 							temp_computation_time = sc_simulation_time();
@@ -1340,10 +1349,21 @@ void NoximProcessingElement::PreprocessingProcess()
 							flag_f =0;
 						}else
 						{
+							//cout<<"Conv.."<<local_id<<endl;
 							if(ID_layer == NN_Model->active_layers.front()) //
 							{
+								//cout<<"Checking.."<<local_id<<endl;
 								Convreceive(true);
-								LayerConvComp(NN_Model->interm_data_in);
+								
+								if(ID_layer == 1)
+								{
+									LayerConvComp(NN_Model-> all_data_in[in_data]);
+								}else
+								{
+									LayerConvComp(NN_Model->interm_data_in);
+									
+								}
+								//cout<<"Checking.."<<local_id<<endl;
 								/*----------Debugging---------------*/
 								/*for(int ff=0; ff< Use_Neu; ff++)
 								{
@@ -1357,8 +1377,10 @@ void NoximProcessingElement::PreprocessingProcess()
 								Convtrans();
 								flag_transmit = true;
 								temp_computation_time = sc_simulation_time();
+								//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start computing..."<<endl;
 								flag_p = 1;
 								flag_f = 1;
+								//cout<<"Checking.."<<local_id<<endl;
 							}else if(ID_layer == NN_Model->active_layers.back())
 							{
 								/*---------------Debugging--------------*/
@@ -1398,6 +1420,7 @@ void NoximProcessingElement::PreprocessingProcess()
 					}
 					else if (NoximGlobalParams::mapping_method == DYNAMIC)
 					{
+						//cout<<"Pool.."<<local_id<<endl;
 						if(NN_Model ->active_layers.size() == 1) // Only 1 layer is mapped
 						{
 							Poolreceive(true);
@@ -1429,10 +1452,12 @@ void NoximProcessingElement::PreprocessingProcess()
 								Poolreceive(true);
 								Pooltrans();
 								//Perform computation and send it
+							
 								LayerPoolComp(NN_Model->interm_data_in);
 								
 								flag_p = 1; 
 								flag_f = 1; 
+								//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start computing..."<<endl;
 								temp_computation_time = sc_simulation_time();
 								flag_transmit = true;
 
@@ -1466,6 +1491,7 @@ void NoximProcessingElement::FCtrans()
 {
 	if(ID_layer !=NN_Model->all_leyer_size.size()-1)
 	{
+		trans_PE_ID.clear();
 		//trans ids	
 		int i;
 		for(i = 0 ; i<NN_Model->all_leyer_ID_Group[ID_layer].size() ; i++)
@@ -1487,6 +1513,7 @@ void NoximProcessingElement::FCreceive(bool SingleOrFirstLayer)
 	receive = NN_Model-> all_leyer_size[ID_layer-1][0];
 	should_receive = receive;
 	receive_Neu_ID.clear();
+	receive_data.clear();
 	receive_data.assign(receive , 0 );
 	
 	if(!SingleOrFirstLayer)
@@ -1568,7 +1595,7 @@ void NoximProcessingElement::Convtrans()
 		}
 
 		/*-------------------Debugging------------------*/
-		/*if(ID_group == 2)
+		/*if(local_id == 26)
 		{	
 			//cout<<Use_Neu<<endl;
 			for(int za=0; za<trans_PE_ID_conv.size();za++)
@@ -1650,6 +1677,7 @@ void NoximProcessingElement::Convtrans()
 
 	trans_PE_ID.clear();
 	trans_PE_ID.push_back(trans_PE_ID_conv[0]);
+	trans_conv.clear();
 	int needed=0;
 	for(int ag =0; ag<trans_PE_ID_conv.size(); ag++)
 	{
@@ -1681,6 +1709,21 @@ void NoximProcessingElement::Convtrans()
 			}
 		}trans_conv.push_back(count);
 	}
+
+	/*-------------------Debugging------------------*/
+		/*if(local_id == 26)
+		{	
+			//cout<<Use_Neu<<endl;
+			for(int za=0; za<trans_PE_ID.size();za++)
+			{
+				cout<<"("<<trans_PE_ID[za]<<"--"<<trans_conv[za]<<")--";
+			}
+			//cout<<NN_Model->all_pool_coord[PE_table_nxtlayer_neuron[0].ID_pool].size()<<endl;
+			//cout<<(NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])<<endl;
+		}
+		
+		/*----------------------------------------------*/
+
 }
 
 void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
@@ -1760,6 +1803,7 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 	}
 	receive = receive_Neu_ID.size();
 	should_receive = receive;
+	receive_data.clear();
 	receive_data.assign(receive , 0 );
 	
 
@@ -2002,12 +2046,14 @@ void NoximProcessingElement::Poolreceive(bool SingleOrFirstLayer)
 void NoximProcessingElement::DynamicMappingDone()
 {
 	//cout<<NN_Model->Mapping_done<<endl;
-	if(NN_Model->Mapping_done == true)
+	if(trig_mapping.read())//NN_Model->Mapping_done == true)
 	{
+		//cout<<local_id<<endl;
 		//cout<<"Mapping status: "<<NN_Model->Mapping_done<<endl;
-		NN_Model->Mapping_done = false;
+		
 		//cout<<"Mapping status: "<<NN_Model->Mapping_done<<endl;
 		PreprocessingProcess();	
+		NN_Model->Mapping_done = false;
 	}
 }
 

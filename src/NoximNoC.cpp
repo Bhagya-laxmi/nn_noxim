@@ -52,6 +52,7 @@ void NoximNoC::buildMesh()
 	    // Map clock and reset
 	    t[i][j][k]->clock(clock);
 	    t[i][j][k]->reset(reset);
+		t[i][j][k]->trig_mapping(trig_mapping);
 
 	    // Map Rx signals
 	    t[i][j][k]->req_rx[DIRECTION_NORTH] (req_to_south[i][j][k]);
@@ -806,6 +807,11 @@ bool NoximNoC::EmergencyDecision()
 
 void NoximNoC::Dynamic_check()  //Dynamic mapping
 { 
+	if(trig_mapping.read() == true)
+	{
+		trig_mapping.write(false);
+	}
+	
 	if(NoximGlobalParams::mapping_method == DYNAMIC)
 	{
 		int count =0;
@@ -826,6 +832,7 @@ void NoximNoC::Dynamic_check()  //Dynamic mapping
 			}
 			/*----------------------------------*/
 			nnmodel.Dymapping();
+			trig_mapping.write(true);
 		}
 	}
 	

@@ -1039,6 +1039,8 @@ void NNModel::Dymapping()
 
 		//int debug;
 		//Correction of the group numbers for dynamic mapping
+
+
 		if(PEMappingCount.size() > 0) //Ignoring the first mapping
 		{
 			int mapped_count = 0;
@@ -1091,15 +1093,17 @@ void NNModel::Dymapping()
 		PEMappingCount.push_back(Group_table.size());
 
 		HardwarePlan();
-
+		//cout<<"------------------------"<<endl;
+		//cout<<"Interm Data OUt size:"<<interm_data_out.size()<<endl;
+		//cout<<"------------------------"<<endl;
 		//Deque ready for storing data	
 		interm_data_in.clear();
 		interm_data_in = interm_data_out;
 		/*--------------Debugging----------------*/
-		//if(interm_data_in.size() >0)
-		//{
-		//	cout<<"interm data in: "<< interm_data_in[303]<<endl;
-		//}
+		/*if(interm_data_in.size() >0)
+		{
+			cout<<"interm data in: "<< interm_data_in[303]<<endl;
+		}
 		/*-------------------------------*/
 
 		interm_data_out.clear();

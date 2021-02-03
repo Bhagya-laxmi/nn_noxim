@@ -61,6 +61,9 @@ SC_MODULE(NoximTile)
     sc_signal <int> free_slots_local;
     sc_signal <int> free_slots_neighbor_local;
 
+	/*----Dynamic mapping-----------*/
+	sc_in<bool> trig_mapping;
+
     // Instances
     NoximRouter *r;		                // Router instance
     NoximProcessingElement *pe;	                // Processing Element instance
@@ -131,6 +134,8 @@ SC_MODULE(NoximTile)
 	pe->free_slots(free_slots_neighbor_local);
 	/****************MODIFY BY HUI-SHUN********************/
 	pe->free_slots_neighbor(free_slots_local);
+	/*-----------Dynamic mapping---------------*/
+	pe->trig_mapping(trig_mapping);
 
     }
 

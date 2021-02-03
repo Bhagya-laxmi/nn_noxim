@@ -23,6 +23,7 @@
         "fstream": "cpp",
         "limits": "cpp",
         "atomic": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "memory": "cpp"
     }
 }
