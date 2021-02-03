@@ -99,6 +99,15 @@ void NoximRouter::rxProcess()
 void NoximRouter::txProcess()
 {
     if (reset.read()) {
+		/*--------------Debugging----------------*/
+			char fileID_r[15] = "Trial_";
+			char fileID_t[5];
+			//cout<<"Local Id: "<<local_id<<endl;
+			sprintf(fileID_t,"%d",local_id);
+			//cout<<"File Id: "<<fileID_t<<endl;
+			strcat(fileID_r, fileID_t);
+			remove(fileID_r);
+			/*------------------------------------*/
 	// Clear outputs and indexes of transmitting protocol
 	for (int i = 0; i < DIRECTIONS + 1; i++) {
 	    req_tx[i].write(0);
@@ -139,7 +148,7 @@ void NoximRouter::txProcess()
 				<< ": Router[" << local_id
 				<< "], Input[" << i << "] (" << buffer[i].
 				Size() << " flits)" << ", reserved Output["
-				<< o << "], flit: " << flit << endl;
+				<< o << "], flit: " << flit <<" XYX: "<<flit.XYX_routing<< endl;
 			/*----------------------------------------*/
 
 		    if (reservation_table.isAvailable(o)) {
