@@ -165,8 +165,15 @@ bool NNModel::load()//M_fname Useless tytyty
 	output_size=all_leyer_size.back()[0];
 
 	//******************mapping information prepare************************
-	cout<<"Mapping Algorithm: "<< NoximGlobalParams::mapping_algorithm<<endl;
-	cout<<"Mapping Method: STATIC"<<endl;
+	cout<<"Mapping Algorithm=> "<< NoximGlobalParams::mapping_algorithm<<endl;
+	cout<<"Mapping Method=> STATIC"<<endl;
+	if(NoximGlobalParams::faulty_mode != INACTIVE)
+	{
+		cout<<"Routing Algorithm=> Table based routing"<<endl;
+	}else
+	{
+		cout<<"Routing Algorithm=> XYX routing"<<endl;
+	}
 	
 	
 	mapping_table.clear();
@@ -534,10 +541,6 @@ bool NNModel::load()//M_fname Useless tytyty
 	/*-----------------------------------*/
 
 	active_layers.clear();
-	for(int re=0; re<all_leyer_ID_Group.size()+1; re++)
-	{
-		cout<<"active_layers: "<<re+1<<" ";
-	}
 
 	/*------------------Faulty Nodes ---------------------*/
 	if(NoximGlobalParams::faulty_mode != INACTIVE)
@@ -546,7 +549,9 @@ bool NNModel::load()//M_fname Useless tytyty
 		faulty_mapping_table = mapping_table;
 		FaultyMode();
 		ShortestPath();
+		
 	}
+	
 //******************print floorplan****************
 	Mapping_done = false;
 	if(NoximGlobalParams::mapping_method == STATIC)

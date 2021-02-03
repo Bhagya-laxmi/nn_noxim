@@ -1,5 +1,2 @@
-26: Router[10], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 80-->5], src_Neu_id = 0, data = 0 XYX: 0
-266: Router[10], Input[2] (15 flits), reserved Output[0], flit: [type: H, seq: 0, 90-->5], src_Neu_id = 0, data = 0 XYX: 0
-382: Router[10], Input[2] (10 flits), reserved Output[0], flit: [type: H, seq: 0, 70-->5], src_Neu_id = 0, data = 0 XYX: 0
-995: Router[10], Input[0] (1 flits), reserved Output[2], flit: [type: H, seq: 0, 0-->84], src_Neu_id = 0, data = 0 XYX: 0
-32779: Router[10], Input[6] (1 flits), reserved Output[2], flit: [type: H, seq: 0, 10-->84], src_Neu_id = 0, data = 0 XYX: 0
+12: Router[10], Input[6] (1 flits), reserved Output[1], flit: [type: H, seq: 0, 10-->84], src_Neu_id = 0, data = 0 XYX: 1
+962: Router[10], Input[2] (1 flits), reserved Output[0], flit: [type: H, seq: 0, 70-->5], src_Neu_id = 0, data = 0 XYX: 0
