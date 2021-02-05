@@ -21,6 +21,7 @@
 #include "NoximProcessingElement.h"
 //extern int throttling[8][8][4];
 //extern int throttling[DEFAULT_MESH_DIM_X][DEFAULT_MESH_DIM_Y][DEFAULT_MESH_DIM_Z];
+//Local memory implementation
 
 int NoximProcessingElement::randInt(int min, int max)
 {
