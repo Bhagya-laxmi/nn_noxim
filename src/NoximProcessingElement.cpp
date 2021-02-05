@@ -2289,7 +2289,7 @@ void NoximProcessingElement:: ConvWeights()
 		all_conv_bias_pe.push_back(NN_Model->all_conv_bias[conv_layers[c]]);
 	}
 
-	if(local_id ==0)
+	/*if(local_id ==0)
 	{
 		cout<<"Conv Layer: "<<conv_layers[0]<<endl;
 		cout<<all_conv_weight_pe[conv_layers[0]].size()<<endl;
@@ -2302,5 +2302,5 @@ void NoximProcessingElement:: ConvWeights()
 		{
 			cout<<all_conv_bias_pe[conv_layers[0]][p]<<"-----";
 		}
-	}
+	}*/
 }
