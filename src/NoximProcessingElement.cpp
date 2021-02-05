@@ -134,18 +134,29 @@ void NoximProcessingElement::rxProcess()
 							int conv_z= NN_Model->all_leyer_size[ID_layer][6];
 							int denominator = NN_Model->all_leyer_size[ID_layer][1]* NN_Model->all_leyer_size[ID_layer][2];
 							
+							int dr;
+							for(dr=0; dr< conv_layers.size(); dr++)
+							{
+								if(conv_layers[dr] == PE_table[bg].ID_conv)
+								{
+									break;
+								}
+							}
+
 							for(int bl =0; bl< conv_z; bl++)
 							{
 								for(int fg=0;fg< size_conv;fg++)
 								{
-									value = value + deq_data[bl*size_conv +fg]* NN_Model->all_conv_weight[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator][bl][fg];
+									
+									value = value + deq_data[bl*size_conv +fg]* all_conv_weight_pe[dr][PE_table[bg].ID_In_layer/denominator][bl][fg];
+									//value = value + deq_data[bl*size_conv +fg]* NN_Model->all_conv_weight[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator][bl][fg];
 								}
 								
 								
 							}
 							
 							//Add bias
-							value = value + NN_Model->all_conv_bias[PE_table[bg].ID_conv][PE_table[bg].ID_In_layer/denominator];
+							value = value + all_conv_bias_pe[dr][PE_table[bg].ID_In_layer/denominator];
 							
 							//Activation function
 							if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
@@ -1289,6 +1300,7 @@ void NoximProcessingElement::PreprocessingProcess()
 
 				}else if(Type_layer == 'c')
 				{
+					ConvWeights();
 					if(NoximGlobalParams::mapping_method == STATIC)
 					{
 						//Layer is convolution
@@ -1296,7 +1308,7 @@ void NoximProcessingElement::PreprocessingProcess()
 						//Step2: Receive neuron ids from NNModel
 
 						Convreceive(false);
-
+						
 						//Step3: If layer is conv 1, take data from memory and perform convolution and send data
 						if(ID_layer == 1)
 						{
@@ -2067,16 +2079,25 @@ void NoximProcessingElement::LayerConvComp(deque<float> &data_deq)
 	for(int aa =0; aa<Use_Neu; aa++)
 	{
 		value =0.0;
+		int dr;
+		for(dr=0; dr< conv_layers.size(); dr++)
+		{
+			if(conv_layers[dr] == PE_table[aa].ID_conv)
+			{
+				break;
+			}
+		}
+
 		for(int ab=0; ab< kernel_z ;ab++)
 		{
 			for(int ac =0; ac< kernel_size;ac++)
 			{
-				value += NN_Model->all_conv_weight[PE_table[aa].ID_conv][PE_table[aa].ID_In_layer / denominator][ab][ac] * data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]];//NN_Model-> all_data_in[in_data][receive_neu_ID_conv[aa][ac+ab*kernel_size]];
+				value += all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac] * data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]];//NN_Model-> all_data_in[in_data][receive_neu_ID_conv[aa][ac+ab*kernel_size]];
 			}
 			
 		}
 		//Adding bias
-		value += NN_Model ->all_conv_bias[PE_table[aa].ID_conv][PE_table[aa].ID_In_layer / denominator];
+		value += all_conv_bias_pe[dr][PE_table[aa].ID_In_layer / denominator];
 
 		//Activation function
 		if ( NN_Model->all_leyer_size[ID_layer].back() == RELU )//relu
@@ -2236,5 +2257,50 @@ void NoximProcessingElement::LayerFCComp(deque<float> &data_deq)
 			file_o << res[ff] << endl; //file_o << res[i] << endl;
 		}
 		
+	}
+}
+
+void NoximProcessingElement:: ConvWeights()
+{
+	conv_layers.clear();
+	conv_layers.push_back(PE_table[0].ID_conv);
+	int needed =0;
+	for(int a=1; a< Use_Neu; a++)
+	{
+		needed = 1;
+		for(int b=0; b< conv_layers.size(); b++)
+		{
+			if(conv_layers[b] == PE_table[a].ID_conv )
+			{
+				needed =0;
+				break;
+			}
+		}
+		if(needed == 1)
+		{
+			conv_layers.push_back(PE_table[a].ID_conv);
+		}
+	}
+	all_conv_weight_pe.clear();
+	all_conv_bias_pe.clear();
+	for(int c=0;c <conv_layers.size(); c++)
+	{
+		all_conv_weight_pe.push_back(NN_Model->all_conv_weight[conv_layers[c]]);
+		all_conv_bias_pe.push_back(NN_Model->all_conv_bias[conv_layers[c]]);
+	}
+
+	if(local_id ==0)
+	{
+		cout<<"Conv Layer: "<<conv_layers[0]<<endl;
+		cout<<all_conv_weight_pe[conv_layers[0]].size()<<endl;
+		cout<<all_conv_weight_pe[conv_layers[0]][0].size()<<endl;
+		cout<<all_conv_weight_pe[conv_layers[0]][1].size()<<endl;
+		cout<<all_conv_weight_pe[conv_layers[0]][0][0][0]<<"--"<<all_conv_weight_pe[conv_layers[0]][0][0][24]<<endl;
+
+		cout<<"Bias: "<<endl;
+		 for( int p=0; p< all_conv_bias_pe[conv_layers[0]].size();p++)
+		{
+			cout<<all_conv_bias_pe[conv_layers[0]][p]<<"-----";
+		}
 	}
 }

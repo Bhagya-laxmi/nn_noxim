@@ -97,6 +97,9 @@ SC_MODULE(NoximProcessingElement)
 	deque<int> Neu_complete;
 
 	deque<int> curr_trans_pe_id;
+	deque <deque<deque< deque< float >>>> all_conv_weight_pe;
+	deque<deque <float>> all_conv_bias_pe;
+	deque <int> conv_layers;
 	//deque <int> packet_size;
 	//deque <deque<int>> curr_src_neu_id;
 	//deque<deque<float>> curr_data;
@@ -162,7 +165,9 @@ float fixed_sim(double long d);
 	void LayerConvComp(deque<float> &data_deq);
 	void LayerPoolComp(deque<float> &data_deq);
 	void LayerFCComp(deque<float> &data_deq);
+	void ConvWeights();
 	
+
 	bool flag_transmit;
     // Constructor
     SC_CTOR(NoximProcessingElement) {
