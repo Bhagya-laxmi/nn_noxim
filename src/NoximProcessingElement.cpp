@@ -916,6 +916,7 @@ if (reset.read() ) {
 							/*------------------------------------------*/
 							flag_p=1;
 							flag_f=1;
+							temp_computation_time = sc_simulation_time();
 						}else
 						{
 							flag_p=0;
