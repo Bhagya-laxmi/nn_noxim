@@ -798,7 +798,6 @@ int NoximRouter::selectionFunction(const vector < int >&directions,
 vector < int >NoximRouter::routingXYX(const NoximCoord & current,
 				     const NoximCoord & destination,const bool XYX_routing)
 {
-	
     vector < int >directions;
 	if(XYX_routing)
 	{
