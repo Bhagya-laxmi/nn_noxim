@@ -1,8 +1,7 @@
 %List of Faulty Nodes in the NoC
 %Make a list of nodes one below the other with numbering of the nodes starting from 0
 
- 14
- 25
- 37
- 63
- 74
+ 00
+ 01
+ 10
+ 11

@@ -1315,14 +1315,14 @@ void NoximProcessingElement::PreprocessingProcess()
 							
 							LayerConvComp(NN_Model-> all_data_in[in_data]);
 							/*--------------Debugging-------------------*/
-							/*if(ID_group ==1)
+							/*if(ID_group ==0)
 							{
-								for(int ff =0; ff< Use_Neu; ff++)
-								{
-									cout<<"("<< res[ff]<<")--";
-								}
-								cout<<endl<<res.size()<<endl;;
-							}*/
+								//for(int ff =0; ff< Use_Neu; ff++)
+								//{
+									cout<<"("<< res[71]<<")--";
+								//}
+								//cout<<endl<<res.size()<<endl;;
+							}
 							/*------------------------------------------*/
 							//cout<<sc_simulation_time()<<": (PE_"<<local_id<<") Now layer "<<ID_layer<<" start computing..."<<endl;
 							flag_p=1;
@@ -2093,6 +2093,15 @@ void NoximProcessingElement::LayerConvComp(deque<float> &data_deq)
 			for(int ac =0; ac< kernel_size;ac++)
 			{
 				value += all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac] * data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]];//NN_Model-> all_data_in[in_data][receive_neu_ID_conv[aa][ac+ab*kernel_size]];
+				/*------------Debugging---------------*/
+				/*if(ID_group == 0 && aa == 72)
+				{
+					cout<< "("<<all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac]<< "--"<<data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]]<<")";
+
+				}
+
+				/*------------------------------------*/
+			
 			}
 			
 		}

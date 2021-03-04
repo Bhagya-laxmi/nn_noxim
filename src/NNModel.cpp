@@ -383,7 +383,8 @@ bool NNModel::load()//M_fname Useless tytyty
 			if(temp_ID_Neu >= all_Nue) break;
 
 			if(temp_ID_Group >= NoximGlobalParams::mesh_dim_x*NoximGlobalParams::mesh_dim_y && NoximGlobalParams::mapping_method == STATIC)
-				cout<<"error group_size or NoC_size" <<endl;						//output error!! 
+				{cout<<"error group_size or NoC_size" <<endl;						//output error!! 
+				}
 			
 			temp_ID_In_layer = 0;
 			temp_ID_In_Group = 0;
