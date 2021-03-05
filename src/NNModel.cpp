@@ -553,7 +553,7 @@ bool NNModel::load()//M_fname Useless tytyty
 		
 	}
 	
-//******************print floorplan****************
+	//******************print floorplan****************
 	Mapping_done = false;
 	if(NoximGlobalParams::mapping_method == STATIC)
 	{
@@ -1724,9 +1724,9 @@ void NNModel:: printShortestDistance(vector<int> adj[], int s,
 	int pred[v], dist[v];
 
 	if (BFS(adj, s, dest, v, pred, dist) == false) {
-		cout << "Given source and destination"
-			<< " are not connected";
-		cout<< s<<" "<<dest<<endl;
+		//cout << "Given source and destination"
+		//	<< " are not connected";
+		//cout<< s<<" "<<dest<<endl;
 		return;
 	}
 

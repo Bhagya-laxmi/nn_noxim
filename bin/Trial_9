@@ -1,0 +1,2 @@
+12: Router[9], Input[6] (1 flits), reserved Output[2], flit: [type: H, seq: 0, 9-->35], src_Neu_id = 0, data = 0 XYX: 1
+152: Router[9], Input[6] (1 flits), reserved Output[2], flit: [type: H, seq: 0, 9-->34], src_Neu_id = 0, data = 0 XYX: 0
