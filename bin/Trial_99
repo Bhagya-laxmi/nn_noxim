@@ -1,0 +1,3 @@
+18: Router[99], Input[0] (1 flits), reserved Output[3], flit: [type: H, seq: 0, 69-->96], src_Neu_id = 0, data = 0 XYX: 0
+80: Router[99], Input[0] (1 flits), reserved Output[3], flit: [type: H, seq: 0, 59-->93], src_Neu_id = 0, data = 0 XYX: 0
+134: Router[99], Input[0] (1 flits), reserved Output[3], flit: [type: H, seq: 0, 49-->91], src_Neu_id = 0, data = 0 XYX: 0
