@@ -144,7 +144,7 @@ void NoximRouter::txProcess()
 				cout<<"Default: "<<NoximGlobalParams::routing_algorithm<<endl;
 			}*/
 
-			char fileID_r[15] = "Trial_";
+			/*char fileID_r[15] = "Trial_";
 			char fileID_t[5];
 			//cout<<"Local Id: "<<local_id<<endl;
 			sprintf(fileID_t,"%d",local_id);
