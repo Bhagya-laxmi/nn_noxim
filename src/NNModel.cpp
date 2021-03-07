@@ -748,6 +748,7 @@ bool NNModel::load()//M_fname Useless tytyty
 				//Changes for Stride and padding in convolution
 				if(stride_c == 1)
 				{
+					cout<<"Here"<<endl;
 					for(int aa =0; aa< coord_x; aa++)
 					{
 						for(int bb =0; bb < coord_y; bb++)
@@ -762,6 +763,8 @@ bool NNModel::load()//M_fname Useless tytyty
 										if(!cond)
 										{
 											temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
+										}else{
+											temp_cell.push_back(-1);
 										}
 										
 										
@@ -777,11 +780,11 @@ bool NNModel::load()//M_fname Useless tytyty
 
 					/*-----------------Debugging---------------*/
 					/*int sf =0;
-					for(int ff=0; ff<all_conv_coord[1][sf].size(); ff++)
+					for(int ff=0; ff<all_conv_coord[0][sf].size(); ff++)
 					{
-						cout<<all_conv_coord[1][sf][ff] <<"--";
+						cout<<all_conv_coord[0][sf][ff] <<"--";
 					}
-					cout<<endl<<"Size: "<<all_conv_coord[1][sf].size()<<endl;
+					cout<<endl<<"Size: "<<all_conv_coord[0][sf].size()<<endl;
 					cout<<coordPrev_y+1<<endl;
 					
 					/*-----------------------------------------*/
@@ -807,7 +810,9 @@ bool NNModel::load()//M_fname Useless tytyty
 											if(!cond)
 											{
 												temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
-											}
+											}else{
+											temp_cell.push_back(-1);
+										}
 										}
 									}
 								}
@@ -824,7 +829,9 @@ bool NNModel::load()//M_fname Useless tytyty
 											if(!cond)
 											{
 												temp_cell.push_back((aa*stride_c+dd-1)*coordPrev_y + (ee+ bb-1) + cc*coordPrev_x*coordPrev_y);
-											}
+											}else{
+											temp_cell.push_back(-1);
+										}
 											
 										}
 									}
@@ -841,7 +848,9 @@ bool NNModel::load()//M_fname Useless tytyty
 											if(!cond)
 											{
 												temp_cell.push_back((aa+dd-1)*coordPrev_y + (ee+ bb*stride_c-1) + cc*coordPrev_x*coordPrev_y);
-											}
+											}else{
+											temp_cell.push_back(-1);
+										}
 											
 										}
 									}
@@ -858,7 +867,9 @@ bool NNModel::load()//M_fname Useless tytyty
 											if(!cond)
 											{
 												temp_cell.push_back((aa*stride_c+dd-1)*coordPrev_y + (ee+ bb*stride_c-1) + cc*coordPrev_x*coordPrev_y);
-											}
+											}else{
+											temp_cell.push_back(-1);
+										}
 											
 										}
 									}

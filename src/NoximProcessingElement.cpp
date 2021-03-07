@@ -118,14 +118,23 @@ void NoximProcessingElement::rxProcess()
 							
 							for(int bh=0; bh< receive_neu_ID_conv[bg].size(); bh++)
 							{
-								for(int bi=0; bi< receive_Neu_ID.size();bi++)
+								if(receive_neu_ID_conv[bg][bh] == -1)
 								{
-									if(receive_neu_ID_conv[bg][bh] == receive_Neu_ID[bi] )
+									deq_data.push_back(0);
+								}
+								else
+								{
+									for(int bi=0; bi< receive_Neu_ID.size();bi++)
 									{
-										deq_data.push_back(receive_data[bi]);
-										break;
+										if(receive_neu_ID_conv[bg][bh] == receive_Neu_ID[bi] )
+										{
+											deq_data.push_back(receive_data[bi]);
+											break;
+										}
 									}
 								}
+								
+								
 							}
 							
 							/*---------------------------------------*/
@@ -1652,7 +1661,11 @@ void NoximProcessingElement::Convtrans()
 						cout<<(PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))<<endl;
 					}*/
 						/*-----------------------------*/
-					if( (PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))== NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac])
+					if(NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac] == -1)
+					{
+						//Do nothing
+					}
+					else if( (PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2]))== NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac])
 					{
 						
 						for(int ad =0; ad< NN_Model->all_leyer_ID_Group[ID_layer].size(); ad++)
@@ -1761,28 +1774,33 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 			int id_in_layer = NN_Model->all_conv_coord[PE_table[aa].ID_conv][PE_table[aa].ID_In_layer % (NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])][ab];
 			//cout<<"("<<id_in_layer<<"-"<<SingleOrFirstLayer<<"--"<<ID_layer<<")";
 			done =0;
-			if(ID_layer != 1 && !SingleOrFirstLayer)
+			if(id_in_layer == -1)
 			{
-				for(int ac=0; ac< NN_Model->all_leyer_ID_Group[ID_layer-2].size();ac++)
-				{
-					int temp_Prevgrp = NN_Model->all_leyer_ID_Group[ID_layer-2][ac];
-					PE_table_Prevlayer=NN_Model->Group_table[temp_Prevgrp];
-					for(int ad =0; ad<PE_table_Prevlayer.size(); ad++)
-					{
-						if(id_in_layer == PE_table_Prevlayer[ad].ID_In_layer)
-						{
-							temp_receive_neu_id_conv.push_back(PE_table_Prevlayer[ad].ID_Neu);
-							done =1;
-							break;
-						}
-					}if(done == 1)break;
-				}
-			}else
-			{
-				temp_receive_neu_id_conv.push_back(id_in_layer);
+				temp_receive_neu_id_conv.push_back(-1);
 			}
-			
-			
+			else
+			{
+				if(ID_layer != 1 && !SingleOrFirstLayer)
+				{
+					for(int ac=0; ac< NN_Model->all_leyer_ID_Group[ID_layer-2].size();ac++)
+					{
+						int temp_Prevgrp = NN_Model->all_leyer_ID_Group[ID_layer-2][ac];
+						PE_table_Prevlayer=NN_Model->Group_table[temp_Prevgrp];
+						for(int ad =0; ad<PE_table_Prevlayer.size(); ad++)
+						{
+							if(id_in_layer == PE_table_Prevlayer[ad].ID_In_layer)
+							{
+								temp_receive_neu_id_conv.push_back(PE_table_Prevlayer[ad].ID_Neu);
+								done =1;
+								break;
+							}
+						}if(done == 1)break;
+					}
+				}else
+				{
+					temp_receive_neu_id_conv.push_back(id_in_layer);
+				}
+			}	
 		}
 		receive_neu_ID_conv.push_back(temp_receive_neu_id_conv);
 		temp_receive_neu_id_conv.clear();
@@ -1792,24 +1810,38 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 	{
 		int needed=0;
 		receive_Neu_ID.clear();
-		receive_Neu_ID.push_back(receive_neu_ID_conv[0][0]);
+		for(int sd=0; sd< receive_neu_ID_conv[0].size(); sd++)
+		{
+			if(receive_neu_ID_conv[0][sd] != -1)
+			{
+				receive_Neu_ID.push_back(receive_neu_ID_conv[0][sd]);
+				break;
+			}
+		}
+		
 		for( int ba = 0; ba <receive_neu_ID_conv.size() ; ba++)
 		{
 			for(int bb =0; bb< receive_neu_ID_conv[ba].size(); bb++)
 			{
 				needed = 0;
-				for(int bc =0; bc< receive_Neu_ID.size(); bc++)
+				if(receive_neu_ID_conv[ba][bb] == -1)
 				{
-					if(receive_neu_ID_conv[ba][bb] == receive_Neu_ID[bc])
+					//Do nothing
+				}else{
+					for(int bc =0; bc< receive_Neu_ID.size(); bc++)
 					{
-						needed = 0;
-						break;
-					}else
-					{
-						needed=1;
-					}
-					
-				}if(needed ==1) receive_Neu_ID.push_back(receive_neu_ID_conv[ba][bb]);
+						if(receive_neu_ID_conv[ba][bb] == receive_Neu_ID[bc])
+						{
+							needed = 0;
+							break;
+						}else
+						{
+							needed=1;
+						}
+						
+					}if(needed ==1) receive_Neu_ID.push_back(receive_neu_ID_conv[ba][bb]);
+				}
+				
 			}
 		}
 		
@@ -1846,7 +1878,11 @@ void NoximProcessingElement::Pooltrans()
 			{
 				for(int ac =0; ac <NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab].size(); ac++ )
 				{
-					if(NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac] == (PE_table[aa].ID_In_layer%(NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])))
+					if(NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac] == -1)
+					{
+						//Do nothing
+					}
+					else if(NN_Model->all_conv_coord[PE_table_nxtlayer_neuron[0].ID_conv][ab][ac] == (PE_table[aa].ID_In_layer%(NN_Model->all_leyer_size[ID_layer][1]*NN_Model->all_leyer_size[ID_layer][2])))
 					{
 						for(int af =0; af< NN_Model->all_leyer_size[ID_layer+1][3] ; af++)
 						{
@@ -2092,7 +2128,13 @@ void NoximProcessingElement::LayerConvComp(deque<float> &data_deq)
 		{
 			for(int ac =0; ac< kernel_size;ac++)
 			{
-				value += all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac] * data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]];//NN_Model-> all_data_in[in_data][receive_neu_ID_conv[aa][ac+ab*kernel_size]];
+				if(receive_neu_ID_conv[aa][ac+ab*kernel_size] == -1)
+				{
+					value += all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac] *0;
+				}else
+				{
+					value += all_conv_weight_pe[dr][PE_table[aa].ID_In_layer / denominator][ab][ac] * data_deq[receive_neu_ID_conv[aa][ac+ab*kernel_size]];//NN_Model-> all_data_in[in_data][receive_neu_ID_conv[aa][ac+ab*kernel_size]];
+				}
 				/*------------Debugging---------------*/
 				/*if(ID_group == 0 && aa == 72)
 				{
