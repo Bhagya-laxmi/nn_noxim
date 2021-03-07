@@ -275,6 +275,123 @@ bool NNModel::load()//M_fname Useless tytyty
 		   temp_conv_weight_layer.clear();
 		   for(int j=0; j< all_leyer_size[i][3];j++)
 		   {
+			   if(i == 1 && j==0)
+				{
+					ifstream fin_w("conv1_k.txt", ios::in);
+
+				}else if(i == 2 && j==0)
+				{
+					ifstream fin_w("conv2_k.txt", ios::in);
+				}else if(i == 4 && j== 0)
+				{
+					ifstream fin_w("conv4_k.txt", ios::in);
+				}else if(i ==5 && j== 0)
+				{
+					ifstream fin_w("conv5_k.txt", ios::in);
+				}else if( i ==7 && j== 0)
+				{
+					ifstream fin_w("conv7_k.txt", ios::in);
+				}else if(i ==8 && j== 0)
+				{
+					ifstream fin_w("conv8_k.txt", ios::in);
+				}else if( i ==9 && j== 0)
+				{
+					ifstream fin_w("conv9_k.txt", ios::in);
+				}else if(i == 11)
+				{
+					if( j ==0)
+					{
+						ifstream fin_w("conv11_k0.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv11_k1.txt", ios::in);
+					}	
+				}else if (i== 12){
+					if( j ==0)
+					{
+						ifstream fin_w("conv12_k0.txt", ios::in);
+					}
+					if( j == 128){
+						ifstream fin_w("conv12_k1.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv12_k2.txt", ios::in);
+					}
+					if(j == 384)
+					{
+						ifstream fin_w("conv12_k3.txt", ios::in);
+					}
+				}else if(i == 13)
+				{
+					if( j ==0)
+					{
+						ifstream fin_w("conv13_k0.txt", ios::in);
+					}
+					if( j == 128){
+						ifstream fin_w("conv13_k1.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv13_k2.txt", ios::in);
+					}
+					if(j== 384)
+					{
+						ifstream fin_w("conv13_k3.txt", ios::in);
+					}
+				}else if(i == 15)
+				{
+					if( j ==0)
+					{
+						ifstream fin_w("conv15_k0.txt", ios::in);
+					}
+					if( j == 128 && j <256{
+						ifstream fin_w("conv15_k1.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv15_k2.txt", ios::in);
+					}
+					if(j== 384)
+					{
+						ifstream fin_w("conv15_k3.txt", ios::in);
+					}
+				}else if(i == 16)
+				{
+					if( j== 0)
+					{
+						ifstream fin_w("conv16_k0.txt", ios::in);
+					}
+					if( j == 128){
+						ifstream fin_w("conv16_k1.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv16_k2.txt", ios::in);
+					}
+					if(j== 384)
+					{
+						ifstream fin_w("conv16_k3.txt", ios::in);
+					}
+				}else if(i ==17)
+				{
+					if( j ==0)
+					{
+						ifstream fin_w("conv17_k0.txt", ios::in);
+					}
+					if( j == 128){
+						ifstream fin_w("conv17_k1.txt", ios::in);
+					}
+					if(j == 256)
+					{
+						ifstream fin_w("conv17_k2.txt", ios::in);
+					}
+					if(j== 384)
+					{
+						ifstream fin_w("conv17_k3.txt", ios::in);
+					}
+				}
 				for(int q=0;q<all_leyer_size[i][6];q++)
 				{
 					temp_weights.clear();
@@ -292,6 +409,58 @@ bool NNModel::load()//M_fname Useless tytyty
 			temp_conv_weight_layer.clear();
 		   for( int m =0; m < all_leyer_size[i][3];m++)
 		   {
+			   if(i == 1)
+				{
+					ifstream fin_w("conv1_b.txt", ios::in);
+
+				}else if(i == 2)
+				{
+					ifstream fin_w("conv2_b.txt", ios::in);
+				}else if(i == 4)
+				{
+					ifstream fin_w("conv4_b.txt", ios::in);
+				}else if(i ==5 )
+				{
+					ifstream fin_w("conv5_b.txt", ios::in);
+				}else if( i ==7)
+				{
+					ifstream fin_w("conv7_b.txt", ios::in);
+				}else if(i ==8)
+				{
+					ifstream fin_w("conv8_b.txt", ios::in);
+				}else if( i ==9 )
+				{
+					ifstream fin_w("conv9_b.txt", ios::in);
+				}else if(i == 11)
+				{
+					
+					ifstream fin_w("conv11_b.txt", ios::in);
+						
+				}else if (i== 12){
+					
+					ifstream fin_w("conv12_b.txt", ios::in);
+					
+				}else if(i == 13)
+				{
+					ifstream fin_w("conv13_b.txt", ios::in);
+					
+				}else if(i == 15)
+				{
+					
+					ifstream fin_w("conv15_b.txt", ios::in);
+					
+				}else if(i == 16)
+				{
+					
+					ifstream fin_w("conv16_b.txt", ios::in);
+					
+				}else if(i ==17)
+				{
+					
+					ifstream fin_w("conv17_b.txt", ios::in);
+					
+				}
+			   
 			   fin_w >> temp_w;
 			   temp_bias_conv.push_back(temp_w);   //Bias for each filter   
 		   }
@@ -407,6 +576,16 @@ bool NNModel::load()//M_fname Useless tytyty
 			temp_bias.clear();
 			if(all_leyer_type[temp_layer]=='f')
 			{
+				if(temp_layer == 19)
+				{
+					ifstream fin_w("fc1_b.txt", ios::in);
+				}else if(temp_layer == 20)
+				{
+					ifstream fin_w("fc2_b.txt", ios::in);
+				}else if(temp_layer ==21)
+				{
+					ifstream fin_w("fc3_b.txt", ios::in);
+				}
 				for(int k=0;k<all_leyer_size[temp_layer][0];k++)
 				{
 					fin_w >> temp_w;
