@@ -275,7 +275,6 @@ bool NNModel::load()//M_fname Useless tytyty
 		   temp_conv_weight_layer.clear();
 		   for(int j=0; j< all_leyer_size[i][3];j++)
 		   {
-				
 				for(int q=0;q<all_leyer_size[i][6];q++)
 				{
 					temp_weights.clear();
