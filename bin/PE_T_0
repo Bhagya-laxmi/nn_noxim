@@ -92,7 +92,7 @@
 101: ProcessingElement[0] SENDING [type: B, seq: 91, 0-->48], src_Neu_id = 90, data = 0
 102: ProcessingElement[0] SENDING [type: B, seq: 92, 0-->48], src_Neu_id = 91, data = 0
 103: ProcessingElement[0] SENDING [type: B, seq: 93, 0-->48], src_Neu_id = 92, data = 0
-104: ProcessingElement[0] SENDING [type: B, seq: 94, 0-->48], src_Neu_id = 93, data = 1.48772
+104: ProcessingElement[0] SENDING [type: B, seq: 94, 0-->48], src_Neu_id = 93, data = 0
 105: ProcessingElement[0] SENDING [type: B, seq: 95, 0-->48], src_Neu_id = 94, data = 0
 106: ProcessingElement[0] SENDING [type: B, seq: 96, 0-->48], src_Neu_id = 95, data = 0
 107: ProcessingElement[0] SENDING [type: B, seq: 97, 0-->48], src_Neu_id = 96, data = 0
