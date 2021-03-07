@@ -605,8 +605,26 @@ bool NNModel::load()//M_fname Useless tytyty
 
 		 if( NeuInfo.Type_layer == 'f')
 		{
+			if(temp_layer == 19)
+				{
+					ifstream fin_w("fc1_b.txt", ios::in);
+				}else if(temp_layer == 20)
+				{
+					if(NeuInfo.ID_In_layer ==0)
+					{
+						ifstream fin_w("fc2_k0.txt", ios::in);
+					}
+					if(NeuInfo.ID_In_layer == 100)
+					{
+						ifstream fin_w("fc2_k1.txt", ios::in);
+					}
+					
+				}else if(temp_layer ==21)
+				{
+					ifstream fin_w("fc3_k.txt", ios::in);
+				}
 			for( int i=0 ; i < ( all_leyer_size[ temp_layer-1 ][0]) ; i++ )	
-			{
+			{	
 				fin_w>>temp_w;
 				NeuInfo.weight.push_back(temp_w);
 			}
