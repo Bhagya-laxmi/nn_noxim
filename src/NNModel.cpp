@@ -346,7 +346,7 @@ bool NNModel::load()//M_fname Useless tytyty
 					{
 						ifstream fin_w("conv15_k0.txt", ios::in);
 					}
-					if( j == 128 && j <256{
+					if( j == 128){
 						ifstream fin_w("conv15_k1.txt", ios::in);
 					}
 					if(j == 256)
@@ -605,18 +605,56 @@ bool NNModel::load()//M_fname Useless tytyty
 
 		 if( NeuInfo.Type_layer == 'f')
 		{
+			int fl;
 			if(temp_layer == 19)
 				{
-					ifstream fin_w("fc1_b.txt", ios::in);
+					if(NeuInfo.ID_In_layer ==0)
+					{
+						fl =0;
+						char fileID_r[10];
+						sprintf(fileID_r,"%d",fl);
+						char file_name_r[10] = "fc1_k";
+						char ext[10] = ".txt";
+						strcat(file_name_r, fileID_r);
+						strcat(file_name_r, ext);
+						
+						ifstream fin_w(file_name_r, ios::in);
+					}else if(NeuInfo.ID_In_layer%20 ==0)
+					{
+						fl++;
+						char fileID_r[10];
+						sprintf(fileID_r,"%d",fl);
+						char file_name_r[10] = "fc1_k";
+						char ext[10] = ".txt";
+						strcat(file_name_r, fileID_r);
+						strcat(file_name_r, ext);
+
+						ifstream fin_w(file_name_r, ios::in);
+					}
 				}else if(temp_layer == 20)
 				{
 					if(NeuInfo.ID_In_layer ==0)
 					{
-						ifstream fin_w("fc2_k0.txt", ios::in);
-					}
-					if(NeuInfo.ID_In_layer == 100)
+						fl =0;
+						char fileID_r[10];
+						sprintf(fileID_r,"%d",fl);
+						char file_name_r[10] = "fc2_k";
+						char ext[10] = ".txt";
+						strcat(file_name_r, fileID_r);
+						strcat(file_name_r, ext);
+						
+						ifstream fin_w(file_name_r, ios::in);
+					}else if(NeuInfo.ID_In_layer%100 ==0)
 					{
-						ifstream fin_w("fc2_k1.txt", ios::in);
+						fl++;
+						char fileID_r[10];
+						sprintf(fileID_r,"%d",fl);
+						char file_name_r[10] = "fc2_k";
+						char ext[10] = ".txt";
+						strcat(file_name_r, fileID_r);
+						strcat(file_name_r, ext);
+
+						ifstream fin_w(file_name_r, ios::in);
 					}
 					
 				}else if(temp_layer ==21)

@@ -3,11 +3,25 @@
 % Pooling ( 3D_shape kernel_x kernel_y stride type:"average"/"maximum" )
 % Dense ( size  activation:"relu"/"tanh"/"sigmoid"/"softmax" )
 
-Input 32 32 1
-Convolution 28 28 6 5 5 1 1 0 relu 
-Pooling 14 14 6 2 2 2 average
-Convolution 10 10 16 5 5 6 1 0 relu
-Pooling 5 5 16 2 2 2 average
-Dense 120 relu
-Dense 84 relu
-Dense 10 softmax
+Input 224 224 3
+Convolution 224 224 64 3 3 3 1 1 relu 
+Convolution 224 224 64 3 3 64 1 1 relu
+Pooling 112 112 64 2 2 2 maximum
+Convolution 112 112 128 3 3 64 1 1 relu
+Convolution 112 112 128 3 3 128 1 1 relu
+Pooling 56 56 128 2 2 2 maximum
+Convolution 56 56 256 3 3 128 1 1 relu
+Convolution 56 56 256 3 3 256 1 1 relu
+Convolution 56 56 256 3 3 256 1 1 relu
+Pooling 28 28 256 2 2 2 maximum
+Convolution 28 28 512 3 3 256 1 1 relu
+Convolution 28 28 512 3 3 512 1 1 relu
+Convolution 28 28 512 3 3 512 1 1 relu
+Pooling 14 14 512 2 2 2 maximum
+Convolution 14 14 512 3 3 512 1 1 relu
+Convolution 14 14 512 3 3 512 1 1 relu
+Convolution 14 14 512 3 3 512 1 1 relu
+Pooling 7 7 512 2 2 2 maximum
+Dense 4096 relu
+Dense 4096 relu
+Dense 2 softmax
