@@ -148,7 +148,6 @@ void showHelp(char selfname[])
 	<< DEFAULT_FAULTY_MODE << "):" << endl;
     cout << "\t\t inactive\t\tNo Faulty Nodes" << endl;
     cout << "\t\t active\t\t\tFaulty Nodes are present" << endl;
-	cout << "\t\t active_with_opt\tFaulty Nodes are present and perform optimization for suitable mapping" << endl;
 }
 
 void showConfig()
