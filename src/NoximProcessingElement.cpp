@@ -1209,7 +1209,7 @@ void NoximProcessingElement::TraffThrottlingProcess()
 		}		
 	}
 }
-
+//Preprocessing to handle static and mapping
 void NoximProcessingElement::PreprocessingProcess()
 {
 	Use_Neu_ID.clear();
@@ -1508,7 +1508,7 @@ void NoximProcessingElement::PreprocessingProcess()
 	}
 	computation_time = NoximGlobalParams::PE_computation_time;
 }
-
+//Destination PEs for FC layers
 void NoximProcessingElement::FCtrans()
 {
 	if(ID_layer !=NN_Model->all_leyer_size.size()-1)
@@ -1529,7 +1529,7 @@ void NoximProcessingElement::FCtrans()
 		/*----------------------*/
 	}
 }
-
+//Source neuron ids for fully-connected layers
 void NoximProcessingElement::FCreceive(bool SingleOrFirstLayer)
 {
 	receive = NN_Model-> all_leyer_size[ID_layer-1][0];
@@ -1556,7 +1556,7 @@ void NoximProcessingElement::FCreceive(bool SingleOrFirstLayer)
 	
 	
 }
-
+//Destination PEs for convolution operation
 void NoximProcessingElement::Convtrans()
 {
 	deque< NeuInformation > PE_table_nxtlayer;
@@ -1751,7 +1751,7 @@ void NoximProcessingElement::Convtrans()
 		/*----------------------------------------------*/
 
 }
-
+//Source neuron ids for convolution operation
 void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 {
 	/*--------------Debugging-------------*/
@@ -1860,7 +1860,7 @@ void NoximProcessingElement::Convreceive(bool SingleOrFirstLayer)
 	/*------------------------------------------*/
 	
 }
-
+//Destination PEs for pooling operation
 void NoximProcessingElement::Pooltrans()
 {
 	if(NN_Model->all_leyer_type[ID_layer +1] == 'c')
@@ -2002,6 +2002,7 @@ void NoximProcessingElement::Pooltrans()
 	}
 }
 
+//source neuron ids for pooling operation
 void NoximProcessingElement::Poolreceive(bool SingleOrFirstLayer)
 {
 	receive_neu_ID_pool.clear();
@@ -2092,6 +2093,7 @@ void NoximProcessingElement::Poolreceive(bool SingleOrFirstLayer)
 	/*------------------------------------------------*/
 }
 
+//Perfrom preprocessing at every mapping iteration
 void NoximProcessingElement::DynamicMappingDone()
 {
 	//cout<<NN_Model->Mapping_done<<endl;
@@ -2106,6 +2108,7 @@ void NoximProcessingElement::DynamicMappingDone()
 	}
 }
 
+//Convolution layer computation procedure
 void NoximProcessingElement::LayerConvComp(deque<float> &data_deq)
 {
 	float value=0.0;
@@ -2161,6 +2164,7 @@ void NoximProcessingElement::LayerConvComp(deque<float> &data_deq)
 	}	
 }
 
+//Pooling layer computation procedure
 void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 {
 	float value;
@@ -2214,6 +2218,7 @@ void NoximProcessingElement::LayerPoolComp(deque<float> &data_deq)
 	/*---------------------------------------*/
 }
 
+//Fuly-connected layer computation procedure
 void NoximProcessingElement::LayerFCComp(deque<float> &data_deq)
 {
 	float denominator_value =0.0;
@@ -2311,6 +2316,7 @@ void NoximProcessingElement::LayerFCComp(deque<float> &data_deq)
 	}
 }
 
+//Storing weights from global memory to local
 void NoximProcessingElement:: ConvWeights()
 {
 	conv_layers.clear();

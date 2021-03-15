@@ -987,7 +987,7 @@ bool NNModel::load()//M_fname Useless tytyty
 
     	return true;
 }
-
+//Dynamic mapping procedure
 void NNModel::Dymapping()
 {
 	bool map_Layer = false; 
@@ -1182,7 +1182,7 @@ void NNModel :: HardwarePlan()
 	}
 }
 
-
+//Deciding the number of layers to be mapped in a dynamic mapping iteration
 bool NNModel:: Check_LayerMapping(int already_mapped)
 {
 	bool ret_val;
@@ -1234,7 +1234,7 @@ bool NNModel:: Check_LayerMapping(int already_mapped)
   return ret_val;
 
 }
-
+//Mapping in the presence of faults
 void NNModel::FaultyMode()
 {
 	//Step 1: save the faulty nodes
@@ -1297,7 +1297,7 @@ void NNModel::FaultyMode()
 	
 
 }
-
+//Table-based routing table creation
 void NNModel:: FaultyMode_prep()
 {
 	//Step 3: Table based routing file creation
