@@ -146,7 +146,7 @@ using namespace std;
 /*----------------Faulty Nodes--------------------*/
 #define INACTIVE			0
 #define ACTIVE				1
-#define ACTIVE_with_Opt		2
+
 // Default configuration can be overridden with command-line arguments
 #define DEFAULT_VERBOSE_MODE               VERBOSE_OFF
 #define DEFAULT_TRACE_MODE                       false

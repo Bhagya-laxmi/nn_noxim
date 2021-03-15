@@ -172,7 +172,7 @@ bool NNModel::load()//M_fname Useless tytyty
 		cout<<"Routing Algorithm=> Table based routing"<<endl;
 	}else
 	{
-		cout<<"Routing Algorithm=> XYX routing"<<endl;
+		cout<<"Routing Algorithm=> XYX or I X/Y routing"<<endl;
 	}
 	
 	

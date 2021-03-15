@@ -360,11 +360,6 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 				NoximGlobalParams::faulty_mode = ACTIVE;
 				cout<< "Faulty Mode => ACTIVE"<<endl;
 				
-			}else if(!strcmp(arg_vet[i],"active_with_opt"))
-			{
-				NoximGlobalParams::faulty_mode = ACTIVE_with_Opt;
-				cout<< "Faulty Mode => ACTIVE_with_Opt"<<endl;
-				
 			}
 		} 
 		else if (!strcmp(arg_vet[i], "-verbose"))
