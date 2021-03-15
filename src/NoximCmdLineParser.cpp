@@ -148,7 +148,6 @@ void showHelp(char selfname[])
 	<< DEFAULT_FAULTY_MODE << "):" << endl;
     cout << "\t\t inactive\t\tNo Faulty Nodes" << endl;
     cout << "\t\t active\t\t\tFaulty Nodes are present" << endl;
-	cout << "\t\t active_with_opt\tFaulty Nodes are present and perform optimization for suitable mapping" << endl;
 }
 
 void showConfig()
@@ -359,11 +358,6 @@ void parseCmdLine(int arg_num, char *arg_vet[])
 			{
 				NoximGlobalParams::faulty_mode = ACTIVE;
 				cout<< "Faulty Mode => ACTIVE"<<endl;
-				
-			}else if(!strcmp(arg_vet[i],"active_with_opt"))
-			{
-				NoximGlobalParams::faulty_mode = ACTIVE_with_Opt;
-				cout<< "Faulty Mode => ACTIVE_with_Opt"<<endl;
 				
 			}
 		} 

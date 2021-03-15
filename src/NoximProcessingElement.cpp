@@ -466,7 +466,7 @@ if (reset.read() ) {
 NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data)  //************tyty*****
 //NoximFlit NoximProcessingElement::nextFlit(const int ID_layer)  //************tyty*****
 {
-	
+	bool Ixy = true;
     NoximFlit flit;
     NoximPacket packet = packet_queue.front();
 	
@@ -484,7 +484,7 @@ NoximFlit NoximProcessingElement::nextFlit(const int ID_layer, const int in_data
 	}
 	/*--------------------------------*/
 //************Intermittent XY routing********************
-	if(flit.sequence_no == 0)
+	if(flit.sequence_no == 0 && Ixy)
 	{
 		curr_XYXrouting = abs(curr_XYXrouting -1);  
 		flit.XYX_routing   = curr_XYXrouting ; 
